@@ -1,6 +1,9 @@
 /*  Iterator.h
  *
- *  sane iterator with next() and has_next()
+ *  abstract interface for sane iterators with next() and has_next()
+ *
+ *  inheriting from this interface allows iteration to be decoupled
+ *  from the details of the container (whose implementation may thus be hidden)
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -13,33 +16,14 @@
 #ifndef PREDEE_PREDEE_ITERATOR
 #define PREDEE_PREDEE_ITERATOR
 
-#include <vector>
-#include <deque>
-#include <list>
-
 using namespace predeepredee
 {
     template<class Data>
     class Iterator
-    {
-        enum container_type = {vector_type, deque_type, list_type};
-        container_type container;
-        void* current; // current iterator
-        void* end; // end iterator
-        
-        typedef vector_iter std::vector::const_iterator;
-        typedef deque_iter std::deque::const_iterator;
-        typedef list_iter std::list::const_iterator;
-        
+    {        
     public:
-        // separate constructors for each container type
-        Iterator(const std::vector& v);
-        Iterator(const std::deque& d);
-        Iterator(const std::list& l);
-
-        ~Iterator(); // destructor
-        bool has_next(); // check if there are more elements to iterate over
-        Data next(); // return next element
+        virtual bool has_next() = 0; // check if there are more elements
+        virtual Data next() = 0; // return next element
     }
 } 
 #endif // PREDEE_PREDEE_ITERATOR
