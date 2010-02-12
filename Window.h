@@ -16,7 +16,7 @@
 
 #include "World.h"
 
-namespace predeepredee
+namespace pdpd
 {
     class Window
     {

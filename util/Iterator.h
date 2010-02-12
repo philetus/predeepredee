@@ -13,17 +13,20 @@
  *  
  */
  
-#ifndef PREDEE_PREDEE_ITERATOR
-#define PREDEE_PREDEE_ITERATOR
+#ifndef PDPD_UTIL_ITERATOR
+#define PDPD_UTIL_ITERATOR
 
-using namespace predeepredee
+namespace pdpd
 {
-    template<class Data>
-    class Iterator
-    {        
-    public:
-        virtual bool has_next() = 0; // check if there are more elements
-        virtual Data next() = 0; // return next element
+    namespace util
+    {
+        template<class Data>
+        class Iterator
+        {        
+        public:
+            virtual bool has_next() = 0; // check if there are more elements
+            virtual Data next() = 0; // return next element
+        }
     }
 } 
-#endif // PREDEE_PREDEE_ITERATOR
+#endif // PDPD_UTIL_ITERATOR

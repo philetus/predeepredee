@@ -13,24 +13,29 @@
  *  
  */
  
-#ifndef PREDEE_PREDEE_WORLD
-#define PREDEE_PREDEE_WORLD
+#ifndef PDPD_WORLD
+#define PDPD_WORLD
 
-#include <list>
+#include <deque>
 #include "Thing.h"
+#include "Iterator.h"
+#include "DequeIterator.h"
 
-using std::vector;
-
-namespace predeepredee
+namespace pdpd
 {
     class World
     {
-        list<Thing> things; // list of things in the world
+        std::deque<Thing> things; // list of things in the world
     public:
-        World(); // constructor
-        ~World(); // destructor
-        void welcome(Thing thing);
-        void dismiss(Thing thing);
+        World();
+        ~World() { delete things; }
+        
+        virtual void welcome(Thing& thing);
+        virtual void dismiss(Thing& thing);
+        
+        // iterator over things
+        virtual Iterator<Thing> iter_things()
+            { return DequeIterator(things) }
     };
 }
- #endif // PREDEE_PREDEE_WORLD
+ #endif // PDPD_WORLD
