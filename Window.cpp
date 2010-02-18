@@ -50,7 +50,7 @@ bool Window::init_sdl()
     // init SDL video
     if(SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
-        cout << "fail! : can't init video : " << SDL_GetError();
+        cout << "fail! : can't init video : " << SDL_GetError() << "\n";
         return false;
     }
 
@@ -68,16 +68,16 @@ bool Window::init_sdl()
 	int flags = SDL_OPENGL | SDL_RESIZABLE;
     if(!(window_surface = SDL_SetVideoMode(width, height, 0, flags)))
     {
-        cout << "fail! : can't open sdl window : " << SDL_GetError();
+        cout << "fail! : can't open sdl window : " << SDL_GetError() << "\n";
         return false;
     }
 }
 
 bool Window::init_gl()
 {
-	cout << "OpenGL version: " <<  glGetString(GL_VERSION);
-	cout << "OpenGL vendor: " << glGetString(GL_VENDOR);
-	cout << "OpenGL renderer: " << glGetString(GL_RENDERER);
+	cout << "OpenGL version: " <<  glGetString(GL_VERSION) << "\n";
+	cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << "\n";
+	cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << "\n";
 
 	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
 	
@@ -100,10 +100,25 @@ bool Window::init_gl()
     handle_resize();
 }
 
-void Window::handle_key_press(Uint16 unicode) {} // TODO
-void Window::handle_key_release(Uint16 unicode) {} // TODO
+void Window::handle_keypress(SDL_keysym* keysym)
+{
+    switch( keysym->sym ) 
+    {
+    case SDLK_ESCAPE:
+        handle_quit();
+        break;
+    default:
+        break;
+    }
+
+}
+void Window::handle_keyrelease(SDL_keysym* keysym) {} // TODO
 void Window::handle_expose() {} // TODO: write expose handler
-void Window::handle_quit() {} // TODO
+
+void Window::handle_quit() {
+    SDL_Quit();
+    exit(0);
+}
 
 void Window::handle_resize()
 {
@@ -139,11 +154,9 @@ void Window::event_loop()
         while(SDL_PollEvent(&event)) {
             switch(event.type)
             {
-            /*
             case SDL_KEYDOWN:
-                handle_key_down( &event.key.keysym );
+                handle_keypress(&event.key.keysym);
                 break;
-             */
 
             case SDL_VIDEORESIZE: // on resize first update width and height
                 width = event.resize.w;

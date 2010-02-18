@@ -51,8 +51,8 @@ namespace pdpd
         void event_loop(); 
         
         // event handlers to be overridden by base classes
-        virtual void handle_key_press(Uint16 unicode);
-        virtual void handle_key_release(Uint16 unicode);
+        virtual void handle_keypress(SDL_keysym* keysym);
+        virtual void handle_keyrelease(SDL_keysym* keysym);
         
         virtual void handle_resize();
         virtual void handle_expose();

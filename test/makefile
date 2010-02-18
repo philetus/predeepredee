@@ -1,31 +1,15 @@
-APP		=	gl-cairo-simple
+CFLAGS += -W -Wall -g -O3
+CFLAGS += `pkg-config --cflags sdl cairo`
+CPP = g++
 
-CPP		=	g++
+TARGETS=test_window
 
-CFLAGS	=	-Wall -c -g -std=c99 \
-			`sdl-config --cflags` \
-			`pkg-config --cflags cairo`
+all: $(TARGETS)
 
-LDFLAGS	=	`sdl-config --libs` \
-			`pkg-config --libs cairo` \
-			-lGL -lGLU -lm
-
-SRCS	=	test.c # \
-#           test2.c
-
-OBJS	=	$(SRCS:.c=.o)
-
-all: $(APP)
-
-.cpp.o:
-	$(CPP) $(CFLAGS) -c $< -o $@
-.c.o:
-	$(CPP) $(CFLAGS) -c $< -o $@
-
-# it is important that $(OBJS) stands _before_ $(LDFLAGS)
-$(APP):	$(OBJS)
-	$(CPP) $(OBJS) $(LDFLAGS) -o$(APP)
+test_window: test_window.o ../Window.cpp
+	$(CPP) -o $@ $+ `pkg-config --libs sdl cairo`
 
 clean:
-	rm -f *.o  *~ $(APP) frame.png
-
+	$(RM) $(TARGETS)
+	$(RM) *.o
+	$(RM) *~
