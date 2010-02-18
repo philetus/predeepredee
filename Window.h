@@ -11,8 +11,11 @@
  *  
  */
  
-#ifndef PREDEE_PREDEE_WINDOW
-#define PREDEE_PREDEE_WINDOW
+#ifndef PDPD_WINDOW
+#define PDPD_WINDOW
+
+#include <SDL/SDL.h>
+#include <GL/gl.h>
 
 #include "World.h"
 
@@ -20,9 +23,42 @@ namespace pdpd
 {
     class Window
     {
-    
+        World* world;
+        int width;
+        int height;
+        char title[]; //TODO
+        static const int loop_pause_interval = 50; // time to delay in event loop
+        SDL_Surface* window_surface;
+        /*
+        cairo_surface_t* cairo_surface;
+        unsigned char* surface_data;
+        unsigned int texture_id;
+        cairo_t* cairo_context;
+        */
+        
+        // manage initialization in constructor
+        bool init_sdl();
+        bool init_gl();
+
+        Window(); // prevent argumentless constructor calls
+        Window(const Window& w); // prevent copy-construction
     public:
-        Window(World world); // constructor takes a world as an argument
-    }
+        Window(World* a_world, int a_width = 600, int a_height = 400); 
+        // TODO: make this work      const char a_title[] = "predee predee");
+        ~Window();
+
+        // main event loop method
+        void event_loop(); 
+        
+        // event handlers to be overridden by base classes
+        virtual void handle_key_press(Uint16 unicode);
+        virtual void handle_key_release(Uint16 unicode);
+        
+        virtual void handle_resize();
+        virtual void handle_expose();
+        virtual void handle_quit();
+        
+        virtual void handle_draw();
+    };
 }
-#endif PREDEE_PREDEE_WINDOW
+#endif // PDPD_WINDOW

@@ -1,5 +1,6 @@
 CFLAGS += -W -Wall -g -O3
 CFLAGS += `pkg-config --cflags sdl cairo`
+CC = g++
 
 TARGETS=test-cairosdl fuzzy-balls sdl-clock gears
 

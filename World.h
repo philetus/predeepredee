@@ -16,17 +16,21 @@
 #ifndef PDPD_WORLD
 #define PDPD_WORLD
 
+/*
 #include <deque>
+
 #include "Thing.h"
 #include "Iterator.h"
 #include "DequeIterator.h"
-
+ */
+ 
 namespace pdpd
 {
     class World
     {
-        std::deque<Thing> things; // list of things in the world
+        // std::deque<Thing> things; // list of things in the world
     public:
+        /*
         World();
         ~World() { delete things; }
         
@@ -36,6 +40,7 @@ namespace pdpd
         // iterator over things
         virtual Iterator<Thing> iter_things()
             { return DequeIterator(things) }
+         */
     };
 }
  #endif // PDPD_WORLD
