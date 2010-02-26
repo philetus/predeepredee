@@ -11,6 +11,142 @@
  */
 
 #include "World.h"
+#include "ThingMotionState.h"
 
 using namespace pdpd;
 
+World::World()
+:
+things(new deque<Things>()),
+gravity(0.0, -10000.0, 0.0) // 10,000mm/s**2 in the -y???
+{
+    // TODO ???
+}
+
+bool World::init_physics()
+{
+	// use the default collision dispatcher for default setup 
+	// for memory, collision handling
+	collision_configuration = new btDefaultCollisionConfiguration();
+    collision_dispatcher = new btCollisionDispatcher(collision_configuration);
+    
+    // use aabb tree to identify potential collision pairs
+    broadphase_interface = new btDbvtBroadphase();
+    
+    // keep it simple, use sequential (not parallel) constraint solver
+    btSequentialImpulseConstraintSolver* sequential_solver = 
+        new btSequentialImpulseConstraintSolver();
+    constraint_solver = sequential_solver;
+    
+    // init physics with above config
+    dynamics_world = 
+        new btDiscreteDynamicsWorld(
+            collision_dispatcher, broadphase_interface, 
+            constraint_solver, collision_configuration);
+    
+    // I fought the law and the law won
+    dynamicsWorld->setGravity(World::gravity);
+    
+    // make something for gravity to work with
+    if (!init_ground()) return false;
+    
+    return true;
+}
+
+bool World::init_ground()
+{
+    // create box for ground plane
+    ground = new Box(Scale3(100.0, 10.0, 100.0), 0.0);
+    
+    // put top of box on zx plane
+    Translation3 ground_position(0.0, -10.0, 0.0);
+    Transformation3 ground_transformation(ground_position);
+    
+    // introduce it to world
+    welcome(ground, ground_transformation);
+    
+    return true;
+}
+
+// welcome a new thing into the world at given position and orientation
+void World::welcome(
+    Thing* thing, 
+    const Transformation3* transformation)
+{   
+    // if atomic just insert thing
+    if(thing->is_atomic()) atomic_insert(thing, transformation);
+
+    // if thing is not atomic insert children too and then add constraints
+    else 
+    {
+        // recursively inserts children
+        composite_insert(thing, transformation);
+                
+        // init constraints between parts
+        Iterator<Thing*> i = thing->iter_children();
+        while(i.has_next()) init_constraints(i.next());
+    }
+}
+
+/*  insert a new thing into the world
+ *  - set up graphics object
+ *  - set up physics
+ */ 
+void World::atomic_insert(
+    AtomicThing* thing, 
+    const Transformation3* transformation)
+{
+    // generate rigid body for thing
+    btScalar mass(thing->get_mass());
+    ThingMotionState* motion_state = new ThingMotionState(transformation);
+    btCollisionShape* collision_shape = thing->get_collision_shape();
+    btVector3 inertia(0.0, 0.0, 0.0);
+    btRigidBody::btRigidBodyConstructionInfo 
+        info(mass, motion_state, collision_shape, inertia);
+    btRigidBody* body = new btRigidBody(info);
+    
+    // is this necessary? motion state already provides interface
+    // thing->set_rigid_body(body);
+    
+    // if thing is dynamic set inertia
+    if(thing->is_dynamic()) body->calculateLocalInertia(mass, inertia);
+    
+    // add rigid body to physics world
+    body->setActivationState(ISLAND_SLEEPING); // ???
+    dynamics_world->addRigidBody(body);
+    body->setActivationState(ISLAND_SLEEPING); // ???
+    
+    // add thing to world
+    things->push_back(thing);
+}
+
+void World::composite_insert(Thing* thing, const Transformation3* transformation)
+{
+    // add thing to world
+    things->push_back(thing);
+    
+    // insert children
+    Iterator<Thing*> i = thing->iter_children(); 
+    while(i.has_next())
+    {
+        Thing* child = i.next();
+        
+        // get transformation to child
+        Transformation3* child_transformation = 
+            new Transformation3(transformation);
+        child_transformation.transform(child->get_offset());
+        
+        // insert with appropriate method
+        if(child->is_atomic()) atomic_insert(child, child_transformation);
+        else composite_insert(child, child_transformation);
+        
+        // clean up
+        delete child_transformation;
+    }    
+}
+
+void World::step_physics()
+{
+    float delta = get_delta_in_seconds();
+    if(dynamics_world) dynamics_world->stepSimulation(delta);
+}

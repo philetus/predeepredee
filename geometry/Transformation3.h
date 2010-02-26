@@ -14,13 +14,23 @@
 #ifndef PDPD_GEOMETRY_TRANSFORMATION3
 #define PDPD_GEOMETRY_TRANSFORMATION3
 
-#include "../vectormath/vectormath.h"
+#include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
     namespace geometry
     {
-        class Transformation3 : public Vectormath::Aos::Transform3 {}
+        class Transformation3 : public btTransform
+        {
+        public:
+            // create new transformation from prototype
+            Transformation3(const btTransform& prototype)
+                { this->crib(prototype); }
+                
+            // copy value from another transform in place
+            crib(const btTransform& prototype)
+                { this->deSerialize(prototype->serialize); }
+        }
     }
 }
 #endif // PDPD_GEOMETRY_TRANSFORMATION3

@@ -20,10 +20,12 @@ using namespace pdpd;
 /*
  *  constructor
  */
-Window::Window(
-        World* a_world, int a_width/*=600*/, int a_height/*=400*/ ) 
+Window::Window( World* a_world, int a_width /*= 600*/, int a_height /*= 400*/ ) 
         // const char a_title[] /*="predee predee"*/)
-    : world(a_world), width(a_width), height(a_height)
+:
+world(a_world),
+width(a_width),
+height(a_height)
 {
     init_sdl();
     init_gl();
@@ -163,10 +165,12 @@ void Window::event_loop()
                 height = event.resize.h;
                 handle_resize();
                 break;
-
+            
+            /*
             case SDL_VIDEOEXPOSE: // redraw screen after expose event
                 handle_expose();
                 break;
+             */
 
             case SDL_QUIT: // ctrl-c
                 handle_quit();
@@ -177,8 +181,10 @@ void Window::event_loop()
             }
         }
         
-        // redraw window to buffer then swap
+        // step physics, redraw window to buffer then swap buffers
+        world->step_physics();
         handle_draw();
+        glFlush(); // is this necessary?
         SDL_GL_SwapBuffers();
         
         // don't race processor

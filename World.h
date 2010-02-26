@@ -16,31 +16,62 @@
 #ifndef PDPD_WORLD
 #define PDPD_WORLD
 
-/*
+
 #include <deque>
+#include "btBulletDynamicsCommon.h"
 
 #include "Thing.h"
 #include "Iterator.h"
 #include "DequeIterator.h"
- */
- 
+
 namespace pdpd
 {
     class World
     {
-        // std::deque<Thing> things; // list of things in the world
+        // private data
+        std::deque<Thing>* things; // list of things in the world
+	    btDynamicsWorld* dynamics_world; // this is the most important class
+	    btClock step_timer; // track time between rendering passes
+	    btTypedConstraint* pick_constraint; // constraint for mouse picking
+        btBroadphaseInterface* broadphase_interface;
+        btCollisionDispatcher* collision_dispatcher;
+        btConstraintSolver* constraint_solver;
+        btDefaultCollisionConfiguration* collision_configuration;
+        btVector3 gravity;
+        things::Box* ground;
+        
+        // private methods
+        void insert(Thing* thing);
+        void init_constraints(Thing* thing);
+        
     public:
-        /*
         World();
         ~World() { delete things; }
         
-        virtual void welcome(Thing& thing);
-        virtual void dismiss(Thing& thing);
+        virtual void welcome(Thing* thing);
+        virtual void dismiss(Thing* thing);
         
         // iterator over things
         virtual Iterator<Thing> iter_things()
             { return DequeIterator(things) }
-         */
+        
+        // manage physics
+        virtual bool init_physics();
+        virtual bool exit_physics();
+        
+        // set up object to serve as ground plane
+        virtual bool init_ground();
+        
+        // get time since last physics update
+        btScalar get_delta_in_seconds()
+        {
+            btScalar us_delta = step_timer.getTimeMicroseconds();
+            step_timer.reset(); // getTime returns time since last reset
+            return us_delta / btScalar(1000000.0);
+        }
+        
+        // update physics simulation
+        void step_physics();
     };
 }
  #endif // PDPD_WORLD
