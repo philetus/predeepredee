@@ -1,7 +1,7 @@
 /*  Rotation3.h
  *
  *  3d rotation represented as quaternion vector
- *  - currently an alias to Quat from sony vectormath library implementation
+ *  - subclasses bullet's btQuaternion
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -14,49 +14,16 @@
 #ifndef PDPD_GEOMETRY_ROTATION3
 #define PDPD_GEOMETRY_ROTATION3
 
-#include "../vectormath/vectormath.h"
+#include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
     namespace geometry
     {
-        class Rotation3 : public Vectormath::Aos::Quat
+        class Rotation3 : public btQuaternion
         {
-            const pi_over_180 = 0.0174532925;
+            static const pi_over_180 = 0.0174532925;
         public:
-            
-            // construct from angle and axis
-            Rotation3(float degrees, Axis3& axis)
-            {
-                Vectormath::Aos::Quat q = 
-                    Vectormath::Aos::Quat::rotation(
-                        degrees * pi_over_180, axis);
-                this->setX(q.getX);
-                this->setY(q.getY);
-                this->setZ(q.getZ);
-                this->setW(q.getW);
-            }
-            
-            // construct from translation matrix
-            Rotation3(Tranformation3& t)
-            {
-                Vectormath::Aos::Quat q =
-                    Vectormath::Aos::Quat(Transformation3.get_upper3x3());
-                this->setX(q.getX);
-                this->setY(q.getY);
-                this->setZ(q.getZ);
-                this->setW(q.getW);
-            }
-            
-            // normalize quaternion in place
-            void normalize()
-            {
-                Vectormath::Aos::Quat q = Vectormath::Aos::normalize(this);
-                this->setX(q.getX);
-                this->setY(q.getY);
-                this->setZ(q.getZ);
-                this->setW(q.getW);
-            }
         }
     }
 }

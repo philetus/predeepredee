@@ -1,7 +1,7 @@
-/*  Translation3.h
+/*  Vector3.h
  *
  *  3d translation vector
- *  - currently an alias to Vector3 from sony vectormath library implementation
+ *  - subclasses bullet's btVector3
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -11,18 +11,18 @@
  *  
  */
 
-#ifndef PDPD_GEOMETRY_TRANSLATION3
-#define PDPD_GEOMETRY_TRANSLATION3
+#ifndef PDPD_GEOMETRY_VECTOR3
+#define PDPD_GEOMETRY_VECTOR3
 
-#include "../vectormath/vectormath.h"
+#include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
     namespace geometry
     {
-        // just subclass Vector3
-        class Translation3 : public Vectormath::Aos::Vector3 {}
+        // subclass btVector3
+        class Vector3 : public btVector3 {}
     }
 }
-#endif // PDPD_GEOMETRY_TRANSLATION3
+#endif // PDPD_GEOMETRY_VECTOR3
 

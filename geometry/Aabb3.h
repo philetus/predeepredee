@@ -14,7 +14,6 @@
 #define PDPD_GEOMETRY_AABB3
 
 #include "btBulletDynamicsCommon.h"
-#include "../vectormath/vectormath.h"
 
 namespace pdpd
 {

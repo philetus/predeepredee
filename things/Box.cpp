@@ -14,11 +14,11 @@
 
 using namespace pdpd;
 using namespace things;
+using namespace geometry;
 
-Box::Box(geometry::Scale3 a_scale, double a_mass /*= 0.0*/)
+Box::Box(Vector3 s, double m /*= 0.0*/, bool child /*= false*/)
 :
-scale(a_scale),
-mass(a_mass)
+scale(s), mass(m), child(c)
 {
     // set collision shape from scale (half size)
     collision_shape = new btCollisionShape(
@@ -34,15 +34,12 @@ mass(a_mass)
     }
 }
 
-bool Box::is_dynamic()
-{
-    if((mass - wiggle) > 0.0) return true;
-    return false;
-}
-
-// index is binary for 3 axes - 0 is (0 0 0) which is -x, -y, -z
-// index should be in range [0..7]
-Vertex Box::get_vertex(int index)
+/*  return vector with position of transformed vertex at index
+ *
+ *  - index is binary for 3 axes - 0 is (0 0 0) which is -x, -y, -z
+ *  - index should be in range [0..7]
+ */ 
+Vector3 Box::get_vertex(int index)
 {
     // create vertex at half-extent of scale centered on axis
     double x = scale.getX() / 2.0;
@@ -51,10 +48,10 @@ Vertex Box::get_vertex(int index)
     if(!(index & 1)) x = -x;
     if(!(index & 2)) y = -y;
     if(!(index & 4)) z = -z;
-    Vertex vertex(x, y, z);
+    Vector3 vertex(x, y, z);
     
-    // transform vertex by current world transformation
-    vertex.transform(transformation);
+    // transform vertex by current world transformation and return
+    return transformation * vertex;
 }
 
 // index should be in range [0..11]
@@ -70,8 +67,3 @@ Facet Box::get_facet(int index)
         get_vertex(vertex_table[index][2]));
 }
     
-// iterate over facets
-Facet Box::FacetIterator::next()
-{
-    return box.get_facet(index++);
-}

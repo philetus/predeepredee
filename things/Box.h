@@ -22,7 +22,6 @@
 #include "../geometry/Vector3.h"
 #include "../util/DequeIterator.h"
 #include "AtomicThing.h"
-#include "Vertex.h"
 #include "Facet.h"
 
 namespace pdpd
@@ -36,8 +35,8 @@ namespace pdpd
         class Box : public AtomicThing
         {
             // Material* material; // defines what box is made of
-            Transform3 origin; // position & orientation of box
-            Scale3 scale; // scale vector representing size of box
+            Transformation3 transformation; // position & orientation of box
+            Vector3 scale; // scale vector representing size of box
             double mass; // mass of box (in grams?)
             
             static const float normal_table[][]; // table of normals by facet
@@ -54,28 +53,37 @@ namespace pdpd
             public:
                 FacetIterator(Box& a_box) box(a_box), index(0) {}
                 virtual bool has_next() { return index < facet_count; }
-                virtual Facet next();
+                virtual Facet next()
+                    { return box.get_facet(index++); }
             } // FacetIterator
             
         public:
-            Box(geometry::Scale3 a_scale, double a_mass = 0.0);
-            ~Box() { delete material; delete position; delete half_size; }
             
-            // *** thing interface
+            // scale, mass, child
+            Box(geometry::Vector3 s, double m = 0.0, bool c = false);
+            ~Box() {}
+            
+            // *** thing interface,
             virtual geometry::Aabb3 get_aabb();
             virtual geometry::Transformation3 get_offset();
-            virtual bool is_dynamic();
-            virtual bool is_child();
+            virtual bool is_dynamic()
+            {
+                if((mass - wiggle) > 0.0) return true;
+                return false;
+            }
             
             // *** atomic thing interface
             // virtual materials::Material* get_material() { return material }
-            virtual util::Iterator<Vertex>* iter_vertices();
+            virtual util::Iterator<Vector3>* iter_vertices();
             virtual util::Iterator<Facet>* iter_facets()
                 { return new FacetIterator(*this); }
             virtual double get_mass() { return mass; }
             virtual void set_transformation(
-                const geometry::Transformation3 new_transformation)
-            { transformation.crib(new_transformation); }
+                const geometry::Transformation3 t)
+            { 
+                transformation.crib(t);
+                touch(); // set touched flag (and recursively set parents' too)
+            }
             
             // component geometry created on the fly from scale & transformation
             Vertex get_vertex(int index);

@@ -29,7 +29,7 @@ namespace pdpd
     {
         btCollisionShape* collision_shape;
     public:
-        AtomicThing() atomic(true) {}
+        AtomicThing() atomic(true), child(false) {}
         // virtual materials::Material get_material() = 0;
         virtual util::Iterator<Vertex>* iter_vertices() = 0;
         virtual util::Iterator<Facet>* iter_facets() = 0;
