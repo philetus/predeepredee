@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "World.h"
+#include "TargetCamera.h"
 #include "things/Box.h"
  
 using namespace std;
@@ -27,7 +28,8 @@ int main(int argc, char* argv[])
     
     // create window onto world and start event loop
     cout << "making window" << "\n";
-    Window* window = new Window(world);
+    TargetCamera* camera = new TargetCamera(600, 400);
+    Window* window = new Window(*world, *camera);
     cout << "starting event loop" << "\n";
     window->event_loop();
     return 0;

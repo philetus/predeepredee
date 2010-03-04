@@ -20,15 +20,20 @@ using namespace pdpd;
 /*
  *  constructor
  */
-Window::Window( World* a_world, int a_width /*= 600*/, int a_height /*= 400*/ ) 
-        // const char a_title[] /*="predee predee"*/)
+Window::Window(
+    World& w, 
+    Camera& c, 
+    ThingDrawer& td,
+    int width, 
+    int height, 
+    string title) 
 :
-world(a_world),
-width(a_width),
-height(a_height)
+world(w),
+camera(c),
+thing_drawer(td)
 {
-    init_sdl();
-    init_gl();
+    init_sdl(width, height, title);
+    init_gl(width, height);
 }
 
 /*
@@ -46,18 +51,44 @@ Window::~Window()
     */
 }
 
-bool Window::init_sdl()
+void Window::init_gl(int width, int height)
 {
+	cout << "OpenGL version: " <<  glGetString(GL_VERSION) << "\n";
+    cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << "\n";
+    cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << "\n";
 
+    glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+
+    /* cairo surface setup stuff
+    glDisable (GL_DEPTH_TEST);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable (GL_TEXTURE_RECTANGLE_ARB);
+        */
+
+    /* Our shading model--Gouraud (smooth). */
+    glShadeModel( GL_SMOOTH );
+
+    /* Culling. */
+    glCullFace( GL_BACK );
+    glFrontFace( GL_CCW );
+    glEnable( GL_CULL_FACE );
+
+    // call camera resize handler to finish init
+    camera.resize(width, height);
+}
+
+void Window::init_sdl(string title)
+{
     // init SDL video
     if(SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
         cout << "fail! : can't init video : " << SDL_GetError() << "\n";
-        return false;
+        handle_quit();
     }
 
 	// set window title
-	SDL_WM_SetCaption("predee predee", NULL); //TODO fix title
+	SDL_WM_SetCaption(title.c_str(), NULL);
 
     // setup opengl context for window
     SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
@@ -71,38 +102,11 @@ bool Window::init_sdl()
     if(!(window_surface = SDL_SetVideoMode(width, height, 0, flags)))
     {
         cout << "fail! : can't open sdl window : " << SDL_GetError() << "\n";
-        return false;
+        handle_quit();
     }
 }
 
-bool Window::init_gl()
-{
-	cout << "OpenGL version: " <<  glGetString(GL_VERSION) << "\n";
-	cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << "\n";
-	cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << "\n";
-
-	glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
-	
-	/* cairo surface setup stuff
-	glDisable (GL_DEPTH_TEST);
-    glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable (GL_TEXTURE_RECTANGLE_ARB);
-	 */
-
-    /* Our shading model--Gouraud (smooth). */
-    glShadeModel( GL_SMOOTH );
-
-    /* Culling. */
-    glCullFace( GL_BACK );
-    glFrontFace( GL_CCW );
-    glEnable( GL_CULL_FACE );
-
-    // call resize handler to finish init
-    handle_resize();
-}
-
-void Window::handle_keypress(SDL_keysym* keysym)
+void Window::handle_key_down(SDL_keysym* keysym)
 {
     switch( keysym->sym ) 
     {
@@ -114,36 +118,9 @@ void Window::handle_keypress(SDL_keysym* keysym)
     }
 
 }
-void Window::handle_keyrelease(SDL_keysym* keysym) {} // TODO
+void Window::handle_key_up(SDL_keysym* keysym) {} // TODO
 void Window::handle_expose() {} // TODO: write expose handler
 
-void Window::handle_quit() {
-    SDL_Quit();
-    exit(0);
-}
-
-void Window::handle_resize()
-{
-    /* Setup our viewport. */
-    glViewport( 0, 0, width, height );
-
-    /*
-     * Change to the projection matrix and set
-     * our viewing volume.
-     */
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    
-    // TODO: make this adjustable
-    float aspect = (float) width / (float) height;
-    GLdouble top = 1.732050808;
-    GLdouble bottom = -top;
-    GLdouble near = 1.0;
-    GLdouble far = 1024.0;     
-    GLdouble left = aspect * bottom;
-    GLdouble right = aspect * top;
-    glFrustum(left, right, bottom, top, near, far);
-}
 
 void Window::event_loop()
 {
@@ -160,10 +137,8 @@ void Window::event_loop()
                 handle_keypress(&event.key.keysym);
                 break;
 
-            case SDL_VIDEORESIZE: // on resize first update width and height
-                width = event.resize.w;
-                height = event.resize.h;
-                handle_resize();
+            case SDL_VIDEORESIZE: 
+                handle_resize(event.resize.w, event.resize.h);
                 break;
             
             /*
@@ -181,9 +156,16 @@ void Window::event_loop()
             }
         }
         
-        // step physics, redraw window to buffer then swap buffers
-        world->step_physics();
-        handle_draw();
+        // step physics
+        world.step_physics();
+        
+        // draw things
+        camera.set_perspective()
+        thing_drawer.visit(world.iter_roots());
+        
+        // TODO: draw overlay
+        
+        // flush and swap buffers
         glFlush(); // is this necessary?
         SDL_GL_SwapBuffers();
         
@@ -192,136 +174,3 @@ void Window::event_loop()
     }
 }
 
-// draw some stuff for test
-void Window::handle_draw()
-{
-    static bool should_rotate = true;
-    
-    /* Our angle of rotation. */
-    static float angle = 55.0f;
-
-    static GLfloat v0[] = { -1.0f, -1.0f,  1.0f };
-    static GLfloat v1[] = {  1.0f, -1.0f,  1.0f };
-    static GLfloat v2[] = {  1.0f,  1.0f,  1.0f };
-    static GLfloat v3[] = { -1.0f,  1.0f,  1.0f };
-    static GLfloat v4[] = { -1.0f, -1.0f, -1.0f };
-    static GLfloat v5[] = {  1.0f, -1.0f, -1.0f };
-    static GLfloat v6[] = {  1.0f,  1.0f, -1.0f };
-    static GLfloat v7[] = { -1.0f,  1.0f, -1.0f };
-    static GLubyte red[]    = { 255,   0,   0, 255 };
-    static GLubyte green[]  = {   0, 255,   0, 255 };
-    static GLubyte blue[]   = {   0,   0, 255, 255 };
-    static GLubyte white[]  = { 255, 255, 255, 255 };
-    static GLubyte yellow[] = {   0, 255, 255, 255 };
-    static GLubyte black[]  = {   0,   0,   0, 255 };
-    static GLubyte orange[] = { 255, 255,   0, 255 };
-    static GLubyte purple[] = { 255,   0, 255,   0 };
-
-    /* Clear the color and depth buffers. */
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-    /* We don't want to modify the projection matrix. */
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity( );
-
-    /* Move down the z-axis. */
-    glTranslatef( 0.0, 0.0, -5.0 );
-
-    /* Rotate. */
-    glRotatef( angle, 0.0, 1.0, 0.0 );
-
-    if ( should_rotate ) {
-        if ( ++angle > 360.0f ) {
-            angle = 0.0f;
-        }
-    }
-
-    /* Send our triangle data to the pipeline. */
-    glBegin( GL_TRIANGLES );
-
-    glColor4ubv( red );
-    glVertex3fv( v0 );
-    glColor4ubv( green );
-    glVertex3fv( v1 );
-    glColor4ubv( blue );
-    glVertex3fv( v2 );
-
-    glColor4ubv( red );
-    glVertex3fv( v0 );
-    glColor4ubv( blue );
-    glVertex3fv( v2 );
-    glColor4ubv( white );
-    glVertex3fv( v3 );
-
-    glColor4ubv( green );
-    glVertex3fv( v1 );
-    glColor4ubv( black );
-    glVertex3fv( v5 );
-    glColor4ubv( orange );
-    glVertex3fv( v6 );
-
-    glColor4ubv( green );
-    glVertex3fv( v1 );
-    glColor4ubv( orange );
-    glVertex3fv( v6 );
-    glColor4ubv( blue );
-    glVertex3fv( v2 );
-
-    glColor4ubv( black );
-    glVertex3fv( v5 );
-    glColor4ubv( yellow );
-    glVertex3fv( v4 );
-    glColor4ubv( purple );
-    glVertex3fv( v7 );
-
-    glColor4ubv( black );
-    glVertex3fv( v5 );
-    glColor4ubv( purple );
-    glVertex3fv( v7 );
-    glColor4ubv( orange );
-    glVertex3fv( v6 );
-
-    glColor4ubv( yellow );
-    glVertex3fv( v4 );
-    glColor4ubv( red );
-    glVertex3fv( v0 );
-    glColor4ubv( white );
-    glVertex3fv( v3 );
-
-    glColor4ubv( yellow );
-    glVertex3fv( v4 );
-    glColor4ubv( white );
-    glVertex3fv( v3 );
-    glColor4ubv( purple );
-    glVertex3fv( v7 );
-
-    glColor4ubv( white );
-    glVertex3fv( v3 );
-    glColor4ubv( blue );
-    glVertex3fv( v2 );
-    glColor4ubv( orange );
-    glVertex3fv( v6 );
-
-    glColor4ubv( white );
-    glVertex3fv( v3 );
-    glColor4ubv( orange );
-    glVertex3fv( v6 );
-    glColor4ubv( purple );
-    glVertex3fv( v7 );
-
-    glColor4ubv( green );
-    glVertex3fv( v1 );
-    glColor4ubv( red );
-    glVertex3fv( v0 );
-    glColor4ubv( yellow );
-    glVertex3fv( v4 );
-
-    glColor4ubv( green );
-    glVertex3fv( v1 );
-    glColor4ubv( yellow );
-    glVertex3fv( v4 );
-    glColor4ubv( black );
-    glVertex3fv( v5 );
-
-    glEnd( );    
-}

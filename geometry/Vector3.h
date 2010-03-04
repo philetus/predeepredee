@@ -21,7 +21,18 @@ namespace pdpd
     namespace geometry
     {
         // subclass btVector3
-        class Vector3 : public btVector3 {}
+        class Vector3 : public btVector3
+        {
+        public:
+            // copy-constructor
+            Vector3(const btVector3& proto)
+                { this->crib(proto); }
+                
+            // copy values from another vector
+            void crib(const btVector3& proto)
+                { this->setValue(proto[0], proto[1], proto[2]); }
+        }
+        
     }
 }
 #endif // PDPD_GEOMETRY_VECTOR3

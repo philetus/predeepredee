@@ -17,7 +17,7 @@ using namespace pdpd;
 
 World::World()
 :
-things(new deque<Things>()),
+next_address(1), // start thing addresses at 1
 gravity(0.0, -10000.0, 0.0) // 10,000mm/s**2 in the -y???
 {
     // TODO ???
@@ -73,6 +73,10 @@ void World::welcome(
     Thing* thing, 
     const Transformation3* transformation)
 {   
+    // only add root-level things to things list
+    roots->push_back(thing);
+    thing->set_root(true);
+    
     // if atomic just insert thing
     if(thing->is_atomic()) atomic_insert(thing, transformation);
 
@@ -83,8 +87,8 @@ void World::welcome(
         composite_insert(thing, transformation);
                 
         // init constraints between parts
-        Iterator<Thing*> i = thing->iter_children();
-        while(i.has_next()) init_constraints(i.next());
+        Iterator<Thing*>* i = thing->iter_children();
+        while(i->has_next()) init_constraints(i->next());
     }
 }
 
@@ -114,22 +118,22 @@ void World::atomic_insert(
     // add rigid body to physics world
     body->setActivationState(ISLAND_SLEEPING); // ???
     dynamics_world->addRigidBody(body);
-    body->setActivationState(ISLAND_SLEEPING); // ???
+    body->setActivationState(ISLAND_SLEEPING); // ???  
     
-    // add thing to world
-    things->push_back(thing);
+    // add thing to selection index and store address
+    thing->set_address(index(thing));
 }
 
 void World::composite_insert(Thing* thing, const Transformation3* transformation)
 {
-    // add thing to world
-    things->push_back(thing);
-    
+    // add thing to selection index and store address
+    thing->set_address(index(thing));
+
     // insert children
-    Iterator<Thing*> i = thing->iter_children(); 
-    while(i.has_next())
+    Iterator<Thing*>* i = thing->iter_children(); 
+    while(i->has_next())
     {
-        Thing* child = i.next();
+        Thing* child = i->next();
         
         // get transformation to child
         Transformation3* child_transformation = 

@@ -16,6 +16,7 @@
 
 #include <SDL/SDL.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 
 #include "World.h"
 
@@ -23,11 +24,10 @@ namespace pdpd
 {
     class Window
     {
-        World* world;
-        int width;
-        int height;
-        char title[]; //TODO
-        static const int loop_pause_interval = 50; // time to delay in event loop
+        // global parameters to tune
+        static const int loop_pause_interval = 50; // delay time in event loop
+                
+        // stuff created by window and must be cleaned up
         SDL_Surface* window_surface;
         /*
         cairo_surface_t* cairo_surface;
@@ -36,29 +36,50 @@ namespace pdpd
         cairo_t* cairo_context;
         */
         
-        // manage initialization in constructor
-        bool init_sdl();
-        bool init_gl();
+        // stuff passed to window but created somewhere else
+        World& world;
+        Camera& camera;
+        ThingDrawer& thing_drawer;
+        // OverlayDrawer& overlay_drawer;
 
-        Window(); // prevent argumentless constructor calls
-        Window(const Window& w); // prevent copy-construction
+        // event handlers call appropriate component
+        void handle_key_down(SDL_keysym* keysym);
+        void handle_key_up(SDL_keysym* keysym);
+        
+        void handle_pointer_down();
+        void handle_pointer_up();
+        void handle_pointer_move();
+        
+        void handle_resize(int w, int h) { camera.resize(w, h); }
+        void handle_quit()
+        {
+            SDL_Quit();
+            exit(0);
+        }
+        // void handle_expose(); // just redraw?
+
+        void init_sdl(); // manage initialization in constructor
+
+        Window(); // hide default constructor
+        Window(const Window& w); // hide copy-constructor
+        
     public:
-        Window(World* a_world, int a_width = 600, int a_height = 400); 
-        // TODO: make this work      const char a_title[] = "predee predee");
-        ~Window();
+        Window(
+            World& w,
+            Camera& c,
+            ThingDrawer& td,
+            int width = 600, 
+            int height = 400, 
+            string title = string("predee predee")); 
+        virtual ~Window();
 
         // main event loop method
-        void event_loop(); 
+        void event_loop();
         
-        // event handlers to be overridden by base classes
-        virtual void handle_keypress(SDL_keysym* keysym);
-        virtual void handle_keyrelease(SDL_keysym* keysym);
-        
-        virtual void handle_resize();
-        virtual void handle_expose();
-        virtual void handle_quit();
-        
-        virtual void handle_draw();
+        // methods to set components
+        void set_world(World& w) { world = w; }
+        void set_camera(Camera& c) { camera = c; }
+        void set_thing_drawer(ThingDrawer& td) { thing_drawer = td; }
     };
 }
 #endif // PDPD_WINDOW

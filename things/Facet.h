@@ -67,15 +67,27 @@ namespace pdpd
             util::Iterator<geometry::Vector3>* iter_vertices()
                 { return new VertexIterator(*this); }
             
+            // TODO: use an array for vertices?
             // return vertex by index
             Vertex3 get_vertex(int index)
             {
-                switch(index++)
+                switch(index)
                 {
                 case 0: return vertex0;
                 case 1: return vertex1;
                 case 2: return vertex2;
                 }
+            }
+            
+            void get_gl_normal(float* m3)
+            {
+                for(int i = 0; i < 3; i++) m3[i] = normal[i];
+            }
+            
+            void get_gl_vertex(float* m3, int index)
+            {
+                Vertex3 vertex = get_vertex(index);
+                for(int i = 0; i < 3; i++) m3[i] = vertex[i];
             }
         }
     }

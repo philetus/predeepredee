@@ -27,11 +27,11 @@ namespace pdpd
         things::AtomicThing* thing; // thing to be transformed
     public:
         ThingMotionState(
-            const geometry::Transformation3 &a_init_transformation, 
-            things::AtomicThing* a_thing)
+            const geometry::Transformation3 &init_t, 
+            things::AtomicThing* t)
         :
-        init_transformation(a_init_transformation),
-        thing(a_thing)
+        init_transformation(init_t),
+        thing(t)
         {}
         
         ~ThingMotionState() {}
@@ -46,9 +46,8 @@ namespace pdpd
         {
             if(thing == NULL) return; // silently return if thing unset
             
-            Transformation3 world_transformation(world_transform);
-            
-            thing->set_transformation(world_transformation);
+            Transformation3 frame(world_transform);
+            thing->set_world_frame(frame);
         }
     }
 }

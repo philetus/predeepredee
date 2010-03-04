@@ -34,8 +34,8 @@ namespace pdpd
          */
         class Box : public AtomicThing
         {
+        protected:
             // Material* material; // defines what box is made of
-            Transformation3 transformation; // position & orientation of box
             Vector3 scale; // scale vector representing size of box
             double mass; // mass of box (in grams?)
             
@@ -64,9 +64,10 @@ namespace pdpd
             ~Box() {}
             
             // *** thing interface,
-            virtual geometry::Aabb3 get_aabb();
-            virtual geometry::Transformation3 get_offset();
-            virtual bool is_dynamic()
+            geometry::Aabb3 get_aabb();
+            void get_parent_frame(geometry::Transformation3* t);
+            void get_gl_parent_frame(btScalar* m16);
+            bool is_dynamic()
             {
                 if((mass - wiggle) > 0.0) return true;
                 return false;
@@ -74,18 +75,12 @@ namespace pdpd
             
             // *** atomic thing interface
             // virtual materials::Material* get_material() { return material }
-            virtual util::Iterator<Vector3>* iter_vertices();
-            virtual util::Iterator<Facet>* iter_facets()
+            util::Iterator<Vector3>* iter_vertices();
+            util::Iterator<Facet>* iter_facets()
                 { return new FacetIterator(*this); }
-            virtual double get_mass() { return mass; }
-            virtual void set_transformation(
-                const geometry::Transformation3 t)
-            { 
-                transformation.crib(t);
-                touch(); // set touched flag (and recursively set parents' too)
-            }
+            double get_mass() { return mass; }
             
-            // component geometry created on the fly from scale & transformation
+            // (untransformed) component geometry created on the fly from scale
             Vertex get_vertex(int index);
             Facet get_facet(int index);
             

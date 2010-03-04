@@ -18,7 +18,10 @@ using namespace geometry;
 
 Box::Box(Vector3 s, double m /*= 0.0*/, bool child /*= false*/)
 :
-scale(s), mass(m), child(c)
+AtomicThing(),
+scale(s),
+mass(m),
+child(c)
 {
     // set collision shape from scale (half size)
     collision_shape = new btCollisionShape(
@@ -48,10 +51,12 @@ Vector3 Box::get_vertex(int index)
     if(!(index & 1)) x = -x;
     if(!(index & 2)) y = -y;
     if(!(index & 4)) z = -z;
-    Vector3 vertex(x, y, z);
+
+    // return untransformed vertex
+    return Vector3 vertex(x, y, z);
     
     // transform vertex by current world transformation and return
-    return transformation * vertex;
+    // return transformation * vertex;
 }
 
 // index should be in range [0..11]

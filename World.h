@@ -18,6 +18,7 @@
 
 
 #include <deque>
+#include <map>
 #include "btBulletDynamicsCommon.h"
 
 #include "Thing.h"
@@ -29,7 +30,10 @@ namespace pdpd
     class World
     {
         // private data
-        std::deque<Thing>* things; // list of things in the world
+        std::deque<Thing*> roots; // list of root things in the world
+        std::map<unsigned int, Thing*> thing_index; // things by uint address
+        unsigned int next_address;
+        static const unsigned int max_address = 0xffff;
 	    btDynamicsWorld* dynamics_world; // this is the most important class
 	    btClock step_timer; // track time between rendering passes
 	    btTypedConstraint* pick_constraint; // constraint for mouse picking
@@ -44,16 +48,27 @@ namespace pdpd
         void insert(Thing* thing);
         void init_constraints(Thing* thing);
         
+        // TODO: for really tho
+        unsigned int get_next_address() { return next_address++; }
+        
+        // adds a thing to index and returns address
+        unsigned int index(Thing* thing)
+        {
+            unsigned int address = get_next_address();
+            thing_index.insert(std::make_pair(address, thing));
+            return address;
+        }
+        
     public:
         World();
-        ~World() { delete things; }
+        ~World() {}
         
         virtual void welcome(Thing* thing);
         virtual void dismiss(Thing* thing);
         
-        // iterator over things
-        virtual Iterator<Thing> iter_things()
-            { return DequeIterator(things) }
+        // iterator over root things
+        virtual Iterator<Thing*>* iter_roots()
+            { return new DequeIterator<Thing*>(roots) }
         
         // manage physics
         virtual bool init_physics();
