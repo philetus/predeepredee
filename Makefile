@@ -2,7 +2,7 @@ CPPFLAGS += -W -Wall -g -O3
 CPPFLAGS += `pkg-config --cflags sdl cairo`
 CPP = g++
 OFLAG = -o
-.SUFFIXES .o .cpp
+.SUFFIXES : .o .cpp
 .cpp.o :
     $(CPP) $(CPPFLAGS) -c $<
 
