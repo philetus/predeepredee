@@ -11,9 +11,11 @@
  */
 
 #include "World.h"
-#include "ThingMotionState.h"
 
 using namespace pdpd;
+using namespace things;
+using namespace util;
+using namespace geometry;
 
 World::World()
 :
@@ -59,7 +61,7 @@ bool World::init_ground()
     ground = new Box(Scale3(100.0, 10.0, 100.0), 0.0);
     
     // put top of box on zx plane
-    Translation3 ground_position(0.0, -10.0, 0.0);
+    Vector3 ground_position(0.0, -10.0, 0.0);
     Transformation3 ground_transformation(ground_position);
     
     // introduce it to world
@@ -71,20 +73,20 @@ bool World::init_ground()
 // welcome a new thing into the world at given position and orientation
 void World::welcome(
     Thing* thing, 
-    const Transformation3* transformation)
+    const Transformation3* world_frame)
 {   
     // only add root-level things to things list
     roots->push_back(thing);
     thing->set_root(true);
     
     // if atomic just insert thing
-    if(thing->is_atomic()) atomic_insert(thing, transformation);
+    if(thing->is_atomic()) atomic_insert(thing, world_frame);
 
     // if thing is not atomic insert children too and then add constraints
     else 
     {
         // recursively inserts children
-        composite_insert(thing, transformation);
+        composite_insert(thing, world_frame);
                 
         // init constraints between parts
         Iterator<Thing*>* i = thing->iter_children();
@@ -98,11 +100,11 @@ void World::welcome(
  */ 
 void World::atomic_insert(
     AtomicThing* thing, 
-    const Transformation3* transformation)
+    const Transformation3& world_frame)
 {
     // generate rigid body for thing
     btScalar mass(thing->get_mass());
-    ThingMotionState* motion_state = new ThingMotionState(transformation);
+    ThingMotionState* motion_state = new ThingMotionState(world_frame);
     btCollisionShape* collision_shape = thing->get_collision_shape();
     btVector3 inertia(0.0, 0.0, 0.0);
     btRigidBody::btRigidBodyConstructionInfo 
@@ -124,7 +126,7 @@ void World::atomic_insert(
     thing->set_address(index(thing));
 }
 
-void World::composite_insert(Thing* thing, const Transformation3* transformation)
+void World::composite_insert(Thing* thing, const Transformation3& world_frame)
 {
     // add thing to selection index and store address
     thing->set_address(index(thing));
@@ -136,16 +138,13 @@ void World::composite_insert(Thing* thing, const Transformation3* transformation
         Thing* child = i->next();
         
         // get transformation to child
-        Transformation3* child_transformation = 
-            new Transformation3(transformation);
-        child_transformation.transform(child->get_offset());
+        // TODO is this correct transform mult order???
+        Transformation3 child_world_frame = 
+            child->get_parent_frame() * world_frame;
         
         // insert with appropriate method
-        if(child->is_atomic()) atomic_insert(child, child_transformation);
-        else composite_insert(child, child_transformation);
-        
-        // clean up
-        delete child_transformation;
+        if(child->is_atomic()) atomic_insert(child, child_world_frame);
+        else composite_insert(child, child_world_frame);
     }    
 }
 

@@ -16,6 +16,7 @@
  
 using namespace std;
 using namespace pdpd;
+using namespace geometry;
 
 void TargetCamera::set_gl_perspective()
 {
@@ -78,10 +79,10 @@ Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up
 	ray_forward.normalize();
 	ray_forward *= far;
 
-	btVector3 right_offset;
-	btVector3 vertical(up_axis);
+	Vector3 right_offset;
+	Vector3 vertical(up_axis);
 
-	btVector3 horizontal;
+	Vector3 horizontal;
 	horizontal = ray_forward.cross(vertical);
 	horizontal.normalize();
 	vertical = horizontal.cross(ray_forward);
@@ -109,11 +110,11 @@ Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up
 		vertical *= aspect;
 	}
 
-	btVector3 ray_to_center = ray_from + ray_forward;
-	btVector3 dh = horizontal * 1.0 / float(width);
-	btVector3 dv = vertical * 1.0 / float(height);
+	Vector3 ray_to_center = ray_from + ray_forward;
+	Vector3 dh = horizontal * 1.0 / float(width);
+	Vector3 dv = vertical * 1.0 / float(height);
 
-	btVector3 ray_to = ray_to_center - (0.5f * horizontal) + (0.5f * vertical);
+	Vector3 ray_to = ray_to_center - (0.5f * horizontal) + (0.5f * vertical);
 	ray_to += x * dh;
 	ray_to -= y * dv;
 	return ray_to;

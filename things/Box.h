@@ -17,12 +17,11 @@
 #ifndef PDPD_THINGS_BOX
 #define PDPD_THINGS_BOX
 
-#include <deque>
-#include "../geometry/Transform3.h"
-#include "../geometry/Vector3.h"
-#include "../util/DequeIterator.h"
 #include "AtomicThing.h"
-#include "Facet.h"
+#include "../util/Iterator.h"
+#include "../geometry/Vector3.h"
+#include "../geometry/Transformation3.h"
+#include "../geometry/Facet.h"
 
 namespace pdpd
 {

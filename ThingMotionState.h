@@ -23,14 +23,14 @@ namespace pdpd
     // interface between physics engine and things' orientation and position
     class ThingMotionState : public btMotionState
     {
-        geometry::Transformation3 init_transformation; // initial rot and pos
+        geometry::Transformation3 init_world_frame; // initial rot and pos
         things::AtomicThing* thing; // thing to be transformed
     public:
         ThingMotionState(
-            const geometry::Transformation3 &init_t, 
+            const geometry::Transformation3 &frame, 
             things::AtomicThing* t)
         :
-        init_transformation(init_t),
+        init_world_frame(frame),
         thing(t)
         {}
         
@@ -39,7 +39,7 @@ namespace pdpd
         // provide physics engine with initial position for thing
         virtual void getWorldTransform(btTransform &world_transform) const
         {
-            world_transform = init_transform;
+            world_transform = init_world_frame;
         }
         
         virtual void setWorldTransform(const btTransform &world_transform)

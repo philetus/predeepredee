@@ -14,11 +14,14 @@
 #ifndef PDPD_WINDOW
 #define PDPD_WINDOW
 
+#include <string>
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
 #include "World.h"
+#include "Camera.h"
+#include "ThingDrawer.h"
 
 namespace pdpd
 {
@@ -37,10 +40,10 @@ namespace pdpd
         */
         
         // stuff passed to window but created somewhere else
-        World& world;
-        Camera& camera;
-        ThingDrawer& thing_drawer;
-        // OverlayDrawer& overlay_drawer;
+        World* world;
+        Camera* camera;
+        ThingDrawer* thing_drawer;
+        // TODO OverlayDrawer* overlay_drawer;
 
         // event handlers call appropriate component
         void handle_key_down(SDL_keysym* keysym);
@@ -65,21 +68,16 @@ namespace pdpd
         
     public:
         Window(
-            World& w,
-            Camera& c,
-            ThingDrawer& td,
+            World* w,
+            Camera* c,
+            ThingDrawer* td,
             int width = 600, 
             int height = 400, 
-            string title = string("predee predee")); 
+            std::string title = std::string("predee predee")); 
         virtual ~Window();
 
         // main event loop method
         void event_loop();
-        
-        // methods to set components
-        void set_world(World& w) { world = w; }
-        void set_camera(Camera& c) { camera = c; }
-        void set_thing_drawer(ThingDrawer& td) { thing_drawer = td; }
     };
 }
 #endif // PDPD_WINDOW

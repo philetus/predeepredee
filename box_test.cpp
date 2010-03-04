@@ -4,7 +4,10 @@
 #include "World.h"
 #include "TargetCamera.h"
 #include "things/Box.h"
- 
+#include "geometry/Vector3.h"
+#include "geometry/Rotation3.h"
+#include "geometry/Translation3.h"
+
 using namespace std;
 using namespace pdpd;
 using namespace things;
@@ -13,25 +16,26 @@ int main(int argc, char* argv[])
 {
     // set up world
     cout << "making world" << "\n";
-    World* world = new World();
+    World world();
     cout << "initializing physics" << "\n";    
     world->init_physics();
     
     // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
-    Box* box = new Box(Scale3(10.0, 20.0, 10.0), 2.0);
+    Box box(Vector3(10.0, 20.0, 10.0), 2.0);
     
     // start box in the air
-    Translation3 box_position(0.0, 50.0, 0.0);
+    Vector3 box_position(0.0, 50.0, 0.0);
     Rotation3 box_orientation(5.0, 0.0, 5.0);
-    Transformation3 box_transformation(box_position, box_orientation);
-    world->welcome(box, box_transformation);
+    Transformation3 box_world_frame(box_position, box_orientation);
+    world.welcome(&box, box_world_frame);
     
     // create window onto world and start event loop
     cout << "making window" << "\n";
-    TargetCamera* camera = new TargetCamera(600, 400);
-    Window* window = new Window(*world, *camera);
+    TargetCamera camera();
+    ThingDrawer drawer();
+    Window window(&world, &camera, &drawer);
     cout << "starting event loop" << "\n";
-    window->event_loop();
+    window.event_loop();
     return 0;
 }
 

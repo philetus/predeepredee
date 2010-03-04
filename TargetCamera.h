@@ -14,6 +14,9 @@
 #define PDPD_TARGET_CAMERA
 
 #include "Camera.h"
+#include "geometry/Vector3.h"
+#include "geometry/Rotation3.h"
+#include "geometry/Matrix3x3.h"
 
 namespace pdpd
 {

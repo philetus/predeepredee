@@ -21,9 +21,12 @@
 #include <map>
 #include "btBulletDynamicsCommon.h"
 
-#include "Thing.h"
-#include "Iterator.h"
-#include "DequeIterator.h"
+#include "ThingMotionState.h"
+#include "things/Thing.h"
+#include "util/Iterator.h"
+#include "util/DequeIterator.h"
+#include "geometry/Vector3.h"
+#include "geometry/Transformation3.h"
 
 namespace pdpd
 {
@@ -41,7 +44,7 @@ namespace pdpd
         btCollisionDispatcher* collision_dispatcher;
         btConstraintSolver* constraint_solver;
         btDefaultCollisionConfiguration* collision_configuration;
-        btVector3 gravity;
+        geometry::Vector3 gravity;
         things::Box* ground;
         
         // private methods
@@ -52,7 +55,7 @@ namespace pdpd
         unsigned int get_next_address() { return next_address++; }
         
         // adds a thing to index and returns address
-        unsigned int index(Thing* thing)
+        unsigned int index(things::Thing* thing)
         {
             unsigned int address = get_next_address();
             thing_index.insert(std::make_pair(address, thing));
@@ -63,12 +66,12 @@ namespace pdpd
         World();
         ~World() {}
         
-        virtual void welcome(Thing* thing);
-        virtual void dismiss(Thing* thing);
+        virtual void welcome(things::Thing* thing);
+        virtual void dismiss(things::Thing* thing);
         
         // iterator over root things
-        virtual Iterator<Thing*>* iter_roots()
-            { return new DequeIterator<Thing*>(roots) }
+        virtual util::Iterator<things::Thing*>* iter_roots()
+            { return new util::DequeIterator<Thing*>(roots) }
         
         // manage physics
         virtual bool init_physics();

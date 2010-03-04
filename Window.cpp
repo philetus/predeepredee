@@ -21,9 +21,9 @@ using namespace pdpd;
  *  constructor
  */
 Window::Window(
-    World& w, 
-    Camera& c, 
-    ThingDrawer& td,
+    World* w, 
+    Camera* c, 
+    ThingDrawer* td,
     int width, 
     int height, 
     string title) 
@@ -75,7 +75,7 @@ void Window::init_gl(int width, int height)
     glEnable( GL_CULL_FACE );
 
     // call camera resize handler to finish init
-    camera.resize(width, height);
+    camera->resize(width, height);
 }
 
 void Window::init_sdl(string title)
@@ -157,11 +157,11 @@ void Window::event_loop()
         }
         
         // step physics
-        world.step_physics();
+        world->step_physics();
         
         // draw things
-        camera.set_perspective()
-        thing_drawer.visit(world.iter_roots());
+        camera->set_perspective()
+        thing_drawer->visit(world->iter_roots());
         
         // TODO: draw overlay
         

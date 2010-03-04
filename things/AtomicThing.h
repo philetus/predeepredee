@@ -13,11 +13,11 @@
 #ifndef PDPD_THINGS_ATOMIC_THING
 #define PDPD_THINGS_ATOMIC_THING
 
-#include "../util/Iterator.h"
-#include "../materials/Material.h"
 #include "Thing.h"
-#include "Vertex.h"
-#include "Facet.h"
+#include "../util/Iterator.h"
+#include "../geometry/Vector3.h"
+#include "../geometry/Facet.h"
+// TODO #include "../materials/Material.h"
 
 namespace pdpd
 {
@@ -38,7 +38,7 @@ namespace pdpd
         {}
         
         // virtual materials::Material get_material() = 0;
-        virtual util::Iterator<Vertex>* iter_vertices() = 0;
+        virtual util::Iterator<Vector3>* iter_vertices() = 0;
         virtual util::Iterator<Facet>* iter_facets() = 0;
         virtual double get_mass() = 0;
         

@@ -18,7 +18,9 @@
 #include <map>
 #include <GL/gl.h>
 #include <GL/glu.h>
+
 #include "util/Iterator.h"
+#include "geometry/Facet.h"
 #include "things/Thing.h"
 #include "things/AtomicThing.h"
 

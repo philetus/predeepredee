@@ -14,12 +14,12 @@
 #ifndef PDPD_GEOMETRY_FACET
 #define PDPD_GEOMETRY_FACET
 
-#include "../geometry/Vector3.h"
+#include "Vector3.h"
 #include "../util/Iterator.h"
 
 namespace pdpd
 {
-    namespace things
+    namespace geometry
     {
         class Facet
         {
@@ -39,8 +39,8 @@ namespace pdpd
                 Facet& facet;
             public:
                 VertexIterator(Facet& f) : facet(f), index(0) {}
-                virtual bool has_next() { return index < facet.vertex_count; }
-                virtual Vertex3 next() { return facet.get_vertex(index++); }
+                bool has_next() { return index < facet.vertex_count; }
+                Vector3 next() { return facet.get_vertex(index++); }
             } // FacetIterator
 
         public:
@@ -64,12 +64,12 @@ namespace pdpd
             vertex2(prototype.vertex2)
             {}
             
-            util::Iterator<geometry::Vector3>* iter_vertices()
+            util::Iterator<Vector3>* iter_vertices()
                 { return new VertexIterator(*this); }
             
             // TODO: use an array for vertices?
             // return vertex by index
-            Vertex3 get_vertex(int index)
+            Vector3 get_vertex(int index)
             {
                 switch(index)
                 {
@@ -86,7 +86,7 @@ namespace pdpd
             
             void get_gl_vertex(float* m3, int index)
             {
-                Vertex3 vertex = get_vertex(index);
+                Vector3 vertex = get_vertex(index);
                 for(int i = 0; i < 3; i++) m3[i] = vertex[i];
             }
         }
