@@ -19,13 +19,18 @@
 
 #include <deque>
 #include <map>
+
 #include "btBulletDynamicsCommon.h"
 
 #include "ThingMotionState.h"
 #include "things/Thing.h"
+#include "things/AtomicThing.h"
+#include "things/CompositeThing.h"
+#include "things/Box.h"
 #include "util/Iterator.h"
 #include "util/DequeIterator.h"
 #include "geometry/Vector3.h"
+#include "geometry/Rotation3.h"
 #include "geometry/Transformation3.h"
 
 namespace pdpd
@@ -33,8 +38,8 @@ namespace pdpd
     class World
     {
         // private data
-        std::deque<Thing*> roots; // list of root things in the world
-        std::map<unsigned int, Thing*> thing_index; // things by uint address
+        std::deque<things::Thing*> roots; // list of root things in the world
+        std::map<unsigned int, things::Thing*> thing_index; // things by address
         unsigned int next_address;
         static const unsigned int max_address = 0xffff;
 	    btDynamicsWorld* dynamics_world; // this is the most important class
@@ -47,9 +52,15 @@ namespace pdpd
         geometry::Vector3 gravity;
         things::Box* ground;
         
-        // private methods
-        void insert(Thing* thing);
-        void init_constraints(Thing* thing);
+        // things must be downcast to atomic or composite before insertion
+        void insert(
+            things::AtomicThing* thing,
+            const geometry::Transformation3& world_frame);
+        void insert(
+            things::CompositeThing* thing,
+            const geometry::Transformation3& world_frame);
+            
+        void init_constraints(things::Thing* thing);
         
         // TODO: for really tho
         unsigned int get_next_address() { return next_address++; }
@@ -64,14 +75,16 @@ namespace pdpd
         
     public:
         World();
-        ~World() {}
+        virtual ~World() {}
         
-        virtual void welcome(things::Thing* thing);
+        virtual void welcome(
+            things::Thing* thing, 
+            const geometry::Transformation3& world_frame);
         virtual void dismiss(things::Thing* thing);
         
         // iterator over root things
         virtual util::Iterator<things::Thing*>* iter_roots()
-            { return new util::DequeIterator<Thing*>(roots) }
+            { return new util::DequeIterator<things::Thing*>(roots); }
         
         // manage physics
         virtual bool init_physics();

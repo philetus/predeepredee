@@ -11,14 +11,15 @@
  */
 
 #include <iostream>
-#include <math>
+#include <cmath>
+
 #include "TargetCamera.h"
  
 using namespace std;
 using namespace pdpd;
 using namespace geometry;
 
-void TargetCamera::set_gl_perspective()
+void TargetCamera::set_perspective()
 {
     // check that window has width and height
     if(width == 0 || height == 0) return;
@@ -71,9 +72,6 @@ void TargetCamera::set_gl_perspective()
 
 Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up
 {
-    // check that window has width and height
-    if(width == 0 || height == 0) return;
-
 	Vector3	ray_from(position);
 	Vector3 ray_forward = (target - position);
 	ray_forward.normalize();
@@ -90,8 +88,8 @@ Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up
 
 	float top = 1.f;
 	float bottom = -1.f;
-	float x = (top-bottom)*0.5f / near;
-	float fov = 2.0 * atanf (x);
+	float wtf = (top-bottom)*0.5f / near;
+	float fov = 2.0 * atanf(wtf);
 	float tan_fov = tanf(0.5f*fov);
 
 

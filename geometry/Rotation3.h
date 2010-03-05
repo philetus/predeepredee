@@ -47,9 +47,9 @@ namespace pdpd
             
             void set_yaw_pitch_roll(float yaw, float pitch, float roll)
             {
-                btQuaternion::setEuler(fd2sr(yaw), fd2sr(pitch), fd2sr(roll);
+                btQuaternion::setEuler(fd2sr(yaw), fd2sr(pitch), fd2sr(roll));
             }
-        }
+        };
     }
 }
 #endif // PDPD_GEOMETRY_ROTATION3

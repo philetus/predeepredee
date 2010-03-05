@@ -22,7 +22,21 @@ namespace pdpd
     {
         class Matrix3x3 : public btMatrix3x3
         {
-        }
+            Matrix3x3(); // hide default constructor
+        public:
+        
+            // construct from rotation
+            Matrix3x3(const btQuaternion& q)
+            :
+            btMatrix3x3(q)
+            {}
+            
+            // copy-constructor
+            Matrix3x3(const btMatrix3x3& m)
+            :
+            btMatrix3x3(m)
+            {}
+        };
         
     }
 }

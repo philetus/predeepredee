@@ -41,8 +41,8 @@ namespace pdpd
         {}
         
         // implements camera interface for rendering and pointer handlers
-        void set_gl_perspective();
-        geometry::Vector3 ray_to(int x, int y);
+        void set_perspective();
+        geometry::Vector3 get_ray_to(int x, int y);
         void tilt(int dx, int dy); // tilt adjusts azimuth and elevation
         void pan(int dx, int dy); // pan moves target
         void zoom(float dd); // zoom adjusts camera distance
@@ -52,6 +52,6 @@ namespace pdpd
         void set_distance(float d) { distance = d; }
         void set_azimuth(float a) { azimuth = a; }
         void set_elevation(float e) { elevation = e; }
-    }
+    };
 }
 #endif // PDPD_TARGET_CAMERA

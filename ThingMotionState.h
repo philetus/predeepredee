@@ -46,9 +46,9 @@ namespace pdpd
         {
             if(thing == NULL) return; // silently return if thing unset
             
-            Transformation3 frame(world_transform);
+            geometry::Transformation3 frame(world_transform);
             thing->set_world_frame(frame);
         }
-    }
+    };
 }
 #endif // PDPD_THING_MOTION_STATE

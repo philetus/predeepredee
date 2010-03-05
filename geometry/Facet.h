@@ -14,6 +14,8 @@
 #ifndef PDPD_GEOMETRY_FACET
 #define PDPD_GEOMETRY_FACET
 
+#include <iostream>
+
 #include "Vector3.h"
 #include "../util/Iterator.h"
 
@@ -30,20 +32,20 @@ namespace pdpd
             
             static const int vertex_count = 3; // facets are triangles
             
+        public:
+
             // *** iterator over vertices
-            class VertexIterator;
-            friend VertexIterator;
-            class VertexIterator : public util::Iterator<Facet>
+            friend class VertexIterator;
+            class VertexIterator : public util::Iterator<Vector3>
             {
                 int index;
                 Facet& facet;
             public:
-                VertexIterator(Facet& f) : facet(f), index(0) {}
+                VertexIterator(Facet& f) : index(0), facet(f) {}
                 bool has_next() { return index < facet.vertex_count; }
                 Vector3 next() { return facet.get_vertex(index++); }
-            } // FacetIterator
+            }; // VertexIterator
 
-        public:
             
             // construct from a normal and three vertices
             Facet(
@@ -77,6 +79,9 @@ namespace pdpd
                 case 1: return vertex1;
                 case 2: return vertex2;
                 }
+                
+                std::cout << "vertex index '" << index << "'out of bounds!";
+                return Vector3(0.0, 0.0, 0.0);
             }
             
             void get_gl_normal(float* m3)
@@ -89,7 +94,7 @@ namespace pdpd
                 Vector3 vertex = get_vertex(index);
                 for(int i = 0; i < 3; i++) m3[i] = vertex[i];
             }
-        }
+        };
     }
 }
 #endif // PDPD_GEOMETRY_FACET

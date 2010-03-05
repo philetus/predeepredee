@@ -23,6 +23,7 @@
 #include "geometry/Facet.h"
 #include "things/Thing.h"
 #include "things/AtomicThing.h"
+#include "things/CompositeThing.h"
 
 namespace pdpd
 {
@@ -46,7 +47,7 @@ namespace pdpd
             if(i == list_cache.end()) return false;
             
             // otherwise copy value and return true
-            *value = *i;
+            *value = i->second;
             return true;
         }
         
@@ -57,7 +58,7 @@ namespace pdpd
         }
         
         // compile display list for thing & add to cache & return index to it
-        GLuint build_display_list(AtomicThing* thing);
+        GLuint build_display_list(things::AtomicThing* thing);
 
         // visit an individual thing
         virtual void visit(things::Thing* thing);
@@ -66,6 +67,7 @@ namespace pdpd
         virtual void draw_atomic_thing(things::AtomicThing* thing);
         
     public:
+        virtual ~ThingDrawer() {}
         
         // visit takes iterator over root-level things in world
         // TODO (root-level things that overlap viewing frustum)
@@ -73,10 +75,7 @@ namespace pdpd
         
         // clear display lists for dismissed things
         virtual void dismiss(things::Thing* thing);
-    }
-    
-    const float thing_diffuse[] = {0.6, 0.6, 0.6, 1.0};
-    const float thing_specular[] = {1.0, 1.0, 1.0, 1.0};
+    };
 }
 
 #endif // PDPD_THING_DRAWER

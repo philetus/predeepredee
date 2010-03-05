@@ -21,30 +21,27 @@ namespace pdpd
     namespace util
     {
         template<class Data>
-        class DequeIterator : public Iterator
+        class DequeIterator : public Iterator<Data>
         {
-            std::deque::const_iterator; current; // current iterator
-            std::deque::const_iterator; end; // end iterator
+            typename std::deque<Data>::const_iterator current; // current iterator
+            typename std::deque<Data>::const_iterator end; // end iterator
                    
         public:
             
             // constructor sets current ptr to beginning of deque and
             // end pointer to end of deque
-            Iterator(const std::deque& d) // constructor takes a deque by ref
+            DequeIterator(const std::deque<Data>& d) // takes a deque by ref
             {
                 current = d.begin();
                 end = d.end();
             }
-            
-            // destructor
-            ~Iterator() { delete current; delete end; } 
-            
+                        
             // check if there are more elements to iterate over
             bool has_next() { return current == end; }
             
             // return next element and increment current ptr
             Data next() { return *(current++); }
-        }
+        };
     }
 } 
 #endif // PDPD_DEQUE_ITERATOR

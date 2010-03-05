@@ -21,6 +21,7 @@ namespace pdpd
     {
         class Aabb3
         {
+        /*
             static const margin = 0.0001;
             Point3 min;
             Point3 max;
@@ -42,8 +43,8 @@ namespace pdpd
                 btTransformAabb(
                     half_extents, margin, transformation, min, max);
             }
-            
-        }
+         */  
+        };
     }
 }
 #endif // PDPD_GEOMETRY_AABB3

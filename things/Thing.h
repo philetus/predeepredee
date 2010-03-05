@@ -19,25 +19,32 @@
 namespace pdpd
 {
     namespace things
-        
+    {
         // superclass for things to be simulated
         class Thing
         {
+        protected:
+            static const double wiggle = 0.000001;
+
             bool atomic; // is this thing composed of other things?
             bool dynamic; // can this thing move/explode?
-            static const double wiggle = 0.000001;
             bool child; // true if has parent
-            Thing* parent; // parent thing
             bool touched; // true if physics has moved this node or child node
             bool root; // true if thing is stored in world thing list
             unsigned int address; // uint uniquely identifying this thing
+            Thing* parent; // parent thing
         public:
             Thing() 
             :
-            atomic(false), touched(false), child(false), root(false)
+            atomic(false),  
+            dynamic(false),
+            child(false), 
+            touched(false), 
+            root(false),
+            address(0)
             {}
             
-            ~Thing() {}
+            virtual ~Thing() {}
             
             void set_address(unsigned int a) { address = a; }
             unsigned int get_address() { return address; }
@@ -49,7 +56,7 @@ namespace pdpd
             virtual bool is_child() { return child; }
             
             // allow things to be sorted spatially by axis aligned bounding box
-            virtual geometry::Aabb3 get_aabb() = 0;
+            // TODO virtual geometry::Aabb3 get_aabb() = 0;
             
             // offset from parent node
             virtual void get_parent_frame(geometry::Transformation3* t) = 0;
@@ -59,10 +66,10 @@ namespace pdpd
             // moved stuff
             virtual void touch()
             {
-                self.touched = true;
+                touched = true;
                 if(is_child()) parent->touch();
             }
-        }
+        };
     }
 }
 #endif // PDPD_THINGS_THING

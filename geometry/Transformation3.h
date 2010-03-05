@@ -23,14 +23,35 @@ namespace pdpd
         class Transformation3 : public btTransform
         {
         public:
-            // create new transformation from prototype
-            Transformation3(const btTransform& prototype)
-                { this->crib(prototype); }
-                
+            // default constructor produces identity transform
+            Transformation3(
+                const btMatrix3x3& b = btMatrix3x3::getIdentity(),
+                const btVector3& o = btVector3(0.0, 0.0, 0.0))
+            :
+            btTransform(b, o)
+            {}
+            
+            // rotation, position constuctor
+            Transformation3(
+                const btQuaternion& r,
+                const btVector3& o = btVector3(0.0, 0.0, 0.0))
+            :
+            btTransform(r, o)
+            {}
+ 
+             // copy-constructor from base class
+            Transformation3(const btTransform& proto) 
+            : 
+            btTransform(proto)
+            {}
+                            
             // copy value from another transform in place
-            crib(const btTransform& prototype)
-                { this->deSerialize(prototype->serialize); }
-        }
+            void crib(const btTransform& proto)
+            {
+                setOrigin(proto.getOrigin());
+                setBasis(proto.getBasis());
+            }
+        };
     }
 }
 #endif // PDPD_GEOMETRY_TRANSFORMATION3

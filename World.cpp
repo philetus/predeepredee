@@ -47,7 +47,7 @@ bool World::init_physics()
             constraint_solver, collision_configuration);
     
     // I fought the law and the law won
-    dynamicsWorld->setGravity(World::gravity);
+    dynamics_world->setGravity(World::gravity);
     
     // make something for gravity to work with
     if (!init_ground()) return false;
@@ -58,14 +58,15 @@ bool World::init_physics()
 bool World::init_ground()
 {
     // create box for ground plane
-    ground = new Box(Scale3(100.0, 10.0, 100.0), 0.0);
+    ground = new Box(Vector3(100.0, 10.0, 100.0), 0.0);
     
     // put top of box on zx plane
-    Vector3 ground_position(0.0, -10.0, 0.0);
-    Transformation3 ground_transformation(ground_position);
+    Rotation3 rotation(0.0, 0.0, 0.0);
+    Vector3 position(0.0, -10.0, 0.0);
+    Transformation3 world_frame(rotation, position);
     
     // introduce it to world
-    welcome(ground, ground_transformation);
+    welcome(ground, world_frame);
     
     return true;
 }
@@ -73,24 +74,31 @@ bool World::init_ground()
 // welcome a new thing into the world at given position and orientation
 void World::welcome(
     Thing* thing, 
-    const Transformation3* world_frame)
+    const Transformation3& world_frame)
 {   
     // only add root-level things to things list
-    roots->push_back(thing);
+    roots.push_back(thing);
     thing->set_root(true);
     
     // if atomic just insert thing
-    if(thing->is_atomic()) atomic_insert(thing, world_frame);
+    if(thing->is_atomic()) 
+        // downcast to atomic thing before insert
+        insert(static_cast<AtomicThing*>(thing), world_frame);
 
     // if thing is not atomic insert children too and then add constraints
     else 
     {
+        // downcast to composite thing
+        CompositeThing* daddy = static_cast<CompositeThing*>(thing);
+        
         // recursively inserts children
-        composite_insert(thing, world_frame);
+        insert(daddy, world_frame);
                 
         // init constraints between parts
-        Iterator<Thing*>* i = thing->iter_children();
-        while(i->has_next()) init_constraints(i->next());
+        Iterator<Thing*>* iterator = daddy->iter_children();
+        while(iterator->has_next()) 
+            init_constraints(iterator->next());
+        delete iterator;
     }
 }
 
@@ -98,25 +106,28 @@ void World::welcome(
  *  - set up graphics object
  *  - set up physics
  */ 
-void World::atomic_insert(
-    AtomicThing* thing, 
-    const Transformation3& world_frame)
+void World::insert(AtomicThing* thing, const Transformation3& world_frame)
 {
     // generate rigid body for thing
     btScalar mass(thing->get_mass());
-    ThingMotionState* motion_state = new ThingMotionState(world_frame);
+    
+    // TODO leaking memory here?
+    ThingMotionState* motion_state = new ThingMotionState(world_frame, thing);
+    
     btCollisionShape* collision_shape = thing->get_collision_shape();
     btVector3 inertia(0.0, 0.0, 0.0);
+
+    // if thing is dynamic set collision shape inertia
+    if(thing->is_dynamic()) 
+        collision_shape->calculateLocalInertia(mass, inertia);
+
     btRigidBody::btRigidBodyConstructionInfo 
         info(mass, motion_state, collision_shape, inertia);
     btRigidBody* body = new btRigidBody(info);
     
     // is this necessary? motion state already provides interface
     // thing->set_rigid_body(body);
-    
-    // if thing is dynamic set inertia
-    if(thing->is_dynamic()) body->calculateLocalInertia(mass, inertia);
-    
+        
     // add rigid body to physics world
     body->setActivationState(ISLAND_SLEEPING); // ???
     dynamics_world->addRigidBody(body);
@@ -126,26 +137,30 @@ void World::atomic_insert(
     thing->set_address(index(thing));
 }
 
-void World::composite_insert(Thing* thing, const Transformation3& world_frame)
+void World::insert(CompositeThing* thing, const Transformation3& world_frame)
 {
     // add thing to selection index and store address
     thing->set_address(index(thing));
 
     // insert children
-    Iterator<Thing*>* i = thing->iter_children(); 
-    while(i->has_next())
+    Iterator<Thing*>* iterator = thing->iter_children(); 
+    while(iterator->has_next())
     {
-        Thing* child = i->next();
+        Thing* child = iterator->next();
         
         // get transformation to child
+        Transformation3 child_parent_frame;
+        child->get_parent_frame(&child_parent_frame);
         // TODO is this correct transform mult order???
-        Transformation3 child_world_frame = 
-            child->get_parent_frame() * world_frame;
+        Transformation3 child_world_frame = child_parent_frame * world_frame;
         
-        // insert with appropriate method
-        if(child->is_atomic()) atomic_insert(child, child_world_frame);
-        else composite_insert(child, child_world_frame);
-    }    
+        // downdcast and insert with appropriate method
+        if(child->is_atomic())
+            insert(static_cast<AtomicThing*>(child), child_world_frame);
+        else
+            insert(static_cast<CompositeThing*>(child), child_world_frame);
+    }
+    delete iterator;
 }
 
 void World::step_physics()

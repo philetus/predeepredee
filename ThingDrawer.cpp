@@ -30,7 +30,7 @@ void ThingDrawer::visit(Iterator<Thing*>* iterator)
 void ThingDrawer::visit(Thing* thing)
 {
     // push address onto gl name stack for selection
-    glPushName(thing->address);
+    glPushName(thing->get_address());
     
     // if thing is atomic draw it
     if(thing->is_atomic())
@@ -40,8 +40,11 @@ void ThingDrawer::visit(Thing* thing)
     }
     else
     {
+        // downcast to composite thing
+        CompositeThing* daddy = static_cast<CompositeThing*>(thing);
+        
         // otherwise recurse over children
-        Iterator<Thing*>* iterator = thing->iter_children();
+        Iterator<Thing*>* iterator = daddy->iter_children();
         while(iterator->has_next())
             visit(iterator->next());
         delete iterator;
@@ -65,7 +68,7 @@ void ThingDrawer::draw_atomic_thing(AtomicThing* thing)
     // TODO: get color from thing's material
     glMaterialfv(GL_FRONT, GL_DIFFUSE, thing_diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, thing_specular);
-    glMaterialfv(GL_FRONT, GL_SHININESS, thing_shininess);
+    glMaterialf(GL_FRONT, GL_SHININESS, thing_shininess);
      
     // translate to current position
     btScalar m[16];
@@ -92,21 +95,27 @@ GLuint ThingDrawer::build_display_list(AtomicThing* thing)
     Iterator<Facet>* iterator = thing->iter_facets();
     while(iterator->has_next())
     {
-        Facet facet = *(iterator->next());
+        Facet facet = iterator->next();
         float m[3]; // float array to hold values to pass to gl
         
         // set normal
-        facet->get_gl_normal(m);
+        facet.get_gl_normal(m);
         glNormal3fv(m);
         
         // set vertices
         for(int i = 0; i < 3; i++)
         {
-            facet->get_gl_vertex(m, i);
+            facet.get_gl_vertex(m, i);
             glVertex3fv(m);
         }
     }
     
     glEnd();
     glEndList();
+    
+    return display_list;
 }
+
+const float ThingDrawer::thing_diffuse[] = {0.6, 0.6, 0.6, 1.0};
+const float ThingDrawer::thing_specular[] = {1.0, 1.0, 1.0, 1.0};
+

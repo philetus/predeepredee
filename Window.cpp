@@ -78,7 +78,7 @@ void Window::init_gl(int width, int height)
     camera->resize(width, height);
 }
 
-void Window::init_sdl(string title)
+void Window::init_sdl(int width, int height, string title)
 {
     // init SDL video
     if(SDL_Init(SDL_INIT_VIDEO) < 0) 
@@ -118,8 +118,8 @@ void Window::handle_key_down(SDL_keysym* keysym)
     }
 
 }
-void Window::handle_key_up(SDL_keysym* keysym) {} // TODO
-void Window::handle_expose() {} // TODO: write expose handler
+// void Window::handle_key_up(SDL_keysym* keysym) {} // TODO
+// void Window::handle_expose() {} // TODO: write expose handler
 
 
 void Window::event_loop()
@@ -134,7 +134,7 @@ void Window::event_loop()
             switch(event.type)
             {
             case SDL_KEYDOWN:
-                handle_keypress(&event.key.keysym);
+                handle_key_down(&event.key.keysym);
                 break;
 
             case SDL_VIDEORESIZE: 
@@ -160,7 +160,7 @@ void Window::event_loop()
         world->step_physics();
         
         // draw things
-        camera->set_perspective()
+        camera->set_perspective();
         thing_drawer->visit(world->iter_roots());
         
         // TODO: draw overlay

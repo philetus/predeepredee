@@ -53,7 +53,7 @@ namespace pdpd
         void handle_pointer_up();
         void handle_pointer_move();
         
-        void handle_resize(int w, int h) { camera.resize(w, h); }
+        void handle_resize(int w, int h) { camera->resize(w, h); }
         void handle_quit()
         {
             SDL_Quit();
@@ -61,7 +61,9 @@ namespace pdpd
         }
         // void handle_expose(); // just redraw?
 
-        void init_sdl(); // manage initialization in constructor
+        // init helpers for constructor
+        void init_sdl(int width, int height, std::string title);
+        void init_gl(int width, int height);
 
         Window(); // hide default constructor
         Window(const Window& w); // hide copy-constructor

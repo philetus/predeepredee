@@ -24,6 +24,12 @@ namespace pdpd
         class Vector3 : public btVector3
         {
         public:
+            // constructor from values
+            Vector3(float x = 0.0, float y = 0.0, float z = 0.0)
+            :
+            btVector3(x, y, z)
+            {}
+
             // copy-constructor
             Vector3(const btVector3& proto)
                 { this->crib(proto); }
@@ -31,8 +37,7 @@ namespace pdpd
             // copy values from another vector
             void crib(const btVector3& proto)
                 { this->setValue(proto[0], proto[1], proto[2]); }
-        }
-        
+        };
     }
 }
 #endif // PDPD_GEOMETRY_VECTOR3

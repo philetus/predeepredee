@@ -52,6 +52,8 @@ namespace pdpd
         up_index(1), // up is y
         up_axis(0.0, 1.0, 0.0)
         {}
+        
+        virtual ~Camera() {}
 
         // called by window on resize event
         virtual void resize(int w, int h)
@@ -77,6 +79,6 @@ namespace pdpd
         
         // zoom camera
         virtual void zoom(float dd) = 0;     
-    }
+    };
 }
 #endif // PDPD_CAMERA
