@@ -13,8 +13,10 @@
 #ifndef PDPD_UTIL_DEQUE_ITERATOR
 #define PDPD_UTIL_DEQUE_ITERATOR
 
-#include "Iterator.h"
+#include <iostream>
 #include <deque>
+
+#include "Iterator.h"
 
 namespace pdpd
 {
@@ -37,7 +39,7 @@ namespace pdpd
             }
                         
             // check if there are more elements to iterate over
-            bool has_next() { return current == end; }
+            bool has_next() { return (current != end); }
             
             // return next element and increment current ptr
             Data next() { return *(current++); }
