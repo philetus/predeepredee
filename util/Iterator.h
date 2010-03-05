@@ -24,7 +24,7 @@ namespace pdpd
         class Iterator
         {        
         public:
-            virtual ~Iterator();
+            virtual ~Iterator() {}
             virtual bool has_next() = 0; // check if there are more elements
             virtual Data next() = 0; // return next element
         };

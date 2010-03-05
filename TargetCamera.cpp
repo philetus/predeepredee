@@ -117,3 +117,8 @@ Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up
 	ray_to -= y * dv;
 	return ray_to;
 }
+
+void TargetCamera::tilt(int, int) {} // TODO
+void TargetCamera::pan(int, int) {} // TODO
+void TargetCamera::zoom(float) {} // TODO
+

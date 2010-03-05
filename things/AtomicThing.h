@@ -34,8 +34,6 @@ namespace pdpd
             btCollisionShape* collision_shape;
         public:
             AtomicThing() 
-            :
-            Thing()
             {
                 atomic = true;
                 child = false;

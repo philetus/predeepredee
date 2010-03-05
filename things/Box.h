@@ -58,8 +58,7 @@ namespace pdpd
         public:
             
             // scale, mass, child
-            Box(geometry::Vector3 s, double m = 0.0, bool c = false);
-            ~Box() {}
+            Box(geometry::Vector3 s, float m = 0.0, bool c = false);
             
             // *** thing interface,
             // TODO geometry::Aabb3 get_aabb();
@@ -68,7 +67,7 @@ namespace pdpd
             bool is_dynamic()
             {
                 if((mass - wiggle) > 0.0) return true;
-                return false;
+                return false;            
             }
             
             // *** atomic thing interface

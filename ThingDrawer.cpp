@@ -119,3 +119,5 @@ GLuint ThingDrawer::build_display_list(AtomicThing* thing)
 const float ThingDrawer::thing_diffuse[] = {0.6, 0.6, 0.6, 1.0};
 const float ThingDrawer::thing_specular[] = {1.0, 1.0, 1.0, 1.0};
 
+void ThingDrawer::dismiss(Thing*) {} // TODO
+

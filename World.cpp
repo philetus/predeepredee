@@ -168,3 +168,8 @@ void World::step_physics()
     float delta = get_delta_in_seconds();
     if(dynamics_world) dynamics_world->stepSimulation(delta);
 }
+
+void World::init_constraints(Thing*) {} // TODO
+void World::dismiss(Thing*) {} // TODO
+bool World::exit_physics() { return true; } // TODO
+

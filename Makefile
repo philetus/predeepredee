@@ -2,7 +2,7 @@ CPPFLAGS += -W -Wall -g -O3
 CPPFLAGS += `pkg-config --cflags sdl cairo bullet`
 CPP = g++
 OFLAG = -o
-LIBRARIES = `pkg-config --libs sdl cairo bullet`
+LIBRARIES = `pkg-config --libs sdl cairo bullet` -lGLU
 .SUFFIXES : .o .cpp
 .cpp.o : $(CPP) $(CPPFLAGS) -c $<
 
