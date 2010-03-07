@@ -9,9 +9,12 @@
  *  for more information see: http://www.gnu.org/licenses/gpl.html
  *  
  */
+ 
+#include <iostream>
 
 #include "World.h"
 
+using namespace std;
 using namespace pdpd;
 using namespace things;
 using namespace util;
@@ -76,6 +79,8 @@ void World::welcome(
     Thing* thing, 
     const Transformation3& world_frame)
 {   
+    cout << "welcoming thing!\n";
+    
     // only add root-level things to things list
     roots.push_back(thing);
     thing->set_root(true);
@@ -108,6 +113,8 @@ void World::welcome(
  */ 
 void World::insert(AtomicThing* thing, const Transformation3& world_frame)
 {
+    cout << "atomic insert!\n";
+
     // generate rigid body for thing
     btScalar mass(thing->get_mass());
     
@@ -116,11 +123,13 @@ void World::insert(AtomicThing* thing, const Transformation3& world_frame)
     
     btCollisionShape* collision_shape = thing->get_collision_shape();
     btVector3 inertia(0.0, 0.0, 0.0);
-
+    
+    /* already happens in box constructor???
     // if thing is dynamic set collision shape inertia
     if(thing->is_dynamic()) 
         collision_shape->calculateLocalInertia(mass, inertia);
-
+    */
+    
     btRigidBody::btRigidBodyConstructionInfo 
         info(mass, motion_state, collision_shape, inertia);
     btRigidBody* body = new btRigidBody(info);
@@ -139,6 +148,8 @@ void World::insert(AtomicThing* thing, const Transformation3& world_frame)
 
 void World::insert(CompositeThing* thing, const Transformation3& world_frame)
 {
+    cout << "composite insert!\n";
+
     // add thing to selection index and store address
     thing->set_address(index(thing));
 

@@ -11,8 +11,11 @@
  *  
  */
 
+#include <iostream>
+
 #include "ThingDrawer.h"
 
+using namespace std;
 using namespace pdpd;
 using namespace util;
 using namespace things;
@@ -23,7 +26,9 @@ void ThingDrawer::visit(Iterator<Thing*>* iterator)
 {
     // visit each root level thing
     while(iterator->has_next()) 
+    {
         visit(iterator->next());
+    }
     delete iterator;
 }
 

@@ -16,7 +16,11 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include <deque>
+
 #include "geometry/Vector3.h"
+#include "Light.h"
+#include "util/DequeIterator.h"
 
 namespace pdpd
 {
@@ -27,12 +31,13 @@ namespace pdpd
     protected:
         static const float pi_over_180 = 0.01745329251994329547; // rad to deg
         static const float epsilon = 0.0000001; // wiggle room
-
+        
         // updated by window
         int width;
         int height;
         
         // tuneable parameters
+        unsigned int next_light;
         float near; // near clipping plane distance
         float far; // far clipping plane distance
         int forward_index;
@@ -40,11 +45,14 @@ namespace pdpd
         int up_index;
         geometry::Vector3 up_axis;
         
+        std::deque<Light*> lights;
+        
     public:
         Camera() 
         :
         width(0),
         height(0), 
+        next_light(GL_LIGHT0),
         near(1.0),
         far(1000.0),
         forward_index(2), // forward is -z
@@ -78,7 +86,45 @@ namespace pdpd
         virtual void pan(int dx, int dy) = 0;
         
         // zoom camera
-        virtual void zoom(float dd) = 0;     
+        virtual void zoom(float dd) = 0;
+        
+        // set up some lights
+        virtual void init_lights()
+        {
+            float p0[] = {6000.0, 4000.0, 5000.0, 0.0};
+            float p1[] = {-6000.0, -4000.0, 5000.0, 0.0};
+            float p2[] = {6000.0, 4000.0, -5000.0, 0.0};
+            float p3[] = {-6000.0, -4000.0, -5000.0, 0.0};
+            
+            float a[] = {0.0, 0.0, 0.0, 1.0};
+            float d[] = {1.0, 1.0, 1.0, 1.0};
+            float s[] = {1.0, 1.0, 1.0, 1.0};
+            
+            add_light(new Light(p0, a, d, s));
+            add_light(new Light(p1, a, d, s));
+            add_light(new Light(p2, a, d, s));
+            add_light(new Light(p3, a, d, s));
+            
+        }
+        
+        virtual void clear_lights()
+        {
+            // TODO
+        }
+        
+        void add_light(Light* light)
+        {
+            light->set_name(next_light++);
+            lights.push_back(light);
+        }
+        
+        void enable_lights()
+        {
+            util::DequeIterator<Light*> iterator = 
+                util::DequeIterator<Light*>(lights);
+            while(iterator.has_next()) iterator.next()->enable();
+            glEnable(GL_LIGHTING);
+        }
     };
 }
 #endif // PDPD_CAMERA

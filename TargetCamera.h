@@ -38,7 +38,10 @@ namespace pdpd
         elevation(30.0),
         distance(100.0),
         target(0.0, 0.0, 0.0)
-        {}
+        {
+            // use default superclass light setup
+            init_lights();
+        }
         
         // implements camera interface for rendering and pointer handlers
         void set_perspective();

@@ -61,10 +61,13 @@ void Window::init_gl(int width, int height)
 
     /* cairo surface setup stuff
     glDisable (GL_DEPTH_TEST);
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable (GL_TEXTURE_RECTANGLE_ARB);
         */
+
+    camera->enable_lights();
+    
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     /* Our shading model--Gouraud (smooth). */
     glShadeModel( GL_SMOOTH );

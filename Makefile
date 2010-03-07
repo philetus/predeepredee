@@ -24,7 +24,7 @@ World.o: World.cpp World.h ThingMotionState.h things/Thing.h \
     util/Iterator.h util/DequeIterator.h geometry/Vector3.h \
     geometry/Rotation3.h geometry/Transformation3.h
 
-TargetCamera.o: TargetCamera.cpp TargetCamera.h Camera.h \
+TargetCamera.o: TargetCamera.cpp TargetCamera.h Camera.h Light.h \
     geometry/Vector3.h geometry/Rotation3.h geometry/Matrix3x3.h
     
 ThingDrawer.o: ThingDrawer.cpp ThingDrawer.h util/Iterator.h geometry/Facet.h \

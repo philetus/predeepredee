@@ -13,6 +13,8 @@
 #ifndef PDPD_THINGS_ATOMIC_THING
 #define PDPD_THINGS_ATOMIC_THING
 
+#include <iostream>
+
 #include "Thing.h"
 #include "../util/Iterator.h"
 #include "../geometry/Vector3.h"
@@ -46,6 +48,11 @@ namespace pdpd
             
             virtual void set_world_frame(const geometry::Transformation3& frame)
             {
+                geometry::Vector3 origin = frame.getOrigin();
+                std::cout << "setting world frame to:" << std::endl
+                    << origin[0] << " " << origin[1] << " " << origin[2]
+                    << std::endl;
+                    
                 world_frame.crib(frame);
                 touch(); // set touched flag (and recursively set parents' too)
             }
