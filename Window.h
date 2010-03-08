@@ -23,6 +23,11 @@
 #include "Camera.h"
 #include "ThingDrawer.h"
 
+#include "geometry/Vector3.h"
+#include "geometry/Rotation3.h"
+#include "geometry/Transformation3.h"
+#include "things/Box.h"
+
 namespace pdpd
 {
     class Window
@@ -44,14 +49,32 @@ namespace pdpd
         Camera* camera;
         ThingDrawer* thing_drawer;
         // TODO OverlayDrawer* overlay_drawer;
-
+        
+        bool pointer_down;
+        int pointer_last_x;
+        int pointer_last_y;
+        
         // event handlers call appropriate component
         void handle_key_down(SDL_keysym* keysym);
         void handle_key_up(SDL_keysym* keysym);
+        void handle_space();
         
-        void handle_pointer_down();
-        void handle_pointer_up();
-        void handle_pointer_move();
+        void handle_pointer_down(int x, int y)
+        {
+            pointer_down = true;
+            pointer_last_x = x;
+            pointer_last_y = y;
+        }
+        void handle_pointer_up() { pointer_down = false; }
+        void handle_pointer_motion(int x, int y)
+        {
+            if(pointer_down)
+            {
+                camera->tilt(x - pointer_last_x, y - pointer_last_y);
+                pointer_last_x = x;
+                pointer_last_y = y;
+            }
+        }
         
         void handle_resize(int w, int h) { camera->resize(w, h); }
         void handle_quit()
@@ -75,8 +98,28 @@ namespace pdpd
             ThingDrawer* td,
             int width = 600, 
             int height = 400, 
-            std::string title = std::string("predee predee")); 
-        virtual ~Window();
+            std::string title = std::string("predee predee"))
+        :
+        world(w),
+        camera(c),
+        thing_drawer(td),
+        pointer_down(false)
+        {
+            init_sdl(width, height, title);
+            init_gl(width, height);
+        }
+
+        virtual ~Window()
+        {
+            /*
+            delete title;
+            delete window_surface;
+            delete cairo_surface;
+            delete surface_data;
+            delete texture_id;
+            delete cairo_context;
+            */
+        }
 
         // main event loop method
         void event_loop();

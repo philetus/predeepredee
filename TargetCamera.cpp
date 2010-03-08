@@ -68,6 +68,9 @@ void TargetCamera::set_perspective()
         position[0], position[1], position[2], 
         target[0], target[1], target[2],
         up_axis[0], up_axis[1], up_axis[2]);
+    
+    // clear the screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up
@@ -118,7 +121,16 @@ Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up
 	return ray_to;
 }
 
-void TargetCamera::tilt(int, int) {} // TODO
+void TargetCamera::tilt(int dx, int dy)
+{
+    azimuth += static_cast<float>(dx);
+    if(azimuth >= 360.0) azimuth -= 360.0;
+    if(azimuth < 0.0) azimuth += 360.0;
+    
+    elevation += static_cast<float>(dy);
+    if(elevation > 90.0) elevation = 90.0;
+    if(elevation < -90.0) elevation = -90.0;
+}
 void TargetCamera::pan(int, int) {} // TODO
 void TargetCamera::zoom(float) {} // TODO
 

@@ -16,40 +16,9 @@
  
 using namespace std;
 using namespace pdpd;
+using namespace geometry;
+using namespace things;
 
-/*
- *  constructor
- */
-Window::Window(
-    World* w, 
-    Camera* c, 
-    ThingDrawer* td,
-    int width, 
-    int height, 
-    string title) 
-:
-world(w),
-camera(c),
-thing_drawer(td)
-{
-    init_sdl(width, height, title);
-    init_gl(width, height);
-}
-
-/*
- *  destructor
- */
-Window::~Window()
-{
-    /*
-    delete title;
-    delete window_surface;
-    delete cairo_surface;
-    delete surface_data;
-    delete texture_id;
-    delete cairo_context;
-    */
-}
 
 void Window::init_gl(int width, int height)
 {
@@ -76,6 +45,8 @@ void Window::init_gl(int width, int height)
     glCullFace( GL_BACK );
     glFrontFace( GL_CCW );
     glEnable( GL_CULL_FACE );
+    
+    glEnable(GL_DEPTH_TEST);
 
     // call camera resize handler to finish init
     camera->resize(width, height);
@@ -116,14 +87,29 @@ void Window::handle_key_down(SDL_keysym* keysym)
     case SDLK_ESCAPE:
         handle_quit();
         break;
+    case SDLK_SPACE:
+        handle_space();
+        break;
     default:
         break;
     }
 
 }
+
+void Window::handle_space()
+{
+    // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
+    Box* box = new Box(Vector3(10.0, 20.0, 10.0), 2.0);
+
+    // start box in the air
+    Vector3 box_position(0.0, 100.0, 0.0);
+    Rotation3 box_orientation(0.0, 0.0, 0.0);
+    Transformation3 box_world_frame(box_orientation, box_position);
+    world->welcome(box, box_world_frame);
+}
+
 // void Window::handle_key_up(SDL_keysym* keysym) {} // TODO
 // void Window::handle_expose() {} // TODO: write expose handler
-
 
 void Window::event_loop()
 {
@@ -138,6 +124,18 @@ void Window::event_loop()
             {
             case SDL_KEYDOWN:
                 handle_key_down(&event.key.keysym);
+                break;
+
+            case SDL_MOUSEMOTION: 
+                handle_pointer_motion(event.motion.x, event.motion.y);
+                break;
+
+            case SDL_MOUSEBUTTONDOWN: 
+                handle_pointer_down(event.button.x, event.button.y);
+                break;
+
+            case SDL_MOUSEBUTTONUP: 
+                handle_pointer_up();
                 break;
 
             case SDL_VIDEORESIZE: 

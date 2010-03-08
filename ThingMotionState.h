@@ -14,6 +14,8 @@
 #ifndef PDPD_THING_MOTION_STATE
 #define PDPD_THING_MOTION_STATE
 
+#include <iostream>
+
 #include "btBulletDynamicsCommon.h"
 #include "geometry/Transformation3.h"
 #include "things/AtomicThing.h"
@@ -32,22 +34,31 @@ namespace pdpd
         :
         init_world_frame(frame),
         thing(t)
-        {}
+        {
+            // init thing's world frame
+            thing->set_world_frame(frame);
+        }
         
         ~ThingMotionState() {}
         
         // provide physics engine with initial position for thing
         virtual void getWorldTransform(btTransform &world_transform) const
         {
+            //std::cout << "getting world transform!" << std::endl;
+            
             world_transform = init_world_frame;
         }
         
         virtual void setWorldTransform(const btTransform &world_transform)
         {
+            //std::cout << "maybe setting world transform!" << std::endl;
+
             if(thing == NULL) return; // silently return if thing unset
             
             geometry::Transformation3 frame(world_transform);
             thing->set_world_frame(frame);
+
+            //std::cout << "set world transform!" << std::endl;
         }
     };
 }

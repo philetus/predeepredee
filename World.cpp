@@ -78,9 +78,7 @@ bool World::init_ground()
 void World::welcome(
     Thing* thing, 
     const Transformation3& world_frame)
-{   
-    cout << "welcoming thing!\n";
-    
+{       
     // only add root-level things to things list
     roots.push_back(thing);
     thing->set_root(true);
@@ -113,8 +111,6 @@ void World::welcome(
  */ 
 void World::insert(AtomicThing* thing, const Transformation3& world_frame)
 {
-    cout << "atomic insert!\n";
-
     // generate rigid body for thing
     btScalar mass(thing->get_mass());
     
@@ -138,9 +134,9 @@ void World::insert(AtomicThing* thing, const Transformation3& world_frame)
     // thing->set_rigid_body(body);
         
     // add rigid body to physics world
-    body->setActivationState(ISLAND_SLEEPING); // ???
+    //body->setActivationState(ISLAND_SLEEPING); // breaks physics?
     dynamics_world->addRigidBody(body);
-    body->setActivationState(ISLAND_SLEEPING); // ???  
+    //body->setActivationState(ISLAND_SLEEPING); // breaks physics?
     
     // add thing to selection index and store address
     thing->set_address(index(thing));
@@ -148,8 +144,6 @@ void World::insert(AtomicThing* thing, const Transformation3& world_frame)
 
 void World::insert(CompositeThing* thing, const Transformation3& world_frame)
 {
-    cout << "composite insert!\n";
-
     // add thing to selection index and store address
     thing->set_address(index(thing));
 

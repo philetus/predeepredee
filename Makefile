@@ -17,7 +17,9 @@ box_test: box_test.o Window.o World.o TargetCamera.o ThingDrawer.o \
 box_test.o: box_test.cpp Window.h World.h TargetCamera.h ThingDrawer.h \
     things/Box.h
 
-Window.o: Window.cpp Window.h World.h Camera.h ThingDrawer.h
+Window.o: Window.cpp Window.h World.h Camera.h ThingDrawer.h \
+    geometry/Vector3.h geometry/Rotation3.h geometry/Transformation3.h \
+    things/Box.h
 
 World.o: World.cpp World.h ThingMotionState.h things/Thing.h \
     things/AtomicThing.h things/CompositeThing.h things/Box.h \
