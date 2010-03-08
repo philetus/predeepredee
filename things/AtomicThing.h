@@ -34,6 +34,7 @@ namespace pdpd
         protected:
             geometry::Transformation3 world_frame;
             btCollisionShape* collision_shape;
+            btRigidBody* rigid_body;
         public:
             AtomicThing() 
             {
@@ -48,11 +49,6 @@ namespace pdpd
             
             virtual void set_world_frame(const geometry::Transformation3& frame)
             {
-                geometry::Vector3 origin = frame.getOrigin();
-                //std::cout << "setting world frame to:" << std::endl
-                //    << origin[0] << " " << origin[1] << " " << origin[2]
-                //    << std::endl;
-                    
                 world_frame.crib(frame);
                 touch(); // set touched flag (and recursively set parents' too)
             }
@@ -65,6 +61,9 @@ namespace pdpd
             
             virtual btCollisionShape* get_collision_shape()
                 { return collision_shape; }
+            
+            virtual void set_rigid_body(btRigidBody* b) { rigid_body = b; }
+            virtual btRigidBody* get_rigid_body() { return rigid_body; }
         };
     }
 }

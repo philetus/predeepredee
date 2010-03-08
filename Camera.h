@@ -125,6 +125,8 @@ namespace pdpd
             while(iterator.has_next()) iterator.next()->enable();
             glEnable(GL_LIGHTING);
         }
+        
+        virtual const geometry::Vector3 get_position() = 0;
     };
 }
 #endif // PDPD_CAMERA

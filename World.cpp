@@ -23,7 +23,7 @@ using namespace geometry;
 World::World()
 :
 next_address(1), // start thing addresses at 1
-gravity(0.0, -10000.0, 0.0) // 10,000mm/s**2 in the -y???
+gravity(0.0, -1000.0, 0.0) // 10,000mm/s**2 in the -y???
 {
     // TODO ???
 }
@@ -120,18 +120,17 @@ void World::insert(AtomicThing* thing, const Transformation3& world_frame)
     btCollisionShape* collision_shape = thing->get_collision_shape();
     btVector3 inertia(0.0, 0.0, 0.0);
     
-    /* already happens in box constructor???
+    // already happens in box constructor???
     // if thing is dynamic set collision shape inertia
     if(thing->is_dynamic()) 
         collision_shape->calculateLocalInertia(mass, inertia);
-    */
     
     btRigidBody::btRigidBodyConstructionInfo 
         info(mass, motion_state, collision_shape, inertia);
     btRigidBody* body = new btRigidBody(info);
     
     // is this necessary? motion state already provides interface
-    // thing->set_rigid_body(body);
+    thing->set_rigid_body(body);
         
     // add rigid body to physics world
     //body->setActivationState(ISLAND_SLEEPING); // breaks physics?

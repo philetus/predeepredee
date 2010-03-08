@@ -57,7 +57,8 @@ namespace pdpd
         // event handlers call appropriate component
         void handle_key_down(SDL_keysym* keysym);
         void handle_key_up(SDL_keysym* keysym);
-        void handle_space();
+        void drop_box();
+        void shoot_box();
         
         void handle_pointer_down(int x, int y)
         {

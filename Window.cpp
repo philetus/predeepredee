@@ -88,7 +88,10 @@ void Window::handle_key_down(SDL_keysym* keysym)
         handle_quit();
         break;
     case SDLK_SPACE:
-        handle_space();
+        drop_box();
+        break;
+    case SDLK_x:
+        shoot_box();
         break;
     default:
         break;
@@ -96,17 +99,44 @@ void Window::handle_key_down(SDL_keysym* keysym)
 
 }
 
-void Window::handle_space()
+void Window::drop_box()
 {
     // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
-    Box* box = new Box(Vector3(10.0, 20.0, 10.0), 2.0);
+    Box* box = new Box(Vector3(10.0, 20.0, 10.0), 200.0);
 
     // start box in the air
     Vector3 box_position(0.0, 100.0, 0.0);
-    Rotation3 box_orientation(0.0, 0.0, 0.0);
+    Rotation3 box_orientation(30.0, 0.0, 30.0);
     Transformation3 box_world_frame(box_orientation, box_position);
     world->welcome(box, box_world_frame);
 }
+
+void Window::shoot_box()
+{
+
+		Transformation3 world_frame;
+		btVector3 camera_position = camera->get_position();
+		world_frame.setOrigin(camera_position);
+
+		Box* shooter = new Box(Vector3(5.0, 5.0, 5.0), 100.0);
+		
+		world->welcome(shooter, world_frame);
+		
+	    btRigidBody* body = shooter->get_rigid_body();
+		body->setLinearFactor(btVector3(1,1,1));
+
+		btVector3 linear_velocity = -camera_position;
+		linear_velocity.normalize();
+		linear_velocity *= 500.0;
+
+		body->getWorldTransform().setOrigin(camera_position);
+		body->getWorldTransform().setRotation(btQuaternion(0,0,0,1));
+		body->setLinearVelocity(linear_velocity);
+		body->setAngularVelocity(btVector3(0,0,0));
+		body->setCcdMotionThreshold(1.);
+		body->setCcdSweptSphereRadius(0.2f);
+}
+
 
 // void Window::handle_key_up(SDL_keysym* keysym) {} // TODO
 // void Window::handle_expose() {} // TODO: write expose handler

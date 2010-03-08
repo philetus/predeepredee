@@ -55,6 +55,8 @@ namespace pdpd
         void set_distance(float d) { distance = d; }
         void set_azimuth(float a) { azimuth = a; }
         void set_elevation(float e) { elevation = e; }
+        
+        const geometry::Vector3 get_position() { return position; }
     };
 }
 #endif // PDPD_TARGET_CAMERA
