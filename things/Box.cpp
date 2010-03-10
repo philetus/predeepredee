@@ -17,32 +17,6 @@ using namespace things;
 using namespace util;
 using namespace geometry;
 
-
-Box::Box(
-    Vector3 s, 
-    float m, // = 0.0
-    bool c) // = false
-:
-AtomicThing(),
-scale(s),
-mass(m)
-{
-    child = c;
-    
-    // set collision shape from scale (half size)
-    collision_shape = new btBoxShape(
-        btVector3(btScalar(scale.getX() / 2.0),
-                  btScalar(scale.getY() / 2.0),
-                  btScalar(scale.getZ() / 2.0)));
-    
-    // if box is dynamic set inertia
-    if(is_dynamic())
-    {
-        btVector3 inertia(0,0,0);
-        collision_shape->calculateLocalInertia(mass, inertia);
-    }
-}
-
 /*  return vector with position of transformed vertex at index
  *
  *  - index is binary for 3 axes - 0 is (0 0 0) which is -x, -y, -z

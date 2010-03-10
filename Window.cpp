@@ -101,26 +101,26 @@ void Window::handle_key_down(SDL_keysym* keysym)
 
 void Window::drop_box()
 {
-    // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
-    Box* box = new Box(Vector3(10.0, 20.0, 10.0), 200.0);
-
     // start box in the air
     Vector3 box_position(0.0, 100.0, 0.0);
     Rotation3 box_orientation(30.0, 0.0, 30.0);
     Transformation3 box_world_frame(box_orientation, box_position);
-    world->welcome(box, box_world_frame);
+
+    // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
+    Box* box = new Box(Vector3(10.0, 20.0, 10.0), box_world_frame, 0.02);
+    
+    world->welcome(box);
 }
 
 void Window::shoot_box()
 {
-
 		Transformation3 world_frame;
 		btVector3 camera_position = camera->get_position();
 		world_frame.setOrigin(camera_position);
 
-		Box* shooter = new Box(Vector3(5.0, 5.0, 5.0), 100.0);
+		Box* shooter = new Box(Vector3(5.0, 5.0, 5.0), world_frame, 1.0);
 		
-		world->welcome(shooter, world_frame);
+		world->welcome(shooter);
 		
 	    btRigidBody* body = shooter->get_rigid_body();
 		body->setLinearFactor(btVector3(1,1,1));

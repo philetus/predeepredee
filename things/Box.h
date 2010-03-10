@@ -58,7 +58,36 @@ namespace pdpd
         public:
             
             // scale, mass, child
-            Box(geometry::Vector3 s, float m = 0.0, bool c = false);
+            Box(
+                const geometry::Vector3& s,
+                const geometry::Transformation3& f,
+                float m = 0.0, 
+                bool c = false)
+            :
+            AtomicThing(f),
+            scale(s),
+            mass(m)
+            {
+                child = c;
+                
+                // set collision shape from scale (half size)
+                collision_shape = new btBoxShape(
+                    btVector3(btScalar(scale.getX() / 2.0),
+                              btScalar(scale.getY() / 2.0),
+                              btScalar(scale.getZ() / 2.0)));
+                
+                // if box is dynamic set inertia
+                btVector3 inertia(0,0,0);
+                if(is_dynamic())
+                    collision_shape->calculateLocalInertia(mass, inertia);
+                
+                // get interface with physics engine
+                btMotionState* motion_state = get_motion_state();
+
+                btRigidBody::btRigidBodyConstructionInfo 
+                    info(mass, motion_state, collision_shape, inertia);
+                rigid_body = new btRigidBody(info);           
+            }
             
             // *** thing interface,
             // TODO geometry::Aabb3 get_aabb();
@@ -66,8 +95,8 @@ namespace pdpd
             void get_gl_parent_frame(btScalar* m16);
             bool is_dynamic()
             {
-                if((mass - wiggle) > 0.0) return true;
-                return false;            
+                if((mass - epsilon) > 0.0) return true;
+                return false;         
             }
             
             // *** atomic thing interface

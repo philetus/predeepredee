@@ -23,7 +23,7 @@ using namespace geometry;
 World::World()
 :
 next_address(1), // start thing addresses at 1
-gravity(0.0, -1000.0, 0.0) // 10,000mm/s**2 in the -y???
+gravity(0.0, -1000.0, 0.0) // 10m/s**2 in the -y???
 {
     // TODO ???
 }
@@ -60,24 +60,22 @@ bool World::init_physics()
 
 bool World::init_ground()
 {
-    // create box for ground plane
-    ground = new Box(Vector3(100.0, 10.0, 100.0), 0.0);
-    
     // put top of box on zx plane
     Rotation3 rotation(0.0, 0.0, 0.0);
     Vector3 position(0.0, -10.0, 0.0);
     Transformation3 world_frame(rotation, position);
+
+    // create box for ground plane
+    ground = new Box(Vector3(100.0, 10.0, 100.0), world_frame, 0.0);
     
     // introduce it to world
-    welcome(ground, world_frame);
+    welcome(ground);
     
     return true;
 }
 
 // welcome a new thing into the world at given position and orientation
-void World::welcome(
-    Thing* thing, 
-    const Transformation3& world_frame)
+void World::welcome(Thing* thing)
 {       
     // only add root-level things to things list
     roots.push_back(thing);
@@ -86,7 +84,7 @@ void World::welcome(
     // if atomic just insert thing
     if(thing->is_atomic()) 
         // downcast to atomic thing before insert
-        insert(static_cast<AtomicThing*>(thing), world_frame);
+        insert(static_cast<AtomicThing*>(thing));
 
     // if thing is not atomic insert children too and then add constraints
     else 
@@ -95,7 +93,7 @@ void World::welcome(
         CompositeThing* daddy = static_cast<CompositeThing*>(thing);
         
         // recursively inserts children
-        insert(daddy, world_frame);
+        insert(daddy);
                 
         // init constraints between parts
         Iterator<Thing*>* iterator = daddy->iter_children();
@@ -109,39 +107,17 @@ void World::welcome(
  *  - set up graphics object
  *  - set up physics
  */ 
-void World::insert(AtomicThing* thing, const Transformation3& world_frame)
+void World::insert(AtomicThing* thing)
 {
-    // generate rigid body for thing
-    btScalar mass(thing->get_mass());
-    
-    // TODO leaking memory here?
-    ThingMotionState* motion_state = new ThingMotionState(world_frame, thing);
-    
-    btCollisionShape* collision_shape = thing->get_collision_shape();
-    btVector3 inertia(0.0, 0.0, 0.0);
-    
-    // already happens in box constructor???
-    // if thing is dynamic set collision shape inertia
-    if(thing->is_dynamic()) 
-        collision_shape->calculateLocalInertia(mass, inertia);
-    
-    btRigidBody::btRigidBodyConstructionInfo 
-        info(mass, motion_state, collision_shape, inertia);
-    btRigidBody* body = new btRigidBody(info);
-    
-    // is this necessary? motion state already provides interface
-    thing->set_rigid_body(body);
-        
     // add rigid body to physics world
-    //body->setActivationState(ISLAND_SLEEPING); // breaks physics?
+    btRigidBody* body = thing->get_rigid_body();
     dynamics_world->addRigidBody(body);
-    //body->setActivationState(ISLAND_SLEEPING); // breaks physics?
     
     // add thing to selection index and store address
     thing->set_address(index(thing));
 }
 
-void World::insert(CompositeThing* thing, const Transformation3& world_frame)
+void World::insert(CompositeThing* thing)
 {
     // add thing to selection index and store address
     thing->set_address(index(thing));
@@ -151,18 +127,12 @@ void World::insert(CompositeThing* thing, const Transformation3& world_frame)
     while(iterator->has_next())
     {
         Thing* child = iterator->next();
-        
-        // get transformation to child
-        Transformation3 child_parent_frame;
-        child->get_parent_frame(&child_parent_frame);
-        // TODO is this correct transform mult order???
-        Transformation3 child_world_frame = child_parent_frame * world_frame;
-        
-        // downdcast and insert with appropriate method
+                
+        // downcast and insert with appropriate method
         if(child->is_atomic())
-            insert(static_cast<AtomicThing*>(child), child_world_frame);
+            insert(static_cast<AtomicThing*>(child));
         else
-            insert(static_cast<CompositeThing*>(child), child_world_frame);
+            insert(static_cast<CompositeThing*>(child));
     }
     delete iterator;
 }

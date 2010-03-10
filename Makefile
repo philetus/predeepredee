@@ -21,7 +21,7 @@ Window.o: Window.cpp Window.h World.h Camera.h ThingDrawer.h \
     geometry/Vector3.h geometry/Rotation3.h geometry/Transformation3.h \
     things/Box.h
 
-World.o: World.cpp World.h ThingMotionState.h things/Thing.h \
+World.o: World.cpp World.h things/Thing.h \
     things/AtomicThing.h things/CompositeThing.h things/Box.h \
     util/Iterator.h util/DequeIterator.h geometry/Vector3.h \
     geometry/Rotation3.h geometry/Transformation3.h

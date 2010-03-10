@@ -31,12 +31,16 @@ namespace pdpd
          */
         class AtomicThing : public Thing
         {
+            AtomicThing(); // hide
+            AtomicThing(const AtomicThing&); // hide
         protected:
             geometry::Transformation3 world_frame;
             btCollisionShape* collision_shape;
             btRigidBody* rigid_body;
         public:
-            AtomicThing() 
+            AtomicThing(const geometry::Transformation3& frame)
+            :
+            world_frame(frame)
             {
                 atomic = true;
                 child = false;
@@ -62,8 +66,39 @@ namespace pdpd
             virtual btCollisionShape* get_collision_shape()
                 { return collision_shape; }
             
-            virtual void set_rigid_body(btRigidBody* b) { rigid_body = b; }
+            // virtual void set_rigid_body(btRigidBody* b) { rigid_body = b; }
             virtual btRigidBody* get_rigid_body() { return rigid_body; }
+            
+            /*  motion state
+             *  - interface to physics engine
+             *  - implements btMotionState interface
+             *    > getWorldTransform - provides initial position to engine
+             *    > setWorldTransform - allows physics engine to move thing
+             */
+            friend class MotionState;
+            class MotionState : public btMotionState
+            {
+                AtomicThing* thing; // thing to be transformed
+            public:
+                MotionState(AtomicThing* t)
+                :
+                thing(t)
+                {}
+                
+                // provide physics engine with initial position for thing
+                virtual void getWorldTransform(
+                    btTransform &world_transform) const
+                    { world_transform = thing->world_frame; }
+                
+                virtual void setWorldTransform(
+                    const btTransform &world_transform)
+                {
+                    geometry::Transformation3 frame(world_transform);
+                    thing->set_world_frame(frame);
+                }
+            };
+            
+            btMotionState* get_motion_state() { return new MotionState(this); }
         };
     }
 }

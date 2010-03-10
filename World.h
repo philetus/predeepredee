@@ -22,7 +22,6 @@
 
 #include "btBulletDynamicsCommon.h"
 
-#include "ThingMotionState.h"
 #include "things/Thing.h"
 #include "things/AtomicThing.h"
 #include "things/CompositeThing.h"
@@ -53,12 +52,8 @@ namespace pdpd
         things::Box* ground;
         
         // things must be downcast to atomic or composite before insertion
-        void insert(
-            things::AtomicThing* thing,
-            const geometry::Transformation3& world_frame);
-        void insert(
-            things::CompositeThing* thing,
-            const geometry::Transformation3& world_frame);
+        void insert(things::AtomicThing* thing);
+        void insert(things::CompositeThing* thing);
             
         void init_constraints(things::Thing* thing);
         
@@ -77,9 +72,7 @@ namespace pdpd
         World();
         virtual ~World() {}
         
-        virtual void welcome(
-            things::Thing* thing, 
-            const geometry::Transformation3& world_frame);
+        virtual void welcome(things::Thing* thing);
         virtual void dismiss(things::Thing* thing);
         
         // iterator over root things

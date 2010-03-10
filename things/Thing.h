@@ -24,7 +24,7 @@ namespace pdpd
         class Thing
         {
         protected:
-            static const double wiggle = 0.000001;
+            static const double epsilon = 0.000001;
 
             bool atomic; // is this thing composed of other things?
             bool dynamic; // can this thing move/explode?
