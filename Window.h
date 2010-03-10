@@ -57,6 +57,7 @@ namespace pdpd
         // event handlers call appropriate component
         void handle_key_down(SDL_keysym* keysym);
         void handle_key_up(SDL_keysym* keysym);
+        SDL_Surface* get_sdl_surface(int width, int height);
         void drop_box();
         void shoot_box();
         
@@ -77,7 +78,7 @@ namespace pdpd
             }
         }
         
-        void handle_resize(int w, int h) { camera->resize(w, h); }
+        void handle_resize(int width, int height);
         void handle_quit()
         {
             SDL_Quit();

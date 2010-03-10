@@ -63,7 +63,7 @@ void Window::init_sdl(int width, int height, string title)
 
 	// set window title
 	SDL_WM_SetCaption(title.c_str(), NULL);
-
+        
     // setup opengl context for window
     SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
     SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
@@ -71,13 +71,33 @@ void Window::init_sdl(int width, int height, string title)
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
+    window_surface = get_sdl_surface(width, height);
+}
+
+SDL_Surface* Window::get_sdl_surface(int width, int height)
+{
+    SDL_Surface* surface;
+
 	// get sdl window surface to draw to
 	int flags = SDL_OPENGL | SDL_RESIZABLE;
-    if(!(window_surface = SDL_SetVideoMode(width, height, 0, flags)))
+    if(!(surface = SDL_SetVideoMode(width, height, 0, flags)))
     {
         cout << "fail! : can't open sdl window : " << SDL_GetError() << "\n";
-        handle_quit();
+        return NULL;
     }
+    return surface;
+}
+
+void Window::handle_resize(int width, int height)
+{
+    // (do not!) release old surface
+    //if(window_surface != NULL) delete window_surface;
+    
+    // get sdl surface in new size
+    window_surface = get_sdl_surface(width, height);
+    
+    // update camera parameters
+    camera->resize(width, height);
 }
 
 void Window::handle_key_down(SDL_keysym* keysym)
