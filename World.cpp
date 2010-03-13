@@ -30,27 +30,41 @@ gravity(0.0, -1000.0, 0.0) // 10m/s**2 in the -y???
 
 bool World::init_physics()
 {
-	// use the default collision dispatcher for default setup 
-	// for memory, collision handling
-	collision_configuration = new btDefaultCollisionConfiguration();
+	// use the softbody collision configuration and the default collision
+	// dispatcher for default setup for memory and collision handling
+	collision_configuration = new btSoftBodyRigidBodyCollisionConfiguration();
     collision_dispatcher = new btCollisionDispatcher(collision_configuration);
+    softbody_world_info.m_dispatcher = collision_dispatcher;
     
-    // use aabb tree to identify potential collision pairs
-    broadphase_interface = new btDbvtBroadphase();
+    // use 3 axis sweep to identify potential collision pairs
+	btVector3 world_min(-world_radius, -world_radius, -world_radius);
+	btVector3 world_max(world_radius, world_radius, world_radius);
+    broadphase_interface = new btAxisSweep3(world_min, world_max, max_proxies);
+    softbody_world_info.m_broadphase = broadphase_interface;
     
     // keep it simple, use sequential (not parallel) constraint solver
-    btSequentialImpulseConstraintSolver* sequential_solver = 
-        new btSequentialImpulseConstraintSolver();
-    constraint_solver = sequential_solver;
+    constraint_solver = new btSequentialImpulseConstraintSolver();
     
     // init physics with above config
     dynamics_world = 
-        new btDiscreteDynamicsWorld(
+        new btSoftRigidDynamicsWorld(
             collision_dispatcher, broadphase_interface, 
             constraint_solver, collision_configuration);
     
+    // callback to handle dragging soft bodies 
+    // TODO - do we need this?
+    // dynamics_world->setInternalTickCallback(pretick_callback, this, true);
+    
+    // TODO is this really necessary?
+    dynamics_world->getDispatchInfo().m_enableSPU = true;
+    
     // I fought the law and the law won
     dynamics_world->setGravity(World::gravity);
+    softbody_world_info.m_gravity.setValue(
+        World::gravity[0], World::gravity[1], World::gravity[2]);
+    
+    // wtf? unexplained magic in bullet softbody demo
+    softbody_world_info.m_sparsesdf.Initialize();
     
     // make something for gravity to work with
     if (!init_ground()) return false;

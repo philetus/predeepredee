@@ -21,6 +21,10 @@
 #include <map>
 
 #include "btBulletDynamicsCommon.h"
+#include "BulletSoftBody/btSoftBody.h"
+#include "BulletSoftBody/btSoftRigidDynamicsWorld.h"
+#include "BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h"
+#include "BulletSoftBody/btSoftBodyHelpers.h"
 
 #include "things/Thing.h"
 #include "things/AtomicThing.h"
@@ -41,6 +45,9 @@ namespace pdpd
         std::map<unsigned int, things::Thing*> thing_index; // things by address
         unsigned int next_address;
         static const unsigned int max_address = 0xffff;
+        static const int max_proxies = 32766;
+        static const int max_overlap = 65535;
+        static const float world_radius = 1000.0;
 	    btDynamicsWorld* dynamics_world; // this is the most important class
 	    btClock step_timer; // track time between rendering passes
 	    btTypedConstraint* pick_constraint; // constraint for mouse picking
@@ -50,6 +57,12 @@ namespace pdpd
         btDefaultCollisionConfiguration* collision_configuration;
         geometry::Vector3 gravity;
         things::Box* ground;
+	    btSoftBodyWorldInfo	softbody_world_info;
+        // TODO do we need these?
+        //btAlignedObjectArray<btSoftSoftCollisionAlgorithm*> 
+        //    soft_soft_collision_algorithms;
+        //btAlignedObjectArray<btSoftRididCollisionAlgorithm*> 
+        //    soft_rigid_collision_algorithms;
         
         // things must be downcast to atomic or composite before insertion
         void insert(things::AtomicThing* thing);
