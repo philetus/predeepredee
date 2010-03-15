@@ -62,19 +62,23 @@ namespace pdpd
             // set up some lights
             virtual void init_lights()
             {
-                float p0[] = {600.0, 400.0, 500.0, 0.0};
-                float p1[] = {-600.0, -400.0, 500.0, 0.0};
+                float p0[] = {-500.0, 1000.0, -500.0, 0.0};
+                //float p1[] = {600.0, -400.0, 500.0, 0.0};
                 float p2[] = {600.0, 400.0, -500.0, 0.0};
-                //float p3[] = {-600.0, -400.0, -500.0, 0.0};
+                float p3[] = {-600.0, 400.0, 500.0, 0.0};
                 
-                float a[] = {0.2, 0.2, 0.2, 1.0};
-                float d[] = {1.0, 1.0, 1.0, 1.0};
-                float s[] = {1.0, 1.0, 1.0, 1.0};
+                float a0[] = {0.1, 0.1, 0.1, 1.0};
+                float d0[] = {0.9, 0.9, 0.9, 1.0};
+                float s0[] = {0.9, 0.9, 0.9, 1.0};
+
+                float a[] = {0.0, 0.0, 0.0, 1.0};
+                float d[] = {0.6, 0.6, 0.6, 1.0};
+                float s[] = {0.2, 0.2, 0.2, 1.0};
                 
-                add_light(new Light(p0, a, d, s));
-                add_light(new Light(p1, a, d, s));
+                add_light(new Light(p0, a0, d0, s0));
+                //add_light(new Light(p1, a, d, s));
                 add_light(new Light(p2, a, d, s));
-                //add_light(new Light(p3, a, d, s));     
+                add_light(new Light(p3, a, d, s));     
             }
             
             virtual void clear_lights()

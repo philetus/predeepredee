@@ -63,9 +63,8 @@ void WorldRenderer::render()
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
-    glColor4f(0.8, 0.3, 0.0, 1.0);
+    glColor4f(0.5, 0.2, 0.0, 1.0);
     thing_drawer->visit(world->iter_roots(), thing_drawer->solid_mode);
-    //thing_drawer->visit(world->iter_roots(), thing_drawer->shadow_mode, shadowcast);
 
     // 1st shadow rendering pass
     glDisable(GL_LIGHTING);
@@ -74,7 +73,7 @@ void WorldRenderer::render()
     glEnable(GL_STENCIL_TEST);
 
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(0.0f, 100.0f);
+    glPolygonOffset(0.0f, 10.0f);
 
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFFL);
@@ -113,7 +112,7 @@ void WorldRenderer::render()
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.0, 0.3, 0.8, 0.8);
+    glColor4f(0.0, 0.2, 0.7, 0.7);
     thing_drawer->visit(world->iter_roots(), thing_drawer->solid_mode);
 
     // put things back?
