@@ -17,22 +17,26 @@
 
 using namespace std;
 using namespace pdpd;
+using namespace renderer;
 using namespace util;
 using namespace things;
 using namespace geometry;
 
 // iterates over root-level things and descends tree to atomic things
-void ThingDrawer::visit(Iterator<Thing*>* iterator)
+void ThingDrawer::visit(
+    Iterator<Thing*>* iterator, 
+    int mode, 
+    const Vector3& cast)
 {
     // visit each root level thing
     while(iterator->has_next()) 
     {
-        visit(iterator->next());
+        visit(iterator->next(), mode, cast);
     }
     delete iterator;
 }
 
-void ThingDrawer::visit(Thing* thing)
+void ThingDrawer::visit(Thing* thing, int mode, const Vector3& cast)
 {
     // push address onto gl name stack for selection
     glPushName(thing->get_address());
@@ -40,8 +44,25 @@ void ThingDrawer::visit(Thing* thing)
     // if thing is atomic draw it
     if(thing->is_atomic())
     {
-        // downcast to atomic thing before calling draw method
-        draw_atomic_thing(static_cast<AtomicThing*>(thing));
+        // choose action based on mode
+        // downcast to atomic thing before passing
+        if(mode == solid_mode)
+        {
+            draw_atomic_thing(static_cast<AtomicThing*>(thing));       
+        }
+        else if(mode == shadow_mode)
+        {
+            shade_atomic_thing(static_cast<AtomicThing*>(thing), cast);
+        }
+        else if(mode == pick_mode)
+        {
+            // TODO - need a separate pick method???
+            draw_atomic_thing(static_cast<AtomicThing*>(thing));
+        }
+        else
+        {
+            cout << "wtf??? unrecognized visit mode: " << mode << "!" << endl;
+        }
     }
     else
     {
@@ -51,7 +72,7 @@ void ThingDrawer::visit(Thing* thing)
         // otherwise recurse over children
         Iterator<Thing*>* iterator = daddy->iter_children();
         while(iterator->has_next())
-            visit(iterator->next());
+            visit(iterator->next(), mode, cast);
         delete iterator;
     }
     
@@ -64,16 +85,17 @@ void ThingDrawer::draw_atomic_thing(AtomicThing* thing)
     // if display list is not cached build it now
     GLuint display_list;
     if(!get_cached(thing, &display_list))
+    {
         display_list = build_display_list(thing);
+        cache(thing, display_list);
+    }
     
     // preserve gl state
     glPushMatrix();
     
     // set color 
     // TODO: get color from thing's material
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, thing_diffuse);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, thing_specular);
-    glMaterialf(GL_FRONT, GL_SHININESS, thing_shininess);
+    //set_color();
      
     // translate to current position
     btScalar m[16];
@@ -86,6 +108,75 @@ void ThingDrawer::draw_atomic_thing(AtomicThing* thing)
     // restore gl state
     glPopMatrix();
 }
+
+void ThingDrawer::shade_atomic_thing(AtomicThing* thing, const Vector3& cast)
+{
+    // cout << "shading thing " << *thing << endl;
+    
+    Transformation3 world_frame;
+    thing->get_world_frame(&world_frame);
+
+    // preserve gl state
+    glPushMatrix();
+
+    // draw shadow volume for each facet
+    Iterator<Facet>* iterator = thing->iter_facets();
+    while(iterator->has_next())
+    {
+        Facet facet = iterator->next();
+        facet.transform(world_frame);
+
+        // only draw if facet is facing the light
+        if(facet.get_normal().angle_to(cast) > 90.0)
+        {
+            shade_facet(facet, cast);
+        }
+    }
+    delete iterator;
+
+    // restore gl state
+    glPopMatrix();
+}
+
+// draw shadow volume for facet
+void ThingDrawer::shade_facet(Facet& near, const Vector3& cast)
+{
+    // cout << "shading facet " << near << endl;
+    
+    // far facet is near facet translated by shadowcast vector
+    Facet far(near);
+    far += cast;
+    
+    float m[3]; // float array to hold values to pass to gl
+
+    // draw end caps of shadow volume
+    glBegin(GL_TRIANGLES);
+    for(int i = 0; i < 3; i++) // near
+    {
+        near.get_gl_vertex(m, i);
+        glVertex3fv(m);
+    }
+    for(int i = 2; i >= 0; i--) // far
+    {
+        far.get_gl_vertex(m, i);
+        glVertex3fv(m);
+    }
+    glEnd();
+    
+    // draw sides
+    glBegin(GL_QUAD_STRIP);
+    for(int i = 0; i <= 3; i++)
+    {
+        near.get_gl_vertex(m, i % 3);
+        glVertex3fv(m);
+        far.get_gl_vertex(m, i % 3);
+        glVertex3fv(m);
+    }
+    glEnd();
+    
+}
+
+void ThingDrawer::pick_atomic_thing(AtomicThing*){}
 
 GLuint ThingDrawer::build_display_list(AtomicThing* thing)
 {
@@ -114,6 +205,7 @@ GLuint ThingDrawer::build_display_list(AtomicThing* thing)
             glVertex3fv(m);
         }
     }
+    delete iterator;
     
     glEnd();
     glEndList();

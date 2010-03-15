@@ -13,7 +13,9 @@
 #ifndef PDPD_THINGS_THING
 #define PDPD_THINGS_THING
 
-#include "../geometry/Aabb3.h"
+#include <iostream>
+
+//#include "../geometry/Aabb3.h"
 #include "../geometry/Transformation3.h"
 
 namespace pdpd
@@ -23,6 +25,9 @@ namespace pdpd
         // superclass for things to be simulated
         class Thing
         {
+            friend std::ostream& operator<<(
+                std::ostream& os, 
+                const Thing& t);
         protected:
             static const double epsilon = 0.000001;
 

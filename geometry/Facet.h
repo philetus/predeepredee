@@ -31,6 +31,9 @@ namespace pdpd
             Vector3 vertex2;
             
             static const int vertex_count = 3; // facets are triangles
+            friend std::ostream& operator<<(
+                std::ostream& os, 
+                const Facet& f);
             
         public:
 
@@ -84,6 +87,11 @@ namespace pdpd
                 return Vector3(0.0, 0.0, 0.0);
             }
             
+            Vector3 get_normal()
+            {
+                return normal;
+            }
+            
             void get_gl_normal(float* m3)
             {
                 for(int i = 0; i < 3; i++) m3[i] = normal[i];
@@ -94,7 +102,26 @@ namespace pdpd
                 Vector3 vertex = get_vertex(index);
                 for(int i = 0; i < 3; i++) m3[i] = vertex[i];
             }
-        };
+            
+            void transform(const btTransform transformation)
+            {
+                vertex0 = transformation * vertex0;
+                vertex1 = transformation * vertex1;
+                vertex2 = transformation * vertex2;
+                
+                // only rotate normal
+                btTransform rotation_only(transformation.getBasis());
+                normal = rotation_only * normal;
+            }
+            
+            Facet operator+=(const Vector3& delta)
+            {
+                vertex0 += delta;
+                vertex1 += delta;
+                vertex2 += delta;
+                return *this;
+            }
+        };        
     }
 }
 #endif // PDPD_GEOMETRY_FACET

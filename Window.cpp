@@ -18,39 +18,7 @@ using namespace std;
 using namespace pdpd;
 using namespace geometry;
 using namespace things;
-
-
-void Window::init_gl(int width, int height)
-{
-	cout << "OpenGL version: " <<  glGetString(GL_VERSION) << "\n";
-    cout << "OpenGL vendor: " << glGetString(GL_VENDOR) << "\n";
-    cout << "OpenGL renderer: " << glGetString(GL_RENDERER) << "\n";
-
-    glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
-
-    /* cairo surface setup stuff
-    glDisable (GL_DEPTH_TEST);
-    glEnable (GL_TEXTURE_RECTANGLE_ARB);
-        */
-
-    camera->enable_lights();
-    
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    /* Our shading model--Gouraud (smooth). */
-    glShadeModel( GL_SMOOTH );
-
-    /* Culling. */
-    glCullFace( GL_BACK );
-    glFrontFace( GL_CCW );
-    glEnable( GL_CULL_FACE );
-    
-    glEnable(GL_DEPTH_TEST);
-
-    // call camera resize handler to finish init
-    camera->resize(width, height);
-}
+using namespace renderer;
 
 void Window::init_sdl(int width, int height, string title)
 {
@@ -70,7 +38,8 @@ void Window::init_sdl(int width, int height, string title)
     SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
     SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
+    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 ); // shadows need stencil buff
+    
     window_surface = get_sdl_surface(width, height);
 }
 
@@ -79,7 +48,7 @@ SDL_Surface* Window::get_sdl_surface(int width, int height)
     SDL_Surface* surface;
 
 	// get sdl window surface to draw to
-	int flags = SDL_OPENGL | SDL_RESIZABLE;
+	int flags = SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_RESIZABLE;
     if(!(surface = SDL_SetVideoMode(width, height, 0, flags)))
     {
         cout << "fail! : can't open sdl window : " << SDL_GetError() << "\n";
@@ -90,9 +59,6 @@ SDL_Surface* Window::get_sdl_surface(int width, int height)
 
 void Window::handle_resize(int width, int height)
 {
-    // (do not!) release old surface
-    //if(window_surface != NULL) delete window_surface;
-    
     // get sdl surface in new size
     window_surface = get_sdl_surface(width, height);
     
@@ -210,9 +176,14 @@ void Window::event_loop()
         // step physics
         world->step_physics();
         
-        // draw things
-        camera->set_perspective();
-        thing_drawer->visit(world->iter_roots());
+        // clear window
+        glClear(
+            GL_COLOR_BUFFER_BIT | 
+            GL_DEPTH_BUFFER_BIT | 
+            GL_STENCIL_BUFFER_BIT);
+
+        // render world
+        world_renderer->render();
         
         // TODO: draw overlay
         

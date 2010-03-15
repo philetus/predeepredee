@@ -2,7 +2,9 @@
 
 #include "Window.h"
 #include "World.h"
-#include "TargetCamera.h"
+#include "renderer/TargetCamera.h"
+#include "renderer/ThingDrawer.h"
+#include "renderer/WorldRenderer.h"
 #include "things/Box.h"
 #include "geometry/Vector3.h"
 #include "geometry/Rotation3.h"
@@ -12,6 +14,7 @@ using namespace std;
 using namespace pdpd;
 using namespace things;
 using namespace geometry;
+using namespace renderer;
 
 int main(int, char**)
 {
@@ -36,7 +39,8 @@ int main(int, char**)
     cout << "making window" << "\n";
     TargetCamera camera;
     ThingDrawer drawer;
-    Window window(&world, &camera, &drawer);
+    WorldRenderer renderer(&world, &camera, &drawer);
+    Window window(&world, &camera, &renderer);
     cout << "starting event loop" << "\n";
     window.event_loop();
     return 0;

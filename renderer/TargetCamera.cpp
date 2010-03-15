@@ -17,6 +17,7 @@
  
 using namespace std;
 using namespace pdpd;
+using namespace renderer;
 using namespace geometry;
 
 void TargetCamera::set_perspective()
@@ -68,9 +69,6 @@ void TargetCamera::set_perspective()
         position[0], position[1], position[2], 
         target[0], target[1], target[2],
         up_axis[0], up_axis[1], up_axis[2]);
-    
-    // clear the screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 Vector3 TargetCamera::get_ray_to(int x, int y) // TODO: clean this up

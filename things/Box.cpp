@@ -67,19 +67,20 @@ const float Box::normal_table[][3] =
      {0.0, 0.0, 1.0}};
 
 // faces should wind ccw!
+// wtf is going on here?
 const int Box::vertex_table[][3] = 
-    {{3, 1, 0},  // -x
-     {2, 3, 0},  // -x
+    {{0, 6, 2},  // -x
+     {0, 4, 6},  // -x
      {5, 4, 0},  // -y
      {1, 5, 0},  // -y
-     {6, 2, 0},  // -z
-     {4, 6, 0},  // -z
-     {4, 5, 7},  // +x
-     {6, 4, 7},  // +x
+     {3, 1, 0},  // -z
+     {2, 3, 0},  // -z
+     {7, 5, 1},  // +x
+     {7, 1, 3},  // +x
      {2, 6, 7},  // +y
      {3, 2, 7},  // +y
-     {1, 3, 7},  // +z
-     {5, 1, 7}}; // +z
+     {7, 6, 4},  // +z
+     {7, 4, 5}}; // +z
 
 Iterator<Vector3>* Box::iter_vertices() { return NULL; } // TODO
 void Box::get_parent_frame(geometry::Transformation3*) {} // TODO

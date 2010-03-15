@@ -20,8 +20,8 @@
 #include <GL/glu.h>
 
 #include "World.h"
-#include "Camera.h"
-#include "ThingDrawer.h"
+#include "renderer/Camera.h"
+#include "renderer/WorldRenderer.h"
 
 #include "geometry/Vector3.h"
 #include "geometry/Rotation3.h"
@@ -46,8 +46,8 @@ namespace pdpd
         
         // stuff passed to window but created somewhere else
         World* world;
-        Camera* camera;
-        ThingDrawer* thing_drawer;
+        renderer::Camera* camera;
+        renderer::WorldRenderer* world_renderer;
         // TODO OverlayDrawer* overlay_drawer;
         
         bool pointer_down;
@@ -88,7 +88,6 @@ namespace pdpd
 
         // init helpers for constructor
         void init_sdl(int width, int height, std::string title);
-        void init_gl(int width, int height);
 
         Window(); // hide default constructor
         Window(const Window& w); // hide copy-constructor
@@ -96,19 +95,20 @@ namespace pdpd
     public:
         Window(
             World* w,
-            Camera* c,
-            ThingDrawer* td,
+            renderer::Camera* c,
+            renderer::WorldRenderer* r,
             int width = 600, 
             int height = 400, 
             std::string title = std::string("predee predee"))
         :
         world(w),
         camera(c),
-        thing_drawer(td),
+        world_renderer(r),
         pointer_down(false)
         {
             init_sdl(width, height, title);
-            init_gl(width, height);
+            world_renderer->init_gl();
+            camera->resize(width, height);
         }
 
         virtual ~Window()
