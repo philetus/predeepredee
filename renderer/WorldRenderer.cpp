@@ -55,7 +55,7 @@ void WorldRenderer::render()
     // update camera perspective
     camera->set_perspective();
 
-//    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_COLOR_MATERIAL);
 //    glEnable(GL_BLEND);
 //    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
