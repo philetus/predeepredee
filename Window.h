@@ -27,6 +27,7 @@
 #include "geometry/Rotation3.h"
 #include "geometry/Transformation3.h"
 #include "things/Box.h"
+#include "things/Flexure.h"
 
 namespace pdpd
 {

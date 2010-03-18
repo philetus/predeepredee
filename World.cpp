@@ -93,7 +93,7 @@ bool World::init_ground()
 
     // create box for ground plane
     float color[4] = {0.0, 0.7, 0.0, 1.0};
-    ground = new Box(Vector3(100.0, 10.0, 100.0), world_frame, color, 0.0);
+    ground = new Box(Vector3(100.0, 30.0, 100.0), world_frame, color, 0.0);
     
     // introduce it to world
     welcome(ground);

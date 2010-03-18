@@ -65,7 +65,7 @@ void WorldRenderer::render()
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
     thing_drawer->visit(world->iter_roots(), thing_drawer->solid_mode, 1);
-
+/*
     // 1st shadow rendering pass
     glDisable(GL_LIGHTING);
     glDepthMask(GL_FALSE);
@@ -73,7 +73,7 @@ void WorldRenderer::render()
     glEnable(GL_STENCIL_TEST);
 
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(0.0f, 10.0f);
+    glPolygonOffset(0.0f, 1.0f);
 
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
     glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFFL);
@@ -122,4 +122,5 @@ void WorldRenderer::render()
     glDepthFunc(GL_LESS);
     glDisable(GL_STENCIL_TEST);
     glDisable(GL_CULL_FACE);
+*/    
 }

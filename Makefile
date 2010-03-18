@@ -29,7 +29,7 @@ box_test.o: box_test.cpp Window.h World.h renderer/TargetCamera.h \
 
 Window.o: Window.cpp Window.h World.h renderer/Camera.h \
     renderer/WorldRenderer.h geometry/Vector3.h geometry/Rotation3.h \
-    geometry/Transformation3.h things/Box.h
+    geometry/Transformation3.h things/Box.h things/Flexure.h
 
 World.o: World.cpp World.h things/Thing.h \
     things/AtomicThing.h things/CompositeThing.h things/Box.h \

@@ -74,10 +74,14 @@ void Window::handle_key_down(SDL_keysym* keysym)
         handle_quit();
         break;
     case SDLK_SPACE:
+    case SDLK_b:
         drop_box();
         break;
     case SDLK_x:
         shoot_box();
+        break;
+    case SDLK_f:
+        drop_flexure();
         break;
     default:
         break;
@@ -126,6 +130,23 @@ void Window::shoot_box()
 
 void Window::drop_flexure()
 {
+    // create a flexure
+    float r = 8.0;
+    float x = 0.0;
+    float y = 60.0;
+    float z = 0.0;
+    float color[4] = {0.8, 0.0, 0.0, 0.0};
+    Flexure* flexure = new Flexure(
+        Vector3(x - r, y, z - r),
+        Vector3(x + r, y, z - r),
+        Vector3(x - r, y, z + r),
+        Vector3(x + r, y, z + r),
+        color,
+        0.01, // mass
+        5, // x resolution
+        5, // y resolution
+        0); // fixed corners - 1 | 2 | 4 | 8
+    world->welcome(flexure);   
 
 }
 

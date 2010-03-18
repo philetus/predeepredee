@@ -30,7 +30,7 @@ namespace pdpd
         protected:            
             geometry::Vector3 vertices[2][2];
             int resolution[2];
-            int fixeds;
+            int fixed_corners;
             
             // *** iterator over facets
             friend class FacetIterator;
@@ -62,26 +62,25 @@ namespace pdpd
                 float mss = 0.0,
                 int x_rs = 9,
                 int y_rs = 9,
-                int fxds = 12,
+                int fxd_crnrs = 4 + 8, // v01 (v10?) & v11
                 bool chld = false)
             :
             SoftThing(clr, mss, chld),
-            fixeds(fxds)
+            fixed_corners(fxd_crnrs)
             {
                 vertices[0][0] = v00;
                 vertices[1][0] = v10;
                 vertices[0][1] = v01;
                 vertices[1][1] = v11;
                 
-                resolution[1] = x_rs;
-                resolution[2] = y_rs;
+                resolution[0] = x_rs;
+                resolution[1] = y_rs;
             }
             
             btSoftBody* init_soft_body(btSoftBodyWorldInfo& sftbdy_wrld_inf)
             {
                 std::cout << "initializing soft body" << std::endl;
                 
-                /*
                 soft_body = btSoftBodyHelpers::CreatePatch(
                     sftbdy_wrld_inf,
                     vertices[0][0],
@@ -90,31 +89,18 @@ namespace pdpd
                     vertices[1][1],
                     resolution[0],
                     resolution[1],
-                    fixeds,
+                    fixed_corners,
                     true);
-                */
+                
+                //std::cout << "fixed corners: " << fixed_corners << std::endl;
 
-                const btScalar	s=8;
-                const btScalar	h=9;
-                const int		r=5;
-                soft_body = btSoftBodyHelpers::CreatePatch(
-                    sftbdy_wrld_inf,
-                    btVector3(-s,h,-s),
-                    btVector3(+s,h,-s),
-                    btVector3(-s,h,+s),
-                    btVector3(+s,h,+s),
-                    r,
-                    r,
-                    4+8,
-                    true);
+                //std::cout << "received soft body pointer: " << soft_body << std::endl;
                 
-                std::cout << "received soft body pointer: " << soft_body << std::endl;
-                
-                std::cout << "setting mass" << std::endl;
+                //std::cout << "setting mass" << std::endl;
                 
                 soft_body->setTotalMass(mass);
                 
-                std::cout << "done initializing soft body" << std::endl;
+                //std::cout << "done initializing soft body" << std::endl;
 
                 return soft_body;
             }
