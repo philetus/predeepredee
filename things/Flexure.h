@@ -42,7 +42,7 @@ namespace pdpd
             public:
                 FacetIterator(Flexure& flxr) 
                 :
-                facet_count(flxr.soft_body->m_faces.size()),
+                facet_count(flxr.soft_body->m_faces.size() * 2),
                 index(0),
                 flexure(flxr)
                 {}
@@ -95,8 +95,8 @@ namespace pdpd
                 */
 
                 const btScalar	s=8;
-                const btScalar	h=4;
-                const int		r=9;
+                const btScalar	h=9;
+                const int		r=5;
                 soft_body = btSoftBodyHelpers::CreatePatch(
                     sftbdy_wrld_inf,
                     btVector3(-s,h,-s),
@@ -131,13 +131,23 @@ namespace pdpd
             
             geometry::Facet get_facet(int index)
             {
+                int i = index / 2;
+                bool side = static_cast<bool>(index % 2);
+                
+                if(side)
+                {
+                    return geometry::Facet(
+                        geometry::Vector3(soft_body->m_faces[i].m_normal),
+                        geometry::Vector3(soft_body->m_faces[i].m_n[0]->m_x),
+                        geometry::Vector3(soft_body->m_faces[i].m_n[1]->m_x),
+                        geometry::Vector3(soft_body->m_faces[i].m_n[2]->m_x));
+                }
                 return geometry::Facet(
-                    geometry::Vector3(soft_body->m_faces[index].m_normal),
-                    geometry::Vector3(soft_body->m_faces[index].m_n[0]->m_x),
-                    geometry::Vector3(soft_body->m_faces[index].m_n[1]->m_x),
-                    geometry::Vector3(soft_body->m_faces[index].m_n[2]->m_x));
+                    geometry::Vector3(-soft_body->m_faces[i].m_normal),
+                    geometry::Vector3(soft_body->m_faces[i].m_n[2]->m_x),
+                    geometry::Vector3(soft_body->m_faces[i].m_n[1]->m_x),
+                    geometry::Vector3(soft_body->m_faces[i].m_n[0]->m_x));
             }
-
         };
     }
 }

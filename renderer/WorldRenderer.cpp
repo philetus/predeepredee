@@ -56,9 +56,6 @@ void WorldRenderer::render()
     camera->set_perspective();
 
     glEnable(GL_COLOR_MATERIAL);
-//    glEnable(GL_BLEND);
-//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
@@ -67,12 +64,9 @@ void WorldRenderer::render()
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
-    //glColor4f(0.5, 0.2, 0.0, 1.0);
     thing_drawer->visit(world->iter_roots(), thing_drawer->solid_mode, 1);
 
     // 1st shadow rendering pass
-//    glDisable(GL_COLOR_MATERIAL);
-//    glDisable(GL_BLEND);
     glDisable(GL_LIGHTING);
     glDepthMask(GL_FALSE);
     glDepthFunc(GL_LEQUAL);
@@ -121,7 +115,6 @@ void WorldRenderer::render()
     glDisable(GL_LIGHTING);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glColor4f(0.0, 0.0, 0.0, 0.5);
     thing_drawer->visit(world->iter_roots(), thing_drawer->solid_mode, 2);
 
     // put things back?

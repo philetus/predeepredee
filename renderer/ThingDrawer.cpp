@@ -172,6 +172,8 @@ void ThingDrawer::pick_thing(AtomicThing*) {}
 
 void ThingDrawer::draw_facets(AtomicThing* thing)
 {
+    //cout << "drawing facets for " << *thing << endl;
+    
     // iterate over facets
     glBegin(GL_TRIANGLES);
     Iterator<Facet>* iterator = thing->iter_facets();
@@ -183,6 +185,7 @@ void ThingDrawer::draw_facets(AtomicThing* thing)
         Facet facet = iterator->next();
         float m[3]; // float array to hold values to pass to gl
         
+        //cout << "  drawing " << facet << endl;
         //cout << "setting facet normal" << endl;   
          
         // set normal
