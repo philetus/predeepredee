@@ -6,6 +6,7 @@
 #include "renderer/ThingDrawer.h"
 #include "renderer/WorldRenderer.h"
 #include "things/Box.h"
+#include "things/Flexure.h"
 #include "geometry/Vector3.h"
 #include "geometry/Rotation3.h"
 #include "geometry/Transformation3.h"
@@ -19,22 +20,25 @@ using namespace renderer;
 int main(int, char**)
 {
     // set up world
-    cout << "making world" << endl;
+    cout << "making world" << "\n";
     World world;
-    cout << "initializing physics" << endl;    
+    cout << "initializing physics" << "\n";    
     world.init_physics();
-    cout << "physics initialized" << endl;    
     
-    /*
-    // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
-    Box box(Vector3(10.0, 20.0, 10.0), 2.0);
-    
-    // start box in the air
-    Vector3 box_position(0.0, 50.0, 0.0);
-    Rotation3 box_orientation(5.0, 0.0, 5.0);
-    Transformation3 box_world_frame(box_orientation, box_position);
-    world.welcome(&box, box_world_frame);
-     */
+    // create a flexure
+    float r = 4.0;
+    float x = 0.0;
+    float y = 20.0;
+    float z = 0.0;
+    float color[4] = {0.8, 0.0, 0.0, 0.0};
+    Flexure flexure(
+        Vector3(x - r, y, z - r),
+        Vector3(x + r, y, z - r),
+        Vector3(x - r, y, z + r),
+        Vector3(x + r, y, z + r),
+        color,
+        1.0);
+    world.welcome(&flexure);   
     
     // create window onto world and start event loop
     cout << "making window" << "\n";

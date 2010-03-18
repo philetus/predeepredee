@@ -93,7 +93,8 @@ void Window::drop_box()
     Transformation3 box_world_frame(box_orientation, box_position);
 
     // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
-    Box* box = new Box(Vector3(10.0, 20.0, 10.0), box_world_frame, 0.02);
+    float color[4] = {0.0, 0.7, 0.7, 1.0};
+    Box* box = new Box(Vector3(10.0, 20.0, 10.0), box_world_frame, color, 0.02);
     
     world->welcome(box);
 }
@@ -103,8 +104,8 @@ void Window::shoot_box()
 		Transformation3 world_frame;
 		btVector3 camera_position = camera->get_position();
 		world_frame.setOrigin(camera_position);
-
-		Box* shooter = new Box(Vector3(5.0, 5.0, 5.0), world_frame, 1.0);
+        float color[4] = {0.9, 0.9, 0.0, 1.0};
+		Box* shooter = new Box(Vector3(5.0, 5.0, 5.0), world_frame, color, 1.0);
 		
 		world->welcome(shooter);
 		
@@ -123,6 +124,10 @@ void Window::shoot_box()
 		body->setCcdSweptSphereRadius(0.2f);
 }
 
+void Window::drop_flexure()
+{
+
+}
 
 // void Window::handle_key_up(SDL_keysym* keysym) {} // TODO
 // void Window::handle_expose() {} // TODO: write expose handler

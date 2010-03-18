@@ -6,14 +6,23 @@ LIBRARIES = `pkg-config --libs sdl cairo bullet` -lGLU
 .SUFFIXES : .o .cpp
 .cpp.o : $(CPP) $(CPPFLAGS) -c $<
 
-TARGETS=box_test
+TARGETS=box_test flexure_test
 
 all: $(TARGETS)
 
+flexure_test: flexure_test.o Window.o World.o renderer/TargetCamera.o \
+    renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
+    things/Thing.o geometry/Facet.o geometry/Vector3.o 
+	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
+	
 box_test: box_test.o Window.o World.o renderer/TargetCamera.o \
     renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
     things/Thing.o geometry/Facet.o geometry/Vector3.o 
 	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
+
+flexure_test.o: flexure_test.cpp Window.h World.h renderer/TargetCamera.h \
+    renderer/ThingDrawer.h renderer/WorldRenderer.h things/Box.h \
+    things/Flexure.h
 
 box_test.o: box_test.cpp Window.h World.h renderer/TargetCamera.h \
     renderer/ThingDrawer.h renderer/WorldRenderer.h things/Box.h
@@ -24,6 +33,7 @@ Window.o: Window.cpp Window.h World.h renderer/Camera.h \
 
 World.o: World.cpp World.h things/Thing.h \
     things/AtomicThing.h things/CompositeThing.h things/Box.h \
+    things/SoftThing.h things/RigidThing.h \
     util/Iterator.h util/DequeIterator.h geometry/Vector3.h \
     geometry/Rotation3.h geometry/Transformation3.h
 
@@ -41,7 +51,7 @@ renderer/WorldRenderer.o: renderer/WorldRenderer.cpp renderer/WorldRenderer.h \
 
 things/Thing.o: things/Thing.cpp things/Thing.h geometry/Transformation3.h
 
-things/Box.o: things/Box.cpp things/Box.h things/AtomicThing.h \
+things/Box.o: things/Box.cpp things/Box.h things/RigidThing.h \
     util/Iterator.h geometry/Vector3.h geometry/Transformation3.h \
     geometry/Facet.h
 

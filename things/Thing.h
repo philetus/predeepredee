@@ -31,19 +31,19 @@ namespace pdpd
         protected:
             static const double epsilon = 0.000001;
 
-            bool atomic; // is this thing composed of other things?
-            bool dynamic; // can this thing move/explode?
             bool child; // true if has parent
+            bool atomic; // is this thing composed of other things?
+            bool soft; // true if thing is softbody not rigid
             bool touched; // true if physics has moved this node or child node
             bool root; // true if thing is stored in world thing list
             unsigned int address; // uint uniquely identifying this thing
             Thing* parent; // parent thing
         public:
-            Thing() 
+            Thing(bool chld = false, bool atmc = false, bool sft = false) 
             :
-            atomic(false),  
-            dynamic(false),
-            child(false), 
+            child(chld),
+            atomic(atmc),  
+            soft(sft),
             touched(false), 
             root(false),
             address(0)
@@ -54,11 +54,11 @@ namespace pdpd
             void set_address(unsigned int a) { address = a; }
             unsigned int get_address() { return address; }
             
+            bool is_child() { return child; }
             bool is_atomic() { return atomic; }
             bool is_root() { return root; }
             void set_root(bool r) { root = r; }
             virtual bool is_dynamic() = 0;
-            virtual bool is_child() { return child; }
             
             // allow things to be sorted spatially by axis aligned bounding box
             // TODO virtual geometry::Aabb3 get_aabb() = 0;

@@ -1,6 +1,6 @@
-/*  World.cpp
+/*  Box.cpp
  *  
- *  interface for adding and removing things from simulator
+ *  a rigid box defined by a scale vector and a world frame
  *
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -42,7 +42,7 @@ Vector3 Box::get_vertex(int index)
 // index should be in range [0..11]
 Facet Box::get_facet(int index)
 {
-    return Facet(
+    Facet facet(
         Vector3(
             normal_table[index][0],
             normal_table[index][1],
@@ -50,6 +50,11 @@ Facet Box::get_facet(int index)
         get_vertex(vertex_table[index][0]),
         get_vertex(vertex_table[index][1]),
         get_vertex(vertex_table[index][2]));
+    
+    // transform to world coordinates
+    facet.transform(world_frame);
+    
+    return facet;
 }
 
 const float Box::normal_table[][3] = 

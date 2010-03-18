@@ -68,12 +68,14 @@ namespace pdpd
             virtual void visit(
                 things::Thing* thing,
                 int mode,
+                int pass,
                 const geometry::Vector3& cast);
 
             // just this method can be overridden to change appearance
-            virtual void draw_atomic_thing(things::AtomicThing* thing);
-            virtual void pick_atomic_thing(things::AtomicThing* thing);
-            virtual void shade_atomic_thing(
+            virtual void draw_thing(things::AtomicThing* thing, int pass = 0);
+            virtual void draw_facets(things::AtomicThing* thing);
+            virtual void pick_thing(things::AtomicThing* thing);
+            virtual void shade_thing(
                 things::AtomicThing* thing,
                 const geometry::Vector3& cast);
             virtual void shade_facet(
@@ -93,6 +95,7 @@ namespace pdpd
             virtual void visit(
                 util::Iterator<things::Thing*>* iterator,
                 int mode,
+                int pass = 0,
                 const geometry::Vector3& cast = 
                     geometry::Vector3(0.0, -1000.0, 0.0));
             

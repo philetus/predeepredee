@@ -29,6 +29,8 @@
 #include "things/Thing.h"
 #include "things/AtomicThing.h"
 #include "things/CompositeThing.h"
+#include "things/RigidThing.h"
+#include "things/SoftThing.h"
 #include "things/Box.h"
 #include "util/Iterator.h"
 #include "util/DequeIterator.h"
@@ -48,7 +50,7 @@ namespace pdpd
         static const int max_proxies = 32766;
         static const int max_overlap = 65535;
         static const float world_radius = 1000.0;
-	    btDynamicsWorld* dynamics_world; // this is the most important class
+	    btSoftRigidDynamicsWorld* dynamics_world; // the most important class
 	    btClock step_timer; // track time between rendering passes
 	    btTypedConstraint* pick_constraint; // constraint for mouse picking
         btBroadphaseInterface* broadphase_interface;
@@ -57,15 +59,16 @@ namespace pdpd
         btDefaultCollisionConfiguration* collision_configuration;
         geometry::Vector3 gravity;
         things::Box* ground;
-	    btSoftBodyWorldInfo	softbody_world_info;
+	    btSoftBodyWorldInfo	soft_world_info;
         // TODO do we need these?
         //btAlignedObjectArray<btSoftSoftCollisionAlgorithm*> 
         //    soft_soft_collision_algorithms;
         //btAlignedObjectArray<btSoftRididCollisionAlgorithm*> 
         //    soft_rigid_collision_algorithms;
         
-        // things must be downcast to atomic or composite before insertion
-        void insert(things::AtomicThing* thing);
+        // things must be downcast before insertion
+        void insert(things::RigidThing* thing);
+        void insert(things::SoftThing* thing);
         void insert(things::CompositeThing* thing);
             
         void init_constraints(things::Thing* thing);

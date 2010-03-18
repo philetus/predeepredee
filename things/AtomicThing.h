@@ -34,71 +34,35 @@ namespace pdpd
             AtomicThing(); // hide
             AtomicThing(const AtomicThing&); // hide
         protected:
-            geometry::Transformation3 world_frame;
-            btCollisionShape* collision_shape;
-            btRigidBody* rigid_body;
+            bool soft;
+            float mass; // mass of thing (in kg?)
         public:
-            AtomicThing(const geometry::Transformation3& frame)
+            float color[4]; // color (TODO implement material class)
+
+            AtomicThing(
+                bool sft,
+                float* clr,
+                float mss = 0.0,
+                bool chld = false)
             :
-            world_frame(frame)
+            Thing(chld, true), // child, atomic
+            soft(sft),
+            mass(mss)
             {
-                atomic = true;
-                child = false;
+                for(int i = 0; i < 4; i++) color[i] = clr[i];
             }
             
             // virtual materials::Material get_material() = 0;
             virtual util::Iterator<geometry::Vector3>* iter_vertices() = 0;
             virtual util::Iterator<geometry::Facet>* iter_facets() = 0;
-            virtual float get_mass() = 0;
-            
-            virtual void set_world_frame(const geometry::Transformation3& frame)
+            virtual bool is_dynamic()
             {
-                world_frame.crib(frame);
-                touch(); // set touched flag (and recursively set parents' too)
+                if((mass - epsilon) > 0.0) return true;
+                return false;         
             }
+            virtual float get_mass() { return mass; }
             
-            virtual void get_world_frame(geometry::Transformation3* frame)
-                { frame->crib(world_frame); }
-            
-            virtual void get_gl_world_frame(btScalar* m16)
-                { world_frame.getOpenGLMatrix(m16); }
-            
-            virtual btCollisionShape* get_collision_shape()
-                { return collision_shape; }
-            
-            // virtual void set_rigid_body(btRigidBody* b) { rigid_body = b; }
-            virtual btRigidBody* get_rigid_body() { return rigid_body; }
-            
-            /*  motion state
-             *  - interface to physics engine
-             *  - implements btMotionState interface
-             *    > getWorldTransform - provides initial position to engine
-             *    > setWorldTransform - allows physics engine to move thing
-             */
-            friend class MotionState;
-            class MotionState : public btMotionState
-            {
-                AtomicThing* thing; // thing to be transformed
-            public:
-                MotionState(AtomicThing* t)
-                :
-                thing(t)
-                {}
-                
-                // provide physics engine with initial position for thing
-                virtual void getWorldTransform(
-                    btTransform &world_transform) const
-                    { world_transform = thing->world_frame; }
-                
-                virtual void setWorldTransform(
-                    const btTransform &world_transform)
-                {
-                    geometry::Transformation3 frame(world_transform);
-                    thing->set_world_frame(frame);
-                }
-            };
-            
-            btMotionState* get_motion_state() { return new MotionState(this); }
+            bool is_soft() { return soft; }            
         };
     }
 }

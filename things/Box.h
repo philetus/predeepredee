@@ -1,10 +1,8 @@
 /*  Box.h
  *
- *  simple atomic thing
+ *  a simple rigid atomic thing
  *
- *  defined by a size (width, depth, height) and a position transform
- *
- *  default color is gray
+ *  - defined by a size (width, depth, height) and a wold frame
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -17,7 +15,7 @@
 #ifndef PDPD_THINGS_BOX
 #define PDPD_THINGS_BOX
 
-#include "AtomicThing.h"
+#include "RigidThing.h"
 #include "../util/Iterator.h"
 #include "../geometry/Vector3.h"
 #include "../geometry/Transformation3.h"
@@ -27,16 +25,11 @@ namespace pdpd
 {
     namespace things
     {
-        /*
-         *  atomic things' interface requires a material and iterators
-         *  over its vertices and facets to facilitate rendering and simulation
-         */
-        class Box : public AtomicThing
+        class Box : public RigidThing
         {
         protected:
             // Material* material; // defines what box is made of
             geometry::Vector3 scale; // scale vector representing size of box
-            float mass; // mass of box (in grams?)
             
             static const float normal_table[][3]; // table of normals by facet
             static const int vertex_table[][3]; // table of vertices by facet
@@ -59,17 +52,15 @@ namespace pdpd
             
             // scale, mass, child
             Box(
-                const geometry::Vector3& s,
-                const geometry::Transformation3& f,
-                float m = 0.0, 
-                bool c = false)
+                const geometry::Vector3& scl,
+                const geometry::Transformation3& wrld_frm,
+                float* clr,
+                float mss = 0.0,
+                bool chld = false)
             :
-            AtomicThing(f),
-            scale(s),
-            mass(m)
-            {
-                child = c;
-                
+            RigidThing(wrld_frm, clr, mss, chld),
+            scale(scl)
+            {                
                 // set collision shape from scale (half size)
                 collision_shape = new btBoxShape(
                     btVector3(btScalar(scale.getX() / 2.0),
@@ -93,18 +84,12 @@ namespace pdpd
             // TODO geometry::Aabb3 get_aabb();
             void get_parent_frame(geometry::Transformation3* t);
             void get_gl_parent_frame(btScalar* m16);
-            bool is_dynamic()
-            {
-                if((mass - epsilon) > 0.0) return true;
-                return false;         
-            }
             
             // *** atomic thing interface
             // virtual materials::Material* get_material() { return material }
             util::Iterator<geometry::Vector3>* iter_vertices();
             util::Iterator<geometry::Facet>* iter_facets()
                 { return new FacetIterator(*this); }
-            float get_mass() { return mass; }
             
             // (untransformed) component geometry created on the fly from scale
             geometry::Vector3 get_vertex(int index);
@@ -113,4 +98,4 @@ namespace pdpd
         };
     }
 }
-#endif // PDPD_THINGS_ATOMIC_THING
+#endif // PDPD_THINGS_BOX

@@ -60,6 +60,7 @@ namespace pdpd
         SDL_Surface* get_sdl_surface(int width, int height);
         void drop_box();
         void shoot_box();
+        void drop_flexure();
         
         void handle_pointer_down(int x, int y)
         {

@@ -52,10 +52,10 @@ namespace pdpd
             
             // construct from a normal and three vertices
             Facet(
-                geometry::Vector3 n, 
-                geometry::Vector3 v0, 
-                geometry::Vector3 v1, 
-                geometry::Vector3 v2)
+                const geometry::Vector3& n, 
+                const geometry::Vector3& v0, 
+                const geometry::Vector3& v1, 
+                const geometry::Vector3& v2)
             :
             normal(n), vertex0(v0), vertex1(v1), vertex2(v2) 
             {}
