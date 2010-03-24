@@ -74,10 +74,14 @@ namespace pdpd
                 
                 // get interface with physics engine
                 btMotionState* motion_state = get_motion_state();
-
+                
+                // get rigid body
                 btRigidBody::btRigidBodyConstructionInfo 
                     info(mass, motion_state, collision_shape, inertia);
                 rigid_body = new btRigidBody(info);           
+                
+                // add pointer back to parent thing to rigid body
+                rigid_body->setUserPointer(static_cast<void*>(this));
             }
             
             // *** thing interface,

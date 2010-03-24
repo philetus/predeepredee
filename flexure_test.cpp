@@ -26,27 +26,28 @@ int main(int, char**)
     world.init_physics();
     
     // create a flexure
-    float r = 8.0;
+    float ur = 2.0;
+    float vr = 8.0;
     float x = 0.0;
     float y = 20.0;
     float z = 0.0;
     float color[4] = {0.8, 0.0, 0.0, 0.0};
     Flexure flexure(
-        Vector3(x - r, y, z - r),
-        Vector3(x + r, y, z - r),
-        Vector3(x - r, y, z + r),
-        Vector3(x + r, y, z + r),
+        Vector3(x - ur, y, z - vr),
+        Vector3(x + ur, y, z - vr),
+        Vector3(x - ur, y, z + vr),
+        Vector3(x + ur, y, z + vr),
         color,
         1.0, // mass
-        5, // x resolution
-        5, // y resolution
+        3, // u resolution
+        9, // v resolution
         0); // fixed corners - 1 | 2 | 4 | 8
     world.welcome(&flexure);
     
     // create a box
     // start box in the air
-    Vector3 box_a_position(-20.0, 20.0, 0.0);
-    Vector3 box_b_position(20.0, 20.0, 0.0);
+    Vector3 box_a_position(-14.0, 20.0, 0.0);
+    Vector3 box_b_position(14.0, 20.0, 0.0);
     Vector3 box_c_position(0.0, 5.0, 0.0);
     Rotation3 box_orientation(0.0, 0.0, 0.0);
     Transformation3 box_a_world_frame(box_orientation, box_a_position);
@@ -65,10 +66,10 @@ int main(int, char**)
     world.welcome(&box_c);
 
     flexure.get_soft_body()->appendAnchor(0, box_a.get_rigid_body());
-	flexure.get_soft_body()->appendAnchor(4, box_a.get_rigid_body());
+	flexure.get_soft_body()->appendAnchor(8, box_a.get_rigid_body());
 
-    flexure.get_soft_body()->appendAnchor(8, box_b.get_rigid_body());
-	flexure.get_soft_body()->appendAnchor(12, box_b.get_rigid_body());
+    flexure.get_soft_body()->appendAnchor(10, box_b.get_rigid_body());
+	flexure.get_soft_body()->appendAnchor(20, box_b.get_rigid_body());
 
     // create window onto world and start event loop
     cout << "making window" << "\n";

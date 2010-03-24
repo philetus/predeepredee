@@ -126,8 +126,8 @@ void TargetCamera::tilt(int dx, int dy)
     if(azimuth < 0.0) azimuth += 360.0;
     
     elevation += static_cast<float>(dy);
-    if(elevation > 90.0) elevation = 90.0;
-    if(elevation < -90.0) elevation = -90.0;
+    if(elevation > 89.0) elevation = 89.0;
+    if(elevation < -89.0) elevation = -89.0;
 }
 void TargetCamera::pan(int, int) {} // TODO
 void TargetCamera::zoom(float) {} // TODO

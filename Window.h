@@ -54,27 +54,68 @@ namespace pdpd
         bool pointer_down;
         int pointer_last_x;
         int pointer_last_y;
-        
+        enum {
+            tilt_mode,
+            pick_mode,
+            shoot_mode
+        } pointer_mode;
+        things::RigidThing* picked_thing;
+        btPoint2PointConstraint* pick_constraint;
+        static const float pick_clamping = 30.0;
+        geometry::Vector3 old_pick_position;
+        geometry::Vector3 old_hit_position;
+        float old_pick_distance;
+
+        void pick_thing(int x, int y);
+        void unpick();
+        void move_picked(int x, int y);
+           
         // event handlers call appropriate component
         void handle_key_down(SDL_keysym* keysym);
         void handle_key_up(SDL_keysym* keysym);
         SDL_Surface* get_sdl_surface(int width, int height);
         void drop_box();
-        void shoot_box();
         void drop_flexure();
+        void shoot_box(int x, int y);
+        float shoot_box_velocity;
         
         void handle_pointer_down(int x, int y)
         {
             pointer_down = true;
             pointer_last_x = x;
             pointer_last_y = y;
+            switch(pointer_mode)
+            {
+            case shoot_mode:
+                shoot_box(x, y);
+                break;
+            case pick_mode:
+                pick_thing(x, y);
+                break;
+            default:
+                break;
+            }
         }
-        void handle_pointer_up() { pointer_down = false; }
+        void handle_pointer_up() 
+        {
+            pointer_down = false;
+            unpick();
+        }
         void handle_pointer_motion(int x, int y)
         {
             if(pointer_down)
             {
-                camera->tilt(x - pointer_last_x, y - pointer_last_y);
+                switch(pointer_mode)
+                {
+                case tilt_mode:
+                    camera->tilt(x - pointer_last_x, y - pointer_last_y);
+                    break;
+                case pick_mode:
+                    move_picked(x, y);
+                    break;
+                default:
+                    break;
+                }
                 pointer_last_x = x;
                 pointer_last_y = y;
             }
@@ -90,7 +131,7 @@ namespace pdpd
 
         // init helpers for constructor
         void init_sdl(int width, int height, std::string title);
-
+        
         Window(); // hide default constructor
         Window(const Window& w); // hide copy-constructor
         
@@ -106,7 +147,10 @@ namespace pdpd
         world(w),
         camera(c),
         world_renderer(r),
-        pointer_down(false)
+        pointer_down(false),
+        pointer_mode(tilt_mode),
+        pick_constraint(NULL),
+        shoot_box_velocity(500.0)
         {
             init_sdl(width, height, title);
             world_renderer->init_gl();

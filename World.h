@@ -91,6 +91,12 @@ namespace pdpd
         virtual void welcome(things::Thing* thing);
         virtual void dismiss(things::Thing* thing);
         
+        virtual bool is_go()
+        {
+            if(dynamics_world != NULL) return true;
+            return false;
+        }
+        
         // iterator over root things
         virtual util::Iterator<things::Thing*>* iter_roots()
             { return new util::DequeIterator<things::Thing*>(roots); }
@@ -112,6 +118,21 @@ namespace pdpd
         
         // update physics simulation
         void step_physics();
+        
+        void ray_pick(
+            const geometry::Vector3& ry_frm, 
+            const geometry::Vector3& ry_t,
+            btCollisionWorld::ClosestRayResultCallback& ry_cllbck)
+        {
+            if(dynamics_world)
+                dynamics_world->rayTest(ry_frm, ry_t, ry_cllbck);
+        }
+        
+        void add_constraint(btTypedConstraint* cnstrnt)
+            { dynamics_world->addConstraint(cnstrnt); }
+        
+        void remove_constraint(btTypedConstraint* cnstrnt)
+            { dynamics_world->removeConstraint(cnstrnt); }
     };
 }
  #endif // PDPD_WORLD
