@@ -47,14 +47,17 @@ int main(int, char**)
     // *** adjust flexure stiffness
     btSoftBody* f_body = flexure.get_soft_body();
     btSoftBody::Material* f_material = f_body->appendMaterial();
-    f_material->m_kLST = 0.9; // Linear stiffness coefficient [0,1]
-    f_material->m_kAST = 0.9; // Area/Angular stiffness coefficient [0,1]
-    //f_material->m_kVST; // Volume stiffness coefficient [0,1]
+    f_material->m_kLST = 0.95; // Linear stiffness coefficient [0,1]
+    f_material->m_kAST = 0.95; // Area/Angular stiffness coefficient [0,1]
+    f_material->m_kVST = 0.95; // Volume stiffness coefficient [0,1]
     f_body->generateBendingConstraints(2, f_material);
     
     // *** adjust soft body config
-    f_body->m_cfg.kAHR = 0.9; // anchor stiffness
-    f_body->m_cfg.kCHR = 0.9; // rigid contact stiffness
+    f_body->m_cfg.kDP = 0.5; // damping coefficient [0,1]
+    f_body->m_cfg.kCHR = 0.95; // rigid contact stiffness (hardness?) [0,1]
+    //f_body->m_cfg.kKHR = 0.95; // kinetic contacts stiffness (hardness?) [0,1]
+    //f_body->m_cfg.kSHR = 0.95; // soft contacts stiffness (hardness?) [0,1]
+    f_body->m_cfg.kAHR = 0.95; // anchor stiffness (hardness?) [0,1]
     
     // *** soft body collision mask
     f_body->m_cfg.collisions =
@@ -91,7 +94,6 @@ int main(int, char**)
     f_body->appendAnchor(0, box_a.get_rigid_body());
 	f_body->appendAnchor(2, box_b.get_rigid_body());
 	f_body->appendAnchor(26, box_b.get_rigid_body());
-
 
     // create window onto world and start event loop
     cout << "making window" << "\n";

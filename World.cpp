@@ -23,7 +23,7 @@ using namespace geometry;
 World::World()
 :
 next_address(1), // start thing addresses at 1
-gravity(0.0, -1000.0, 0.0) // 10m/s**2 in the -y???
+gravity(0.0, -100.0, 0.0) // 10m/s**2 in the -y???
 {
     // TODO ???
 }
