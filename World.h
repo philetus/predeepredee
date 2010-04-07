@@ -128,8 +128,10 @@ namespace pdpd
                 dynamics_world->rayTest(ry_frm, ry_t, ry_cllbck);
         }
         
-        void add_constraint(btTypedConstraint* cnstrnt)
-            { dynamics_world->addConstraint(cnstrnt); }
+        void add_constraint(
+            btTypedConstraint* cnstrnt, 
+            bool dsbl_lnkd_cllsns = false) // disable linked body collisions
+            { dynamics_world->addConstraint(cnstrnt, dsbl_lnkd_cllsns); }
         
         void remove_constraint(btTypedConstraint* cnstrnt)
             { dynamics_world->removeConstraint(cnstrnt); }
