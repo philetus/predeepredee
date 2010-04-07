@@ -91,16 +91,35 @@ namespace pdpd
                     resolution[1],
                     fixed_corners,
                     true);
-                
-                //std::cout << "fixed corners: " << fixed_corners << std::endl;
-
-                //std::cout << "received soft body pointer: " << soft_body << std::endl;
-                
-                //std::cout << "setting mass" << std::endl;
-                
+                                
                 soft_body->setTotalMass(mass);
+
+                // *** adjust flexure stiffness
+                btSoftBody::Material* material = soft_body->appendMaterial();
+                material->m_kLST = 0.95; // linear stiffness coef [0,1]
+                material->m_kAST = 0.95; // area / angular stiffness coef [0,1]
+                material->m_kVST = 0.95; // volume stiffness coef [0,1]
+                soft_body->generateBendingConstraints(2, material);
                 
-                //std::cout << "done initializing soft body" << std::endl;
+                // *** adjust soft body config
+                soft_body->m_cfg.kDP = 0.3; // damping coefficient [0,1]
+                soft_body->m_cfg.kCHR = 0.95; // rigid contact stiffness
+                                              // (hardness?) [0,1]
+                soft_body->m_cfg.kAHR = 0.95; // anchor stiffness 
+                                              // (hardness?) [0,1]
+                
+                // *** soft body collision mask
+                soft_body->m_cfg.collisions =
+                    btSoftBody::fCollision::SDF_RS // rigid vs soft:
+                                                   // (shape diameter function?)
+                    //btSoftBody::fCollision::CL_RS // rigid vs soft: 
+                                                    // cluster vs convex
+                    | btSoftBody::fCollision::VF_SS; // soft vs soft: 
+                                                     // vertex vs face
+                    //| btSoftBody::fCollision::CL_SS // soft vs soft: 
+                                                      // cluster vs cluster
+                    //| btSoftBody::fCollision::CL_SELF; // soft body self
+                                                         // collision
 
                 return soft_body;
             }
