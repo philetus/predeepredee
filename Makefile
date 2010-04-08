@@ -6,9 +6,14 @@ LIBRARIES = `pkg-config --libs sdl cairo bullet` -lGLU
 .SUFFIXES : .o .cpp
 .cpp.o : $(CPP) $(CPPFLAGS) -c $<
 
-TARGETS=box_test flexure_test
+TARGETS=box_test flexure_test constraint_test
 
 all: $(TARGETS)
+
+constraint_test: constraint_test.o Window.o World.o renderer/TargetCamera.o \
+    renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
+    things/Thing.o geometry/Facet.o geometry/Vector3.o 
+	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
 
 flexure_test: flexure_test.o Window.o World.o renderer/TargetCamera.o \
     renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
@@ -19,6 +24,10 @@ box_test: box_test.o Window.o World.o renderer/TargetCamera.o \
     renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
     things/Thing.o geometry/Facet.o geometry/Vector3.o 
 	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
+
+constraint_test.o: constraint_test.cpp Window.h World.h \
+    renderer/TargetCamera.h renderer/ThingDrawer.h renderer/WorldRenderer.h \
+    things/Box.h 
 
 flexure_test.o: flexure_test.cpp Window.h World.h renderer/TargetCamera.h \
     renderer/ThingDrawer.h renderer/WorldRenderer.h things/Box.h \
