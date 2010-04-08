@@ -17,6 +17,8 @@ using namespace things;
 using namespace geometry;
 using namespace renderer;
 
+float pi_over_180 = 0.01745329251994329547; // deg to rad
+
 int main(int, char**)
 {
     // set up world
@@ -71,22 +73,33 @@ int main(int, char**)
 	flex_frame_down.setOrigin(btVector3(7.0, 0.0, 0.0));
 	btTransform flex_frame_up = btTransform::getIdentity();
 	flex_frame_up.setOrigin(btVector3(-7.0, 0.0, 0.0));
+	
+	btVector3 flex_lower_angle(-5.0 * pi_over_180, -5.0 * pi_over_180, 1.0);
+	btVector3 flex_upper_angle(5.0 * pi_over_180, 5.0 * pi_over_180, -1.0);
 
 	btGeneric6DofConstraint* flex0 = 
 	    new btGeneric6DofConstraint(
 	        *body_a, *body_b, flex_frame_down, flex_frame_up, true);
+	flex0->setAngularLowerLimit(flex_lower_angle);
+	flex0->setAngularUpperLimit(flex_upper_angle);
 
 	btGeneric6DofConstraint* flex1 = 
 	    new btGeneric6DofConstraint(
 	        *body_b, *body_c, flex_frame_down, flex_frame_up, true);
+	flex1->setAngularLowerLimit(flex_lower_angle);
+	flex1->setAngularUpperLimit(flex_upper_angle);
 
 	btGeneric6DofConstraint* flex2 = 
 	    new btGeneric6DofConstraint(
 	        *body_c, *body_d, flex_frame_down, flex_frame_up, true);
+	flex2->setAngularLowerLimit(flex_lower_angle);
+	flex2->setAngularUpperLimit(flex_upper_angle);
 
 	btGeneric6DofConstraint* flex3 = 
 	    new btGeneric6DofConstraint(
 	        *body_d, *body_e, flex_frame_down, flex_frame_up, true);
+	flex3->setAngularLowerLimit(flex_lower_angle);
+	flex3->setAngularUpperLimit(flex_upper_angle);
 	
     world.add_constraint(flex0, false);
     world.add_constraint(flex1, false);
