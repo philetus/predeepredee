@@ -1,6 +1,7 @@
 /*  Window.h
  *
- *  window accepts either a camera, brush or both
+ *  gui window with 3d rendering of simulation world and 2d menu overlay
+ *  - uses sdl for window and mouse events
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -34,9 +35,7 @@ namespace pdpd
     {
         // global parameters to tune
         static const int loop_pause_interval = 50; // delay time in event loop
-        
-        mutable bool running; // flag to indicate if root started window yet
-        
+                
         // stuff created by window and must be cleaned up
         SDL_Surface* window_surface;
         /*
@@ -169,17 +168,9 @@ namespace pdpd
             delete cairo_context;
             */
         }
-        
-        void _start() { running = true; }
 
-        // *** public window interface
-        int get_x();
-        int get_y();
-        int get_height();
-        int get_width();
-        std::string get_title();
-        unsigned int get_id();
-        bool is_running() { return running; }
+        // main event loop method
+        void event_loop();
     };
 }
 #endif // PDPD_WINDOW

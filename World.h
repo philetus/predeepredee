@@ -86,27 +86,27 @@ namespace pdpd
         
     public:
         World();
-        virtual ~World() {}
+        ~World() {}
         
-        virtual void welcome(things::Thing* thing);
-        virtual void dismiss(things::Thing* thing);
+        void welcome(things::Thing* thing);
+        void dismiss(things::Thing* thing);
         
-        virtual bool is_go()
+        bool is_go()
         {
             if(dynamics_world != NULL) return true;
             return false;
         }
         
         // iterator over root things
-        virtual util::Iterator<things::Thing*>* iter_roots()
+        util::Iterator<things::Thing*>* iter_roots()
             { return new util::DequeIterator<things::Thing*>(roots); }
         
         // manage physics
-        virtual bool init_physics();
-        virtual bool exit_physics();
+        bool init_physics();
+        bool exit_physics();
         
         // set up object to serve as ground plane
-        virtual bool init_ground();
+        bool init_ground();
         
         // get time since last physics update
         btScalar get_delta_in_seconds()
