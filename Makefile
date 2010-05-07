@@ -10,35 +10,19 @@ TARGETS=box_test flexure_test constraint_test
 
 all: $(TARGETS)
 
-constraint_test: constraint_test.o Window.o World.o renderer/TargetCamera.o \
+box_test: box_test.o RootDemon.o WorldWindow.o World.o renderer/TargetCamera.o \
     renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
     things/Thing.o geometry/Facet.o geometry/Vector3.o 
 	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
 
-flexure_test: flexure_test.o Window.o World.o renderer/TargetCamera.o \
-    renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
-    things/Thing.o geometry/Facet.o geometry/Vector3.o 
-	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
-	
-box_test: box_test.o Window.o World.o renderer/TargetCamera.o \
-    renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
-    things/Thing.o geometry/Facet.o geometry/Vector3.o 
-	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
-
-constraint_test.o: constraint_test.cpp Window.h World.h \
+box_test.o: box_test.cpp Window.h WorldWindow.h World.h \
     renderer/TargetCamera.h renderer/ThingDrawer.h renderer/WorldRenderer.h \
-    things/Box.h 
+    things/Box.h
 
-flexure_test.o: flexure_test.cpp Window.h World.h renderer/TargetCamera.h \
-    renderer/ThingDrawer.h renderer/WorldRenderer.h things/Box.h \
+WorldWindow.o: WorldWindow.cpp WorldWindow.h Window.h World.h \
+    renderer/Camera.h renderer/WorldRenderer.h geometry/Vector3.h \
+    geometry/Rotation3.h geometry/Transformation3.h things/Box.h \
     things/Flexure.h
-
-box_test.o: box_test.cpp Window.h World.h renderer/TargetCamera.h \
-    renderer/ThingDrawer.h renderer/WorldRenderer.h things/Box.h
-
-Window.o: Window.cpp Window.h World.h renderer/Camera.h \
-    renderer/WorldRenderer.h geometry/Vector3.h geometry/Rotation3.h \
-    geometry/Transformation3.h things/Box.h things/Flexure.h
 
 World.o: World.cpp World.h things/Thing.h \
     things/AtomicThing.h things/CompositeThing.h things/Box.h \

@@ -34,6 +34,32 @@ void stop_root_demon(RootDemon* dmn)
     SDL_Quit(); // shut down sdl
 }
 
+void RootDemon::handle_quit()
+{
+    SDL_Quit();
+    exit(0);
+}
+
+void RootDemon::init_sdl()
+{
+    // init SDL video and threaded events
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) < 0) 
+    {
+        std::cout << "fail! : can't init sdl : " << SDL_GetError() 
+            << std::endl;
+        running = false;
+        handle_quit();
+    }
+
+    // setup opengl context for window
+    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+    SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 ); // shadows need stencil buff
+}
+
 // *** private methods to handle main loop
 
 void RootDemon::handle_things()
@@ -71,6 +97,11 @@ void RootDemon::handle_events()
             window.handle_pointer_up();
             break;
 
+        case SDL_MOUSEMOTION: 
+            window = get_window(event.motion.windowID);
+            window->handle_pointer_motion(event.motion.x, event.motion.y);
+            break;
+
         case SDL_WINDOWEVENT:
             window = get_window(event.window.windowID);
             if(event.window.type == SDL_WINDOWEVENT_RESIZED)
@@ -98,25 +129,46 @@ void RootDemon::handle_start_windows()
     while(!window_queue.is_empty())
     {
         Window* window = window_queue.pop();
-
-        // get sdl window
-        window._sdl_window = SDL_CreateWindow(window->get_title().c_str(),
-                                              window->get_x(),
-                                              window->get_y(),
-                                              window->get_width(),
-                                              window->get_height(),
-                                              SDL_WINDOW_SHOWN);
+        SDL_Window* sdl_window;
+        SDL_GLContext gl_context;
         
+        // get sdl window
+        sdl_window = SDL_CreateWindow(window->get_title().c_str(),
+                                      window->get_x(),
+                                      window->get_y(),
+                                      window->get_width(),
+                                      window->get_height(),
+                                      SDL_WINDOW_RESIZABLE 
+                                        | SDL_WINDOW_OPENGL 
+                                        | SDL_WINDOW_SHOWN);
+        if(sdl_window == NULL)
+        {
+            cout << "failed to create sdl window!" << endl;
+            break;
+        }
+        
+        // create an opengl context
+        gl_context = SDL_GL_Create_Context(sdl_window);
+        if(gl_context == NULL)
+        {
+            cout << "failed to create gl context!" << endl;
+            break;
+        }
+        
+        SDL_GL_SetSwapInterval(1); // sync buffer swap with vertical refresh
+                        
         // add window to root index
         window_index.insert(
             pair<unsigned int, Window*>(window->get_id(), window));
-        window._running = true;
+        
+        // call window's start method to say it is ready
+        window->start(sdl_window, gl_context, &world);
     }
 }
 
 void RootDemon::step_world()
 {
-    world->step_physics();
+    world.step_physics();
 }
 
 void RootDemon::render_windows()
@@ -126,6 +178,21 @@ void RootDemon::render_windows()
     {
         Window* window = i.next();
         
+        // make window's opengl context current
+        SDL_GL_MakeCurrent(window->get_sdl_window(), window->get_gl_context());
+        
+        // clear window
+        glClear(
+            GL_COLOR_BUFFER_BIT | 
+            GL_DEPTH_BUFFER_BIT | 
+            GL_STENCIL_BUFFER_BIT);
+
+        // call draw method
+        window->draw();
+        
+        // flush and swap window buffers
+        glFlush(); // is this necessary?
+        SDL_GL_SwapWindow(window->get_sdl_window());
     }
 }
  

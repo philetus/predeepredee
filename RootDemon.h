@@ -36,12 +36,16 @@ namespace pdpd
         util::GuardedQueue<things::Thing*> welcome_queue;
         mutable bool running;
         
-        // private helper functions to run in main loop
+        // private helper methods for main loop
         void handle_things();
         void handle_events();
         void handle_start_windows();
         void step_world();
         void render_windows();
+        
+        // more helper methods
+        void handle_quit();
+        void init_sdl();
                 
         // get window from index by id
         Window* get_window(unsigned int wndw_id)
@@ -61,14 +65,7 @@ namespace pdpd
         :
         running(true)
         {
-            // init SDL video and threaded events
-            if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) < 0) 
-            {
-                std::cout << "fail! : can't init sdl : " << SDL_GetError() 
-                    << std::endl;
-                running = false;
-                SDL_Quit();
-            }
+            init_sdl();
         }
         
         // just push window onto window queue

@@ -1,6 +1,7 @@
 #include <iostream>
 
-#include "Window.h"
+#include "RootDemon.h"
+#include "WorldWindow.h"
 #include "World.h"
 #include "renderer/TargetCamera.h"
 #include "renderer/ThingDrawer.h"
@@ -19,11 +20,9 @@ using namespace renderer;
 int main(int, char**)
 {
     // set up world
-    cout << "making world" << endl;
-    World world;
-    cout << "initializing physics" << endl;    
-    world.init_physics();
-    cout << "physics initialized" << endl;    
+    cout << "making root demon" << endl;
+    RootDemon* rut = start_root_demon();
+    cout << "root demon started" << endl;    
     
     /*
     // 10mm x 10mm x 20mm tall oblong box weighing 2 grams
@@ -40,10 +39,11 @@ int main(int, char**)
     cout << "making window" << "\n";
     TargetCamera camera;
     ThingDrawer drawer;
-    WorldRenderer renderer(&world, &camera, &drawer);
-    Window window(&world, &camera, &renderer);
-    cout << "starting event loop" << "\n";
-    window.event_loop();
+    WorldWindow window(&camera, &drawer);
+    
+    cout << "starting window" << "\n";
+    rut->start_window(&window);
+    
     return 0;
 }
 

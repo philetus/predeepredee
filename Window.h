@@ -1,6 +1,6 @@
 /*  Window.h
  *
- *  window accepts either a camera, brush or both
+ *  interface for a window initialized by root demon
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -18,168 +18,78 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "World.h"
-#include "renderer/Camera.h"
-#include "renderer/WorldRenderer.h"
-
-#include "geometry/Vector3.h"
-#include "geometry/Rotation3.h"
-#include "geometry/Transformation3.h"
-#include "things/Box.h"
-#include "things/Flexure.h"
-
 namespace pdpd
 {
     class Window
-    {
-        // global parameters to tune
-        static const int loop_pause_interval = 50; // delay time in event loop
-        
+    {        
+    protected:
+        // sdl stuff
+        SDL_Window* sdl_window;
+        SDL_GLContext gl_context;
         mutable bool running; // flag to indicate if root started window yet
         
-        // stuff created by window and must be cleaned up
-        SDL_Surface* window_surface;
-        /*
-        cairo_surface_t* cairo_surface;
-        unsigned char* surface_data;
-        unsigned int texture_id;
-        cairo_t* cairo_context;
-        */
-        
-        // stuff passed to window but created somewhere else
-        World* world;
-        renderer::Camera* camera;
-        renderer::WorldRenderer* world_renderer;
-        // TODO OverlayDrawer* overlay_drawer;
-        
-        bool pointer_down;
-        int pointer_last_x;
-        int pointer_last_y;
-        enum {
-            tilt_mode,
-            pick_mode,
-            shoot_mode
-        } pointer_mode;
-        things::RigidThing* picked_thing;
-        btPoint2PointConstraint* pick_constraint;
-        static const float pick_clamping = 30.0;
-        geometry::Vector3 old_pick_position;
-        geometry::Vector3 old_hit_position;
-        float old_pick_distance;
-
-        void pick_thing(int x, int y);
-        void unpick();
-        void move_picked(int x, int y);
-           
-        // event handlers call appropriate component
-        void handle_key_down(SDL_keysym* keysym);
-        void handle_key_up(SDL_keysym* keysym);
-        SDL_Surface* get_sdl_surface(int width, int height);
-        void drop_box();
-        void drop_flexure();
-        void shoot_box(int x, int y);
-        float shoot_box_velocity;
-        
-        void handle_pointer_down(int x, int y)
-        {
-            pointer_down = true;
-            pointer_last_x = x;
-            pointer_last_y = y;
-            switch(pointer_mode)
-            {
-            case shoot_mode:
-                shoot_box(x, y);
-                break;
-            case pick_mode:
-                pick_thing(x, y);
-                break;
-            default:
-                break;
-            }
-        }
-        void handle_pointer_up() 
-        {
-            pointer_down = false;
-            unpick();
-        }
-        void handle_pointer_motion(int x, int y)
-        {
-            if(pointer_down)
-            {
-                switch(pointer_mode)
-                {
-                case tilt_mode:
-                    camera->tilt(x - pointer_last_x, y - pointer_last_y);
-                    break;
-                case pick_mode:
-                    move_picked(x, y);
-                    break;
-                default:
-                    break;
-                }
-                pointer_last_x = x;
-                pointer_last_y = y;
-            }
-        }
-        
-        void handle_resize(int width, int height);
-        void handle_quit()
-        {
-            SDL_Quit();
-            exit(0);
-        }
-        // void handle_expose(); // just redraw?
-
-        // init helpers for constructor
-        void init_sdl(int width, int height, std::string title);
+        // local variables
+        int pos_x;
+        int pos_y;
+        int width;
+        int height;
+        std::string title;
         
         Window(); // hide default constructor
         Window(const Window& w); // hide copy-constructor
         
     public:
         Window(
-            World* w,
-            renderer::Camera* c,
-            renderer::WorldRenderer* r,
-            int width = 600, 
-            int height = 400, 
-            std::string title = std::string("predee predee"))
+            int wdth = 600, 
+            int hght = 400, 
+            std::string ttl = std::string("predee predee"),
+            int ps_x = SDL_WINDOWPOS_UNDEFINED,
+            int ps_y = SDL_WINDOWPOS_UNDEFINED)
         :
-        world(w),
-        camera(c),
-        world_renderer(r),
-        pointer_down(false),
-        pointer_mode(tilt_mode),
-        pick_constraint(NULL),
-        shoot_box_velocity(500.0)
-        {
-            init_sdl(width, height, title);
-            world_renderer->init_gl();
-            camera->resize(width, height);
-        }
+        pos_x(ps_x),
+        pos_y(ps_y),
+        width(wdth),
+        height(hght),
+        title(ttl),
+        running(false)
+        {}
 
-        virtual ~Window()
-        {
-            /*
-            delete title;
-            delete window_surface;
-            delete cairo_surface;
-            delete surface_data;
-            delete texture_id;
-            delete cairo_context;
-            */
-        }
+        virtual ~Window() {}
         
-        void _start() { running = true; }
-
         // *** public window interface
-        int get_x();
-        int get_y();
-        int get_height();
-        int get_width();
-        std::string get_title();
-        unsigned int get_id();
+        int get_pos_x() { return pos_x; }
+        int get_pos_y() { return pos_y; }
+        int get_height() { return height; }
+        int get_width() { return width; }
+        std::string get_title() { return title; }
         bool is_running() { return running; }
+        
+        // *** event handler interface
+        virtual void start(SDL_Window* sdl_wndw, 
+                           SDL_GLContext gl_cntxt,
+                           World*)
+        {
+            sdl_window = sdl_wndw;
+            gl_context = gl_cntxt;
+            running = true;
+        }
+        virtual void set_world(World*) = 0;
+        virtual void handle_key_down(SDLKey ky) = 0;
+        virtual void handle_key_up(SDLKey ky) = 0;
+        virtual void handle_pointer_down(int x, int y) = 0;
+        virtual void handle_pointer_motion(int x, int y) = 0;
+        virtual void handle_pointer_up() = 0;
+        virtual void draw() = 0;
+        
+        // *** sdl interface
+        unsigned int get_id()
+        {
+            if(sdl_window == NULL) return NULL;
+            return SDL_GetWindowID(sdl_window);
+        }
+        SDL_Window* get_sdl_window() { return sdl_window; }
+        SDL_GLContext get_gl_context() { return gl_context; }
+
     };
 }
 #endif // PDPD_WINDOW
