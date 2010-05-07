@@ -108,6 +108,8 @@ void WorldWindow::handle_move(int x, int y)
 
 void WorldWindow::handle_resize(int wdth, int hght)
 {
+    cout << "resizing window to " << wdth << " by " << hght << endl;
+    
     width = wdth;
     height = hght;
     camera->resize(wdth, hght);

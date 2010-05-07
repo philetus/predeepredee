@@ -42,8 +42,7 @@ void Gooey::init_sdl()
     // init SDL video and threaded events
     if(SDL_Init(SDL_INIT_VIDEO) < 0) 
     {
-        std::cout << "fail! : can't init sdl : " << SDL_GetError() 
-            << std::endl;
+        cout << "fail! : can't init sdl : " << SDL_GetError() << endl;
         handle_quit();
     }
 
@@ -71,37 +70,38 @@ void Gooey::handle_events()
             // quit when escape key is pressed!
             if(event.key.keysym.sym == SDLK_ESCAPE) handle_quit();
             
-            window = get_window(event.key.windowID);
+            if((window = get_window(event.key.windowID)) == NULL) break;
             window->handle_key_down(event.key.keysym.sym);
             break;
 
         case SDL_KEYUP:
-            window = get_window(event.key.windowID);
+            if((window = get_window(event.key.windowID)) == NULL) break;
             window->handle_key_up(event.key.keysym.sym);
             break;
 
         case SDL_MOUSEBUTTONDOWN: 
-            window = get_window(event.button.windowID);
+            if((window = get_window(event.button.windowID)) == NULL) break;
             window->handle_pointer_down(event.button.x, event.button.y);
             break;
 
         case SDL_MOUSEBUTTONUP: 
-            window = get_window(event.button.windowID);
+            if((window = get_window(event.button.windowID)) == NULL) break;
             window->handle_pointer_up();
             break;
 
         case SDL_MOUSEMOTION: 
-            window = get_window(event.motion.windowID);
+            if((window = get_window(event.motion.windowID)) == NULL) break;
             window->handle_pointer_motion(event.motion.x, event.motion.y);
             break;
 
-        case SDL_WINDOWEVENT:
-            window = get_window(event.window.windowID);
-            if(event.window.type == SDL_WINDOWEVENT_RESIZED)
+        case SDL_WINDOWEVENT:            
+            if((window = get_window(event.window.windowID)) == NULL) break;
+            set_gl_focus(window); // set gl focus to allow gl viewport resize
+            if(event.window.event == SDL_WINDOWEVENT_RESIZED)
             {
                 window->handle_resize(event.window.data1, event.window.data2);
             }
-            else if(event.window.type == SDL_WINDOWEVENT_MOVED)
+            else if(event.window.event == SDL_WINDOWEVENT_MOVED)
             {
                 window->handle_move(event.window.data1, event.window.data2);
             }
@@ -140,7 +140,7 @@ void Gooey::render_windows()
         Window* window = i.next();
         
         // make window's opengl context current
-        SDL_GL_MakeCurrent(window->get_sdl_window(), window->get_gl_context());
+        set_gl_focus(window);
         
         // clear window
         glClear(

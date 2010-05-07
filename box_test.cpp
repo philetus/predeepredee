@@ -32,6 +32,11 @@ int main(int, char**)
     WorldWindow window(&camera, &drawer);
     gooey.welcome(&window);
     
+    TargetCamera camera2;
+    ThingDrawer drawer2;
+    WorldWindow window2(&camera2, &drawer2);
+    gooey.welcome(&window2);
+
     cout << "* starting gooey loop" << endl;
     gooey.loop();
     

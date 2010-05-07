@@ -16,16 +16,18 @@ using namespace gooey;
 
 #include <Python.h> // python api
 
-#include "TheGooeyDemon.h"
-#include "Window_pytype.h"
+#include "Gooey.h"
+#include "WorldWindow.h"
+#include "TargetCamera.h"
+#include "ThingDrawer.h"
 
 // python interpreter wants plain c? :P
 #ifdef __cplusplus
 extern "C" {
 #endif 
  
-// pointer to hold demon once started
-static TheGooeyDemon* demon;
+// pointer to hold gooey
+static Gooey* gooey;
 
 // error to be raised if something goes wrong
 static PyObject *GooeyError;

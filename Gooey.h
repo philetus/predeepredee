@@ -70,6 +70,14 @@ namespace pdpd
         // get pointer to physics world
         World* get_world() { return &world; }
         
+        // get gl context for given window
+        void set_gl_focus(Window* wndw)
+        { 
+            SDL_GL_MakeCurrent(
+                wndw->get_sdl_window(), 
+                wndw->get_gl_context());
+        }
+        
         // add and remove windows
         void welcome(Window* wndw);
         void dismiss(Window* wndw);
