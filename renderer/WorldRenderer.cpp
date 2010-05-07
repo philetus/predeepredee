@@ -30,21 +30,6 @@ void WorldRenderer::init_gl()
     glDisable (GL_DEPTH_TEST);
     glEnable (GL_TEXTURE_RECTANGLE_ARB);
         */
-
-    //enable_lights();
-    
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    /* Our shading model--Gouraud (smooth). */
-    //glShadeModel(GL_SMOOTH);
-
-    /* Culling. */
-    //glCullFace(GL_BACK);
-    //glFrontFace(GL_CCW);
-    //glEnable(GL_CULL_FACE);
-    
-    //glEnable(GL_DEPTH_TEST);
 }
 
 void WorldRenderer::render()
@@ -65,7 +50,7 @@ void WorldRenderer::render()
     glFrontFace(GL_CCW);
     glEnable(GL_CULL_FACE);
     thing_drawer->visit(world->iter_roots(), thing_drawer->solid_mode, 1);
-/*
+
     // 1st shadow rendering pass
     glDisable(GL_LIGHTING);
     glDepthMask(GL_FALSE);
@@ -122,5 +107,4 @@ void WorldRenderer::render()
     glDepthFunc(GL_LESS);
     glDisable(GL_STENCIL_TEST);
     glDisable(GL_CULL_FACE);
-*/    
 }
