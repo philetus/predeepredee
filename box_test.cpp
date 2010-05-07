@@ -29,7 +29,8 @@ int main(int, char**)
     cout << "* making window" << "\n";
     TargetCamera camera;
     ThingDrawer drawer;
-    WorldWindow window(&gooey, &camera, &drawer);
+    WorldWindow window(&camera, &drawer);
+    gooey.welcome(&window);
     
     cout << "* starting gooey loop" << endl;
     gooey.loop();

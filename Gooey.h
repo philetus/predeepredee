@@ -22,7 +22,9 @@
 #include "things/Thing.h"
 
 namespace pdpd
-{
+{ 
+    void kill_gooey();
+
     class Gooey
     {
         // global parameters to tune
@@ -92,7 +94,5 @@ namespace pdpd
         }
         
     };
-    
-    void kill_gooey();
 }
 #endif // PDPD_GOOEY

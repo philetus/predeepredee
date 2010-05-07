@@ -37,12 +37,6 @@ void Gooey::loop()
     }
 }
 
-void pdpd::kill_gooey()
-{
-    SDL_Quit();
-    exit(0);
-}
-
 void Gooey::init_sdl()
 {
     // init SDL video and threaded events
@@ -125,6 +119,9 @@ void Gooey::handle_events()
 
 void Gooey::welcome(Window* wndw)
 {
+    // bless window
+    wndw->bless(&world);
+    
     // add window to root index
     window_index.insert(pair<unsigned int, Window*>(wndw->get_id(), wndw));
 }
@@ -160,3 +157,9 @@ void Gooey::render_windows()
     }
 }
  
+void pdpd::kill_gooey()
+{
+    SDL_Quit();
+    exit(0);
+}
+

@@ -70,22 +70,26 @@ namespace pdpd
         
     public:
         WorldWindow(
-            Gooey* gy,
             renderer::Camera* cmr,
             renderer::ThingDrawer* drwr,
             int wdth = 600, 
             int hght = 400, 
             std::string ttl = std::string("predee predee"))
         :
-        Window(gy, wdth, hght, ttl),
+        Window(wdth, hght, ttl),
         camera(cmr),
         thing_drawer(drwr),
         pointer_down(false),
         pointer_mode(tilt_mode),
         pick_constraint(NULL),
         shoot_box_velocity(500.0)
+        {}
+        
+        void bless(World* wrld)
         {
-            world = gooey->get_world();
+            init_sdl_window();
+            
+            world = wrld;
             world_renderer = 
                 new renderer::WorldRenderer(world, camera, thing_drawer);
             world_renderer->init_gl();
