@@ -45,7 +45,7 @@ namespace pdpd
                 
                 if(SDL_mutexP(lock) < 0) // acquire lock first
                 {
-                    std:cout << "couldn't lock guarded queue!" << std::endl;
+                    std::cout << "couldn't lock guarded queue!" << std::endl;
                     return false;
                 }
                 
@@ -53,7 +53,7 @@ namespace pdpd
                 
                 if(SDL_mutexV(lock) < 0) // release lock after
                 {
-                    std:cout << "couldn't unlock guarded queue!" << std::endl;
+                    std::cout << "couldn't unlock guarded queue!" << std::endl;
                     return false;
                 }
                 
@@ -65,7 +65,7 @@ namespace pdpd
             
                 if(SDL_mutexP(lock) < 0) // acquire lock first
                 {
-                    std:cout << "couldn't lock guarded queue!" << std::endl;
+                    std::cout << "couldn't lock guarded queue!" << std::endl;
                     return;
                 }
                 
@@ -73,7 +73,7 @@ namespace pdpd
 
                 if(SDL_mutexV(lock) < 0) // release lock after
                 {
-                    std:cout << "couldn't unlock guarded queue!" << std::endl;
+                    std::cout << "couldn't unlock guarded queue!" << std::endl;
                     return;
                 }
             }
@@ -84,7 +84,7 @@ namespace pdpd
                 
                 if(SDL_mutexP(lock) < 0) // acquire lock first
                 {
-                    std:cout << "couldn't lock guarded queue!" << std::endl;
+                    std::cout << "couldn't lock guarded queue!" << std::endl;
                     return NULL;
                 }
 
@@ -93,7 +93,7 @@ namespace pdpd
                 
                 if(SDL_mutexV(lock) < 0) // release lock after
                 {
-                    std:cout << "couldn't unlock guarded queue!" << std::endl;
+                    std::cout << "couldn't unlock guarded queue!" << std::endl;
                     return NULL;
                 }
 

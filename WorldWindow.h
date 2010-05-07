@@ -18,6 +18,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "Window.h"
 #include "World.h"
 #include "renderer/Camera.h"
 #include "renderer/ThingDrawer.h"
@@ -92,7 +93,8 @@ namespace pdpd
             sdl_window = sdl_wndw;
             gl_context = gl_cntxt;
             world = wrld;
-            world_renderer = new WorldRenderer(world, camera, thing_drawer);
+            world_renderer = 
+                new renderer::WorldRenderer(world, camera, thing_drawer);
             world_renderer->init_gl();
             camera->resize(width, height);
             running = true;
@@ -104,6 +106,8 @@ namespace pdpd
         void handle_pointer_down(int x, int y);
         void handle_pointer_motion(int x, int y);
         void handle_pointer_up();
+        void handle_move(int x, int y);
+        void handle_resize(int wdth, int hght);
         void draw()
         {
             // render world

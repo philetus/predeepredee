@@ -22,7 +22,7 @@ using namespace renderer;
 
 // *** event handler methods
 
-void Window::handle_key_down(SDLKey ky)
+void WorldWindow::handle_key_down(SDLKey ky)
 {
     switch(ky) 
     {
@@ -46,9 +46,9 @@ void Window::handle_key_down(SDLKey ky)
     }
 }
 
-void Window::handle_key_up(SDLKey ky)
+void WorldWindow::handle_key_up(SDLKey ky)
 {
-    switch(keysym->sym) 
+    switch(ky) 
     {
     default:
         pointer_mode = tilt_mode;
@@ -56,7 +56,7 @@ void Window::handle_key_up(SDLKey ky)
     }
 }
 
-void handle_pointer_down(int x, int y)
+void WorldWindow::handle_pointer_down(int x, int y)
 {
     pointer_down = true;
     pointer_last_x = x;
@@ -74,13 +74,13 @@ void handle_pointer_down(int x, int y)
     }
 }
 
-void handle_pointer_up() 
+void WorldWindow::handle_pointer_up() 
 {
     pointer_down = false;
     unpick();
 }
 
-void handle_pointer_motion(int x, int y)
+void WorldWindow::handle_pointer_motion(int x, int y)
 {
     if(pointer_down)
     {
@@ -100,9 +100,22 @@ void handle_pointer_motion(int x, int y)
     }
 }
 
+void WorldWindow::handle_move(int x, int y)
+{
+    pos_x = x;
+    pos_y = y;
+}
+
+void WorldWindow::handle_resize(int wdth, int hght)
+{
+    width = wdth;
+    height = hght;
+    camera->resize(wdth, hght);
+}
+
 // *** methods to do stuff in window
 
-void Window::drop_box()
+void WorldWindow::drop_box()
 {
     // start box in the air
     Vector3 box_position(0.0, 100.0, 0.0);
@@ -116,7 +129,7 @@ void Window::drop_box()
     world->welcome(box);
 }
 
-void Window::shoot_box(int x, int y)
+void WorldWindow::shoot_box(int x, int y)
 {
         // shoot box in direction of pointer
         Vector3 linear_velocity = camera->get_ray_to(x, y);
@@ -143,7 +156,7 @@ void Window::shoot_box(int x, int y)
 		body->setCcdSweptSphereRadius(0.2f);
 }
 
-void Window::drop_flexure()
+void WorldWindow::drop_flexure()
 {
     // create a flexure
     float r = 8.0;
@@ -165,7 +178,7 @@ void Window::drop_flexure()
 
 }
 
-void Window::move_picked(int x, int y)
+void WorldWindow::move_picked(int x, int y)
 {
     if(pick_constraint != NULL)
     {
@@ -181,7 +194,7 @@ void Window::move_picked(int x, int y)
     }
 }
 
-void Window::unpick()
+void WorldWindow::unpick()
 {
     if ((pick_constraint != NULL) && world->is_go())
     {
@@ -204,7 +217,7 @@ void Window::unpick()
     }
 }
 
-void Window::pick_thing(int x, int y)
+void WorldWindow::pick_thing(int x, int y)
 {
     if(world->is_go())
     {

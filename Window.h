@@ -18,15 +18,13 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "World.h"
+
 namespace pdpd
 {
     class Window
     {        
     protected:
-        // sdl stuff
-        SDL_Window* sdl_window;
-        SDL_GLContext gl_context;
-        mutable bool running; // flag to indicate if root started window yet
         
         // local variables
         int pos_x;
@@ -35,6 +33,11 @@ namespace pdpd
         int height;
         std::string title;
         
+        // sdl stuff
+        SDL_Window* sdl_window;
+        SDL_GLContext gl_context;
+        mutable bool running; // flag to indicate if root started window yet
+
         Window(); // hide default constructor
         Window(const Window& w); // hide copy-constructor
         
@@ -73,18 +76,19 @@ namespace pdpd
             gl_context = gl_cntxt;
             running = true;
         }
-        virtual void set_world(World*) = 0;
         virtual void handle_key_down(SDLKey ky) = 0;
         virtual void handle_key_up(SDLKey ky) = 0;
         virtual void handle_pointer_down(int x, int y) = 0;
         virtual void handle_pointer_motion(int x, int y) = 0;
         virtual void handle_pointer_up() = 0;
+        virtual void handle_move(int x, int y) = 0;
+        virtual void handle_resize(int wdth, int hght) = 0;
         virtual void draw() = 0;
         
         // *** sdl interface
         unsigned int get_id()
         {
-            if(sdl_window == NULL) return NULL;
+            if(sdl_window == NULL) return 0;
             return SDL_GetWindowID(sdl_window);
         }
         SDL_Window* get_sdl_window() { return sdl_window; }

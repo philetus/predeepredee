@@ -20,18 +20,59 @@ using namespace pdpd;
 using namespace things;
 using namespace util;
 
-RootDemon* start_root_demon()
+RootDemon* pdpd::start_root_demon()
 {
     RootDemon* demon = new RootDemon();
-    demon->root_thread = SDL_CreateThread(demon->_start, NULL);
+    
+    if(SDL_Init(0) < 0)
+    {
+        cout << "failed to init base sdl!" << endl;
+    }
+
+    demon->root_thread = SDL_CreateThread(&root_loop, demon);
     return demon;
 }
 
-void stop_root_demon(RootDemon* dmn)
+void pdpd::stop_root_demon(RootDemon* dmn)
 {
+    int status;
+    
     dmn->_stop(); // break out of event loop by setting running flag to false
-    SDL_WaitThread(dmn->root_thread); // wait for thread to finish
+    SDL_WaitThread(dmn->root_thread, &status); // wait for thread to finish
     SDL_Quit(); // shut down sdl
+}
+
+// main event loop method called by start_root_demon
+int pdpd::root_loop(void* dmn)
+{
+    RootDemon* demon = static_cast<RootDemon*>(dmn);
+    
+    cout << " . " << endl;
+    SDL_Delay(1000);
+    
+    cout << " . initializing sdl" << endl;
+    demon->init_sdl();
+    cout << " . sdl initialized!" << endl;
+
+    demon->running = true;
+            
+    cout << " . " << endl;
+    SDL_Delay(1000);
+
+    // enter main loop
+    while(demon->is_running())
+    {
+        //demon->handle_things();
+        demon->handle_start_windows();
+        //demon->handle_events();
+        //demon->step_world();
+        //demon->render_windows();
+        
+        // don't race processor
+        SDL_Delay(demon->loop_pause_interval);
+    }
+    
+    return 0;
 }
 
 void RootDemon::handle_quit()
@@ -44,6 +85,7 @@ void RootDemon::init_sdl()
 {
     // init SDL video and threaded events
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD) < 0) 
+    //if(SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         std::cout << "fail! : can't init sdl : " << SDL_GetError() 
             << std::endl;
@@ -79,22 +121,22 @@ void RootDemon::handle_events()
         {
         case SDL_KEYDOWN:
             window = get_window(event.key.windowID);
-            window->handle_key_down(&event.key.keysym);
+            window->handle_key_down(event.key.keysym.sym);
             break;
 
         case SDL_KEYUP:
             window = get_window(event.key.windowID);
-            window->handle_key_up(&event.key.keysym);
+            window->handle_key_up(event.key.keysym.sym);
             break;
 
         case SDL_MOUSEBUTTONDOWN: 
             window = get_window(event.button.windowID);
-            window.handle_pointer_down(event.button.x, event.button.y);
+            window->handle_pointer_down(event.button.x, event.button.y);
             break;
 
         case SDL_MOUSEBUTTONUP: 
             window = get_window(event.button.windowID);
-            window.handle_pointer_up();
+            window->handle_pointer_up();
             break;
 
         case SDL_MOUSEMOTION: 
@@ -132,10 +174,12 @@ void RootDemon::handle_start_windows()
         SDL_Window* sdl_window;
         SDL_GLContext gl_context;
         
+        cout << " > creating sdl window" << endl;
+        
         // get sdl window
         sdl_window = SDL_CreateWindow(window->get_title().c_str(),
-                                      window->get_x(),
-                                      window->get_y(),
+                                      window->get_pos_x(),
+                                      window->get_pos_y(),
                                       window->get_width(),
                                       window->get_height(),
                                       SDL_WINDOW_RESIZABLE 
@@ -147,22 +191,30 @@ void RootDemon::handle_start_windows()
             break;
         }
         
+        cout << " > creating sdl gl context" << endl;
+
         // create an opengl context
-        gl_context = SDL_GL_Create_Context(sdl_window);
+        gl_context = SDL_GL_CreateContext(sdl_window);
         if(gl_context == NULL)
         {
             cout << "failed to create gl context!" << endl;
             break;
         }
         
+        cout << " > setting sdl swap interval" << endl;
+
         SDL_GL_SetSwapInterval(1); // sync buffer swap with vertical refresh
                         
         // add window to root index
         window_index.insert(
             pair<unsigned int, Window*>(window->get_id(), window));
         
+        cout << " > calling window start method" << endl;
+
         // call window's start method to say it is ready
         window->start(sdl_window, gl_context, &world);
+        
+        cout << "started window" << endl;
     }
 }
 
@@ -173,7 +225,7 @@ void RootDemon::step_world()
 
 void RootDemon::render_windows()
 {
-    MapValueIterator i(window_index);
+    MapValueIterator<unsigned int, Window*> i(window_index);
     while(i.has_next())
     {
         Window* window = i.next();

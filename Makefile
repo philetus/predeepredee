@@ -6,7 +6,7 @@ LIBRARIES = `pkg-config --libs sdl cairo bullet` -lGLU
 .SUFFIXES : .o .cpp
 .cpp.o : $(CPP) $(CPPFLAGS) -c $<
 
-TARGETS=box_test flexure_test constraint_test
+TARGETS=box_test
 
 all: $(TARGETS)
 

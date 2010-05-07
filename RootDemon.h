@@ -35,15 +35,15 @@ namespace pdpd
         util::GuardedQueue<things::Thing*> dismiss_queue;
         util::GuardedQueue<things::Thing*> welcome_queue;
         mutable bool running;
-        
+                
         // private helper methods for main loop
         void handle_things();
         void handle_events();
         void handle_start_windows();
         void step_world();
         void render_windows();
-        
-        // more helper methods
+
+        // private helper methods
         void handle_quit();
         void init_sdl();
                 
@@ -60,13 +60,17 @@ namespace pdpd
         
     public:
         SDL_Thread* root_thread; // holds thread demon is running in
-        
+        friend int root_loop(void* dmn);
+        friend RootDemon* start_root_demon();
+                
         RootDemon()
         :
-        running(true)
+        running(false)
         {
-            init_sdl();
+            world.init_physics();
         }
+        
+        bool is_running() { return running; }
         
         // just push window onto window queue
         void start_window(Window* wndw)
@@ -85,36 +89,18 @@ namespace pdpd
         {
             dismiss_queue.push(thng);
         }
-
-        // main event loop method called by start_root_demon
-        void _start(void*)
-        {
-            // start physics
-            world.init_physics();
-            
-            // enter main loop
-            while(running)
-            {
-                handle_things();
-                handle_start_windows();
-                handle_events();
-                step_world();
-                render_windows();
-                
-                // don't race processor
-                SDL_Delay(loop_pause_interval);
-            }
-        }
         
         void _stop() // called from outside root thread by stop_root_demon
         {
             running = false;
             world.exit_physics();
         }
+        
     };
     
     // only make one root demon, use this factory function
     RootDemon* start_root_demon();
     void stop_root_demon(RootDemon* dmn);
+    int root_loop(void* dmn);
 }
 #endif // PDPD_ROOT_DEMON

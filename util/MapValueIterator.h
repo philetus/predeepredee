@@ -42,7 +42,7 @@ namespace pdpd
             bool has_next() { return (current != end); }
             
             // return next element and increment current ptr
-            Data next() { return *(current++).second; }
+            Data next() { return (*(current++)).second; }
         };
     }
 } 
