@@ -10,7 +10,7 @@ TARGETS=box_test
 
 all: $(TARGETS)
 
-box_test: box_test.o RootDemon.o WorldWindow.o World.o renderer/TargetCamera.o \
+box_test: box_test.o Gooey.o WorldWindow.o World.o renderer/TargetCamera.o \
     renderer/ThingDrawer.o renderer/WorldRenderer.o things/Box.o \
     things/Thing.o geometry/Facet.o geometry/Vector3.o 
 	$(CPP) $(OFLAG)$@ $+ $(LIBRARIES)
@@ -18,6 +18,8 @@ box_test: box_test.o RootDemon.o WorldWindow.o World.o renderer/TargetCamera.o \
 box_test.o: box_test.cpp Window.h WorldWindow.h World.h \
     renderer/TargetCamera.h renderer/ThingDrawer.h renderer/WorldRenderer.h \
     things/Box.h
+
+Gooey.o: Gooey.cpp Gooey.h World.h Window.h things/Thing.h
 
 WorldWindow.o: WorldWindow.cpp WorldWindow.h Window.h World.h \
     renderer/Camera.h renderer/WorldRenderer.h geometry/Vector3.h \

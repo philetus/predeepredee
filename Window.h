@@ -33,29 +33,62 @@ namespace pdpd
         int height;
         std::string title;
         
-        // sdl stuff
+        Gooey* gooey;
         SDL_Window* sdl_window;
         SDL_GLContext gl_context;
-        mutable bool running; // flag to indicate if root started window yet
 
         Window(); // hide default constructor
         Window(const Window& w); // hide copy-constructor
         
     public:
         Window(
+            Gooey* gy,
             int wdth = 600, 
             int hght = 400, 
             std::string ttl = std::string("predee predee"),
             int ps_x = SDL_WINDOWPOS_UNDEFINED,
             int ps_y = SDL_WINDOWPOS_UNDEFINED)
         :
+        gooey(gy),
         pos_x(ps_x),
         pos_y(ps_y),
         width(wdth),
         height(hght),
-        title(ttl),
-        running(false)
-        {}
+        title(ttl)
+        {
+            cout << " > creating sdl window" << endl;
+        
+            // get sdl window
+            sdl_window = SDL_CreateWindow(window->get_title().c_str(),
+                                          window->get_pos_x(),
+                                          window->get_pos_y(),
+                                          window->get_width(),
+                                          window->get_height(),
+                                          SDL_WINDOW_RESIZABLE 
+                                            | SDL_WINDOW_OPENGL 
+                                            | SDL_WINDOW_SHOWN);
+            if(sdl_window == NULL)
+            {
+                cout << "failed to create sdl window!" << endl;
+                return;
+            }
+            
+            cout << " > creating sdl gl context" << endl;
+
+            // create an opengl context
+            gl_context = SDL_GL_CreateContext(sdl_window);
+            if(gl_context == NULL)
+            {
+                cout << "failed to create gl context!" << endl;
+                return;
+            }
+            
+            cout << " > setting sdl swap interval" << endl;
+
+            SDL_GL_SetSwapInterval(1); // sync buffer swap with vert refresh
+            
+            gooey->welcome(this);            
+        }
 
         virtual ~Window() {}
         

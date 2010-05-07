@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "RootDemon.h"
+#include "Gooey.h"
 #include "WorldWindow.h"
 #include "World.h"
 #include "renderer/TargetCamera.h"
@@ -20,32 +20,21 @@ using namespace renderer;
 int main(int, char**)
 {
     // set up world
-    cout << "* making root demon" << endl;
-    RootDemon* rut = start_root_demon();
-    cout << "* root demon started" << endl;    
+    cout << "* making gooey" << endl;
+    Gooey gooey;
+    cout << "* gooey made" << endl;    
 
-    SDL_Delay(500);
         
     // create window onto world and start event loop
     cout << "* making window" << "\n";
     TargetCamera camera;
     ThingDrawer drawer;
-    WorldWindow window(&camera, &drawer);
+    WorldWindow window(&gooey, &camera, &drawer);
     
-    SDL_Delay(500);
-
-    cout << "* starting window" << endl;
-    rut->start_window(&window);
+    cout << "* starting gooey loop" << endl;
+    gooey.loop();
     
-    //while(rut->is_running()) { SDL_Delay(1000); }
-    
-    SDL_Delay(10000);
-    //int status;
-    //SDL_WaitThread(rut->root_thread, &status);
-    
-    cout << "* done waiting for root demon thread" << endl;
-    
-    SDL_Quit();
+    cout << "* gooey loop done!" << endl;
     
     return 0;
 }

@@ -70,34 +70,26 @@ namespace pdpd
         
     public:
         WorldWindow(
+            Gooey* gy,
             renderer::Camera* cmr,
             renderer::ThingDrawer* drwr,
             int wdth = 600, 
             int hght = 400, 
             std::string ttl = std::string("predee predee"))
         :
-        Window(wdth, hght, ttl),
+        Window(gy, wdth, hght, ttl),
         camera(cmr),
         thing_drawer(drwr),
         pointer_down(false),
         pointer_mode(tilt_mode),
         pick_constraint(NULL),
         shoot_box_velocity(500.0)
-        {}
-        
-        // called when root demon inits window
-        void start(SDL_Window* sdl_wndw,
-                   SDL_GLContext gl_cntxt,
-                   World* wrld)
         {
-            sdl_window = sdl_wndw;
-            gl_context = gl_cntxt;
-            world = wrld;
+            world = gooey->get_world();
             world_renderer = 
                 new renderer::WorldRenderer(world, camera, thing_drawer);
             world_renderer->init_gl();
             camera->resize(width, height);
-            running = true;
         }
 
         // *** event handler interface
@@ -108,6 +100,8 @@ namespace pdpd
         void handle_pointer_up();
         void handle_move(int x, int y);
         void handle_resize(int wdth, int hght);
+        
+        // *** method to draw window calls world renderer
         void draw()
         {
             // render world

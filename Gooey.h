@@ -1,6 +1,6 @@
-/*  RootDemon.h
+/*  Gooey.h
  *
- *  manages world simulation and window events
+ *  manages event loop and physics world
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -10,8 +10,8 @@
  *  
  */
  
-#ifndef PDPD_ROOT_DEMON
-#define PDPD_ROOT_DEMON
+#ifndef PDPD_GOOEY
+#define PDPD_GOOEY
 
 #include <map>
 #include <string>
@@ -19,32 +19,29 @@
 
 #include "World.h"
 #include "Window.h"
-#include "util/GuardedQueue.h"
 #include "things/Thing.h"
 
 namespace pdpd
 {
-    class RootDemon
+    class Gooey
     {
         // global parameters to tune
         static const int loop_pause_interval = 50; // delay time in event loop
-                        
+        
+        bool looping;
         World world; // physics simulation
         std::map<unsigned int, Window*> window_index;
-        util::GuardedQueue<Window*> window_queue;
-        util::GuardedQueue<things::Thing*> dismiss_queue;
-        util::GuardedQueue<things::Thing*> welcome_queue;
-        mutable bool running;
                 
-        // private helper methods for main loop
-        void handle_things();
+        // helper methods for main loop
         void handle_events();
-        void handle_start_windows();
-        void step_world();
         void render_windows();
 
         // private helper methods
-        void handle_quit();
+        void handle_quit()
+        {
+            looping = false;
+            kill_gooey();
+        }
         void init_sdl();
                 
         // get window from index by id
@@ -56,51 +53,46 @@ namespace pdpd
             return i->second;
         }
         
-        RootDemon(const RootDemon& dmn); // hide copy-constructor
+        Gooey(const Gooey& gy); // hide copy-constructor
         
     public:
-        SDL_Thread* root_thread; // holds thread demon is running in
-        friend int root_loop(void* dmn);
-        friend RootDemon* start_root_demon();
-                
-        RootDemon()
+    
+        Gooey()
         :
-        running(false)
+        looping(false)
         {
+            init_sdl();
             world.init_physics();
         }
         
-        bool is_running() { return running; }
+        // get pointer to physics world
+        World* get_world() { return &world; }
         
-        // just push window onto window queue
-        void start_window(Window* wndw)
-        {
-            window_queue.push(wndw);
-        }
+        // add and remove windows
+        void welcome(Window* wndw);
+        void dismiss(Window* wndw);
         
         // just push thing onto welcome queue
         void welcome(things::Thing* thng)
         {
-            welcome_queue.push(thng);
+            world.welcome(thng);
         }
 
         // just push thing onto remove queue
         void dismiss(things::Thing* thng)
         {
-            dismiss_queue.push(thng);
+            world.dismiss(thng);
         }
         
-        void _stop() // called from outside root thread by stop_root_demon
+        void loop(); // start event loop
+        
+        ~Gooey()
         {
-            running = false;
             world.exit_physics();
         }
         
     };
     
-    // only make one root demon, use this factory function
-    RootDemon* start_root_demon();
-    void stop_root_demon(RootDemon* dmn);
-    int root_loop(void* dmn);
+    void kill_gooey();
 }
-#endif // PDPD_ROOT_DEMON
+#endif // PDPD_GOOEY
