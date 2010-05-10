@@ -7,6 +7,7 @@
  */
  
 #include <Python.h>
+#include "structmember.h"
 
 #include "Gooey.h"
 #include "WorldWindow.h"
@@ -20,7 +21,7 @@ extern "C" {
 
 /*
  *
- *  *** gooey wrapper  
+ *  *** pdpd wrapper types to be exposed
  *
  */
 typedef struct {
@@ -28,18 +29,29 @@ typedef struct {
     pdpd::Gooey* _gooey;
 } Gooey;
 
+typedef struct {
+    PyObject_HEAD
+    pdpd::WorldWindow* _window;
+} Window;
+
+
+/*
+ *
+ *  *** gooey wrapper  
+ *
+ */
 static void
 Gooey_dealloc(Gooey* self)
 {
     // free c++ gooey object memory
-    delete _gooey;
+    delete self->_gooey;
     
     // free python object memory
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject*
-Gooey_new(PyTypeObject *type, PyObject, PyObject)
+Gooey_new(PyTypeObject *type, PyObject*, PyObject*)
 {
     Gooey* self;
 
@@ -87,7 +99,7 @@ Gooey_kill(Gooey* self)
 static PyObject*
 Gooey_show(Gooey* self, PyObject* wndw)
 {
-    Window* window = static_cast<Window*>(wndw);
+    Window* window = reinterpret_cast<Window*>(wndw);
     if(window == NULL)
     {
         return NULL;
@@ -102,7 +114,7 @@ Gooey_show(Gooey* self, PyObject* wndw)
 static PyObject*
 Gooey_unshow(Gooey* self, PyObject* wndw)
 {
-    Window* window = static_cast<Window*>(wndw);
+    Window* window = reinterpret_cast<Window*>(wndw);
     if(window == NULL)
     {
         return NULL;
@@ -184,31 +196,28 @@ static PyTypeObject GooeyType = {
  *  *** window wrapper  
  *
  */
-typedef struct {
-    PyObject_HEAD
-    pdpd::WorldWindow* _window;
-} Window;
-
 static void
 Window_dealloc(Window* self)
 {
     // free c++ gooey object memory
-    delete _window;
+    delete self->_window;
     
     // free python object memory
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
 static PyObject*
-Window_new(PyTypeObject *type, PyObject, PyObject)
+Window_new(PyTypeObject *type, PyObject*, PyObject*)
 {
     Window* self;
 
     self = (Window*)type->tp_alloc(type, 0);
     if (self != NULL) 
     {
-        TargetCamera* camera = new TargetCamera();
-        ThingDrawer* drawer = new ThingDrawer();
+        pdpd::renderer::TargetCamera* camera = 
+            new pdpd::renderer::TargetCamera();
+        pdpd::renderer::ThingDrawer* drawer = 
+            new pdpd::renderer::ThingDrawer();
         self->_window = new pdpd::WorldWindow(camera, drawer);
         if (self->_window == NULL)
           {

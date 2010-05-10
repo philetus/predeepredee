@@ -3,6 +3,11 @@ from distutils.core import setup, Extension
 pdpd_module = Extension(
     'pdpd',
     include_dirs = [
+        './',
+        './things',
+        './util',
+        './renderer',
+        './geometry',
         '/usr/include',
         '/usr/local/include/SDL', 
         '/usr/include/cairo', '/usr/include/pixman-1', 
@@ -19,8 +24,9 @@ pdpd_module = Extension(
     sources = [
         'pdpd_pymodule.cpp',
         'Gooey.cpp',
+        'World.cpp',
         'WorldWindow.cpp',
-        'renderer/TargetCamera.cpp'
+        'renderer/TargetCamera.cpp',
         'renderer/ThingDrawer.cpp',
         'renderer/WorldRenderer.cpp',
         'things/Box.cpp',
@@ -32,4 +38,4 @@ pdpd_module = Extension(
 setup (name = 'pdpd_package',
        version = '0.1',
        description = 'predee predee physics simulation library',
-       ext_modules = [pdpd])
+       ext_modules = [pdpd_module])
