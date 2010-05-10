@@ -1,104 +1,311 @@
-/*  gooey_pymodule.cpp
+/*  pdpd_gooey_pymodule.cpp
  *
- *  python interface for pdpd.gooey module
+ *  example illustrating defining a new python type
  *  
- *  copyright 2010 michael philetus weller <philetus@gmail.com>
- *  
- *  you may redistribute or modify this code under the terms of the 
- *  GNU General Public Licence version 3.
- *  for more information see: http://www.gnu.org/licenses/gpl.html
+ *  from http://docs.python.org/py3k/extending/newtypes.html
  *  
  */
-
-using namespace std;
-using namespace pdpd;
-using namespace gooey;
-
-#include <Python.h> // python api
+ 
+#include <Python.h>
 
 #include "Gooey.h"
 #include "WorldWindow.h"
-#include "TargetCamera.h"
-#include "ThingDrawer.h"
+#include "renderer/TargetCamera.h"
+#include "renderer/ThingDrawer.h"
 
 // python interpreter wants plain c? :P
 #ifdef __cplusplus
 extern "C" {
 #endif 
- 
-// pointer to hold gooey
-static Gooey* gooey;
 
-// error to be raised if something goes wrong
-static PyObject *GooeyError;
+/*
+ *
+ *  *** gooey wrapper  
+ *
+ */
+typedef struct {
+    PyObject_HEAD
+    pdpd::Gooey* _gooey;
+} Gooey;
 
-// *** start gooey demon
-static PyObject*
-start_gooey_demon(PyObject*, PyObject*) // ignore self and args
+static void
+Gooey_dealloc(Gooey* self)
 {
-    if (!start_gooey_thread(demon))
-        return NULL; // if starting gooey demon fails, return null pointer
+    // free c++ gooey object memory
+    delete _gooey;
     
-    // return None on success
+    // free python object memory
+    Py_TYPE(self)->tp_free((PyObject*)self);
+}
+
+static PyObject*
+Gooey_new(PyTypeObject *type, PyObject, PyObject)
+{
+    Gooey* self;
+
+    self = (Gooey*)type->tp_alloc(type, 0);
+    if (self != NULL) 
+    {
+        self->_gooey = new pdpd::Gooey;
+        if (self->_gooey == NULL)
+          {
+            Py_DECREF(self);
+            return NULL;
+          }
+    }
+
+    return (PyObject*)self;
+}
+
+static int
+Gooey_init(Gooey* self, PyObject*, PyObject*) // no args, no keywords
+{
+    return 0;
+}
+
+// starts event loop
+static PyObject*
+Gooey_loop(Gooey* self)
+{
+    self->_gooey->loop(); // hangs until event loop is stopped
+
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-// *** stop gooey demon
+// stops event loop
 static PyObject*
-stop_gooey_demon(PyObject*, PyObject*) // ignore self and args
+Gooey_kill(Gooey* self)
 {
-    if (!stop_gooey_thread(demon))
-        return NULL; // if starting gooey demon fails, return null pointer
-    
-    // return None on success
+    self->_gooey->handle_quit(); // stops event loop, physics and sdl lib
+
     Py_INCREF(Py_None);
     return Py_None;
 }
 
-// *** create pdpd window
-static PyObject *
-create_window(PyObject*, PyObject*) // ignore self and args
+// show window on screen
+static PyObject*
+Gooey_show(Gooey* self, PyObject* wndw)
 {
-    // TODO create window object and return it
-    return Py_BuildValue("i", sts);
+    Window* window = static_cast<Window*>(wndw);
+    if(window == NULL)
+    {
+        return NULL;
+    }
+    self->_gooey->show(window->_window);
+
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
-// *** module initialization function
+// remove window from screen
+static PyObject*
+Gooey_unshow(Gooey* self, PyObject* wndw)
+{
+    Window* window = static_cast<Window*>(wndw);
+    if(window == NULL)
+    {
+        return NULL;
+    }
+    self->_gooey->unshow(window->_window);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static PyMethodDef Gooey_methods[] = {
+/*
+    {"welcome", (PyCFunction)Gooey_welcome, METH_O,
+     "welcome a new thing to world"
+    },
+    {"dismiss", (PyCFunction)Gooey_dismiss, METH_O,
+     "dismiss a thing from world"
+    },
+*/
+    {"show", (PyCFunction)Gooey_show, METH_O,
+     "show a window on screen"
+    },
+    {"unshow", (PyCFunction)Gooey_unshow, METH_O,
+     "remove window from screen"
+    },
+    {"loop", (PyCFunction)Gooey_loop, METH_NOARGS,
+     "start event loop"
+    },
+    {"kill", (PyCFunction)Gooey_kill, METH_NOARGS,
+     "stop event loop"
+    },
+    {NULL}  /* Sentinel */
+};
+
+static PyTypeObject GooeyType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "pdpd.Gooey",              /* tp_name */
+    sizeof(Gooey),             /* tp_basicsize */
+    0,                         /* tp_itemsize */
+    (destructor)Gooey_dealloc, /* tp_dealloc */
+    0,                         /* tp_print */
+    0,                         /* tp_getattr */
+    0,                         /* tp_setattr */
+    0,                         /* tp_reserved */
+    0,                         /* tp_repr */
+    0,                         /* tp_as_number */
+    0,                         /* tp_as_sequence */
+    0,                         /* tp_as_mapping */
+    0,                         /* tp_hash  */
+    0,                         /* tp_call */
+    0,                         /* tp_str */
+    0,                         /* tp_getattro */
+    0,                         /* tp_setattro */
+    0,                         /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT |
+        Py_TPFLAGS_BASETYPE,   /* tp_flags */
+    "Gooey object type",       /* tp_doc */
+    0,		                   /* tp_traverse */
+    0,		                   /* tp_clear */
+    0,		                   /* tp_richcompare */
+    0,		                   /* tp_weaklistoffset */
+    0,		                   /* tp_iter */
+    0,		                   /* tp_iternext */
+    Gooey_methods,             /* tp_methods */
+    0,                         /* tp_members */
+    0,                         /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)Gooey_init,      /* tp_init */
+    0,                         /* tp_alloc */
+    Gooey_new,                 /* tp_new */
+};
+
+/*
+ *
+ *  *** window wrapper  
+ *
+ */
+typedef struct {
+    PyObject_HEAD
+    pdpd::WorldWindow* _window;
+} Window;
+
+static void
+Window_dealloc(Window* self)
+{
+    // free c++ gooey object memory
+    delete _window;
+    
+    // free python object memory
+    Py_TYPE(self)->tp_free((PyObject*)self);
+}
+
+static PyObject*
+Window_new(PyTypeObject *type, PyObject, PyObject)
+{
+    Window* self;
+
+    self = (Window*)type->tp_alloc(type, 0);
+    if (self != NULL) 
+    {
+        TargetCamera* camera = new TargetCamera();
+        ThingDrawer* drawer = new ThingDrawer();
+        self->_window = new pdpd::WorldWindow(camera, drawer);
+        if (self->_window == NULL)
+          {
+            Py_DECREF(self);
+            return NULL;
+          }
+    }
+
+    return (PyObject*)self;
+}
+
+static int
+Window_init(Window* self, PyObject*, PyObject*)
+{
+    return 0;
+}
+
+
+static PyTypeObject WindowType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    "pdpd.Window",              /* tp_name */
+    sizeof(Window),             /* tp_basicsize */
+    0,                         /* tp_itemsize */
+    (destructor)Window_dealloc, /* tp_dealloc */
+    0,                         /* tp_print */
+    0,                         /* tp_getattr */
+    0,                         /* tp_setattr */
+    0,                         /* tp_reserved */
+    0,                         /* tp_repr */
+    0,                         /* tp_as_number */
+    0,                         /* tp_as_sequence */
+    0,                         /* tp_as_mapping */
+    0,                         /* tp_hash  */
+    0,                         /* tp_call */
+    0,                         /* tp_str */
+    0,                         /* tp_getattro */
+    0,                         /* tp_setattro */
+    0,                         /* tp_as_buffer */
+    Py_TPFLAGS_DEFAULT |
+        Py_TPFLAGS_BASETYPE,   /* tp_flags */
+    "Window object type",       /* tp_doc */
+    0,		                   /* tp_traverse */
+    0,		                   /* tp_clear */
+    0,		                   /* tp_richcompare */
+    0,		                   /* tp_weaklistoffset */
+    0,		                   /* tp_iter */
+    0,		                   /* tp_iternext */
+    0,                         /* tp_methods */
+    0,                         /* tp_members */
+    0,                         /* tp_getset */
+    0,                         /* tp_base */
+    0,                         /* tp_dict */
+    0,                         /* tp_descr_get */
+    0,                         /* tp_descr_set */
+    0,                         /* tp_dictoffset */
+    (initproc)Window_init,      /* tp_init */
+    0,                         /* tp_alloc */
+    Window_new,                 /* tp_new */
+};
+
+/*
+ *
+ *  *** module setup
+ *
+ */
+static PyModuleDef pdpd_module = {
+    PyModuleDef_HEAD_INIT,
+    "pdpd",
+    "predee predee physics simulation library.",
+    -1,
+    NULL, NULL, NULL, NULL, NULL
+};
+
 PyMODINIT_FUNC
-PyInit_gooey(void)
+PyInit_pdpd(void) 
 {
-    PyObject *m;
+    PyObject* module;
 
-    m = PyModule_Create(&gooey_module);
-    if (m == NULL)
+    if (PyType_Ready(&GooeyType) < 0)
         return NULL;
 
-    GooeyError = PyErr_NewException("gooey.error", NULL, NULL);
-    Py_INCREF(GooeyError);
-    PyModule_AddObject(m, "error", GooeyError);
-    return m;
+    if (PyType_Ready(&WindowType) < 0)
+        return NULL;
+
+    module = PyModule_Create(&pdpd_module);
+    if (module == NULL)
+        return NULL;
+
+    Py_INCREF(&GooeyType);
+    PyModule_AddObject(module, "Gooey", (PyObject*)&GooeyType);
+
+    Py_INCREF(&WindowType);
+    PyModule_AddObject(module, "Window", (PyObject*)&WindowType);
+    
+    return module;
 }
 
-// *** list of methods to be exposed in python
-static PyMethodDef gooey_methods[] = {
-    {"start_gooey_demon",  start_gooey_demon, METH_VARARGS,
-     "Start GUI manager demon in separate thread."},
-    {"stop_gooey_demon",  start_gooey_demon, METH_VARARGS,
-     "Stop GUI manager demon."},
-    {"create_window",  create_window, METH_VARARGS,
-     "Create a new window."},
-    {NULL, NULL, 0, NULL}        /* Sentinel */
-};
-
-static struct PyModuleDef gooey_module = {
-   PyModuleDef_HEAD_INIT,
-   "gooey",   /* name of module */
-   NULL, /* module documentation, may be NULL */
-   -1,       /* size of per-interpreter state of the module,
-                or -1 if the module keeps state in global variables. */
-   gooey_methods
-};
 
 #ifdef __cplusplus
 }

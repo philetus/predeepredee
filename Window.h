@@ -86,7 +86,7 @@ namespace pdpd
         virtual ~Window() {}
         
         // called by gooey when welcomed
-        virtual void bless(World*) { init_sdl_window(); }
+        virtual void wake(World*) { init_sdl_window(); }
 
         // *** public window interface
         int get_pos_x() { return pos_x; }

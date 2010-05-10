@@ -1,12 +1,35 @@
 from distutils.core import setup, Extension
 
-gooey_module = Extension('gooey',
-                         include_dirs = ['/usr/local/include/SDL'],
-                         libraries = ['SDL', 'pthread'],
-                         library_dirs = ['/usr/lib', '/usr/local/lib'],
-                         sources = ['gooey_pymodule.cpp'])
+pdpd_module = Extension(
+    'pdpd',
+    include_dirs = [
+        '/usr/include',
+        '/usr/local/include/SDL', 
+        '/usr/include/cairo', '/usr/include/pixman-1', 
+        '/usr/include/freetype2', '/usr/include/libpng12',
+        ],
+    libraries = [
+        'SDL', 'pthread',  # for sdl
+        'cairo', # for cairo
+        'BulletDynamics', 'BulletCollision', # for bullet
+        'LinearMath', 'BulletSoftBody',      # for bullet too
+        'GLU' # for opengl util lib
+        ],
+    library_dirs = ['/usr/lib', '/usr/local/lib'],
+    sources = [
+        'pdpd_pymodule.cpp',
+        'Gooey.cpp',
+        'WorldWindow.cpp',
+        'renderer/TargetCamera.cpp'
+        'renderer/ThingDrawer.cpp',
+        'renderer/WorldRenderer.cpp',
+        'things/Box.cpp',
+        'things/Thing.cpp',
+        'geometry/Facet.cpp',
+        'geometry/Vector3.cpp'
+        ])
 
-setup (name = 'gooey_package',
-       version = '1.0',
-       description = 'This is a demo package',
-       ext_modules = [gooey])
+setup (name = 'pdpd_package',
+       version = '0.1',
+       description = 'predee predee physics simulation library',
+       ext_modules = [pdpd])

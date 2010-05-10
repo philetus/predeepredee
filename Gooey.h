@@ -39,11 +39,6 @@ namespace pdpd
         void render_windows();
 
         // private helper methods
-        void handle_quit()
-        {
-            looping = false;
-            kill_gooey();
-        }
         void init_sdl();
                 
         // get window from index by id
@@ -79,8 +74,8 @@ namespace pdpd
         }
         
         // add and remove windows
-        void welcome(Window* wndw);
-        void dismiss(Window* wndw);
+        void show(Window* wndw);
+        void unshow(Window* wndw);
         
         // just push thing onto welcome queue
         void welcome(things::Thing* thng)
@@ -101,6 +96,11 @@ namespace pdpd
             world.exit_physics();
         }
         
+        void handle_quit()
+        {
+            looping = false;
+            kill_gooey();
+        }
     };
 }
 #endif // PDPD_GOOEY

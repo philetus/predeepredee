@@ -85,7 +85,7 @@ namespace pdpd
         shoot_box_velocity(500.0)
         {}
         
-        void bless(World* wrld)
+        void wake(World* wrld)
         {
             init_sdl_window();
             

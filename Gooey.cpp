@@ -117,16 +117,16 @@ void Gooey::handle_events()
     }
 }
 
-void Gooey::welcome(Window* wndw)
+void Gooey::show(Window* wndw)
 {
     // bless window
-    wndw->bless(&world);
+    wndw->wake(&world);
     
     // add window to root index
     window_index.insert(pair<unsigned int, Window*>(wndw->get_id(), wndw));
 }
 
-void Gooey::dismiss(Window*)
+void Gooey::unshow(Window*)
 {
     // TODO
 }

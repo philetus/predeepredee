@@ -30,12 +30,12 @@ int main(int, char**)
     TargetCamera camera;
     ThingDrawer drawer;
     WorldWindow window(&camera, &drawer);
-    gooey.welcome(&window);
+    gooey.show(&window);
     
     TargetCamera camera2;
     ThingDrawer drawer2;
     WorldWindow window2(&camera2, &drawer2);
-    gooey.welcome(&window2);
+    gooey.show(&window2);
 
     cout << "* starting gooey loop" << endl;
     gooey.loop();
