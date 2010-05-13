@@ -3,18 +3,12 @@ from distutils.core import setup, Extension
 pdpd_module = Extension(
     'pdpd',
     include_dirs = [
-        './',
-        './things',
-        './util',
-        './renderer',
-        './geometry',
         '/usr/include',
         '/usr/local/include/SDL', 
         '/usr/include/cairo', '/usr/include/pixman-1', 
         '/usr/include/freetype2', '/usr/include/libpng12',
         ],
     libraries = [
-        'stdc++', # handle c++ code
         'SDL', 'pthread',  # for sdl
         'cairo', # for cairo
         'BulletDynamics', 'BulletCollision', # for bullet
