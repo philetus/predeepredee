@@ -20,14 +20,6 @@ using namespace things;
 using namespace util;
 using namespace geometry;
 
-World::World()
-:
-next_address(1), // start thing addresses at 1
-gravity(0.0, -100.0, 0.0) // 10m/s**2 in the -y???
-{
-    // TODO ???
-}
-
 bool World::init_physics()
 {
 	// use the softbody collision configuration and the default collision

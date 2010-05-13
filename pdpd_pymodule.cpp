@@ -11,6 +11,7 @@
 
 #include "Gooey.h"
 #include "WorldWindow.h"
+#include "World.h"
 #include "renderer/TargetCamera.h"
 #include "renderer/ThingDrawer.h"
 

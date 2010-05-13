@@ -46,10 +46,12 @@ namespace pdpd
         std::deque<things::Thing*> roots; // list of root things in the world
         std::map<unsigned int, things::Thing*> thing_index; // things by address
         unsigned int next_address;
-        static const unsigned int max_address = 0xffff;
-        static const int max_proxies = 32766;
-        static const int max_overlap = 65535;
-        static const float world_radius = 1000.0;
+        unsigned int max_address;
+        int max_proxies;
+        int max_overlap;
+        float world_radius;
+        geometry::Vector3 gravity;
+
 	    btSoftRigidDynamicsWorld* dynamics_world; // the most important class
 	    btClock step_timer; // track time between rendering passes
 	    btTypedConstraint* pick_constraint; // constraint for mouse picking
@@ -57,7 +59,6 @@ namespace pdpd
         btCollisionDispatcher* collision_dispatcher;
         btConstraintSolver* constraint_solver;
         btDefaultCollisionConfiguration* collision_configuration;
-        geometry::Vector3 gravity;
         things::Box* ground;
 	    btSoftBodyWorldInfo	soft_world_info;
         // TODO do we need these?
@@ -85,7 +86,16 @@ namespace pdpd
         }
         
     public:
-        World();
+        World()
+        :
+        next_address(1), // start thing addresses at 1
+        max_address(0xffff),
+        max_proxies(32766),
+        max_overlap(65535),
+        world_radius(1000.0),
+        gravity(0.0, -100.0, 0.0) // 10m/s**2 in the -y???
+        {}
+        
         ~World() {}
         
         void welcome(things::Thing* thing);

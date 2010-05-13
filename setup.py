@@ -14,6 +14,7 @@ pdpd_module = Extension(
         '/usr/include/freetype2', '/usr/include/libpng12',
         ],
     libraries = [
+        'stdc++', # handle c++ code
         'SDL', 'pthread',  # for sdl
         'cairo', # for cairo
         'BulletDynamics', 'BulletCollision', # for bullet
