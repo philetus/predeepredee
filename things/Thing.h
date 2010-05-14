@@ -30,22 +30,26 @@ namespace pdpd
                 const Thing& t);
         protected:
             static const double epsilon = 0.000001;
-
+            Species species; // composite | atomic | constraint
             bool child; // true if has parent
-            bool atomic; // is this thing composed of other things?
-            bool soft; // true if thing is softbody not rigid
-            bool touched; // true if physics has moved this node or child node
             bool root; // true if thing is stored in world thing list
+            bool touched; // true if physics has moved this node or child node
             unsigned int address; // uint uniquely identifying this thing
             Thing* parent; // parent thing
         public:
-            Thing(bool chld = false, bool atmc = false, bool sft = false) 
+            enum Species
+            {
+                composite,
+                atomic,
+                constraint
+            };
+            
+            Thing(Species spcs) 
             :
-            child(chld),
-            atomic(atmc),  
-            soft(sft),
-            touched(false), 
+            species(spcs),
+            child(false),
             root(false),
+            touched(false), 
             address(0)
             {}
             
@@ -54,11 +58,26 @@ namespace pdpd
             void set_address(unsigned int a) { address = a; }
             unsigned int get_address() { return address; }
             
+            Species get_species() { return species; }
             bool is_child() { return child; }
-            bool is_atomic() { return atomic; }
             bool is_root() { return root; }
-            void set_root(bool r) { root = r; }
-            virtual bool is_dynamic() = 0;
+            
+            void set_root() {
+                root = true;
+                parent = NULL;
+                child = false;
+            }
+            
+            void set_parent(Thing* thng) 
+            {
+                parent = thng;
+                if(thng == NULL)
+                {
+                    child = false;
+                    return;
+                }
+                child = true;
+            }
             
             // allow things to be sorted spatially by axis aligned bounding box
             // TODO virtual geometry::Aabb3 get_aabb() = 0;

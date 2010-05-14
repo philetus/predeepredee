@@ -1,6 +1,6 @@
-/*  DequeIterator.h
+/*  MapValueIterator.h
  *
- *  iterator over elements of a deque with next() and has_next()
+ *  iterator over values of a map with next() and has_next()
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  

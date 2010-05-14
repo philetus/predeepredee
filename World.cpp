@@ -100,20 +100,23 @@ void World::welcome(Thing* thing)
 
     // only add root-level things to things list
     roots.push_back(thing);
-    thing->set_root(true);
+    thing->set_root();
     
     // if atomic just insert thing
-    if(thing->is_atomic()) 
+    switch(thing->species)
     {
+    
+    case atomic: 
+    
         // downcast and insert
         if(static_cast<AtomicThing*>(thing)->is_soft())
             insert(static_cast<SoftThing*>(thing));        
         else
             insert(static_cast<RigidThing*>(thing));
-    }
-    // if thing is not atomic insert children too and then add constraints
-    else 
-    {
+        break;
+    
+    case composite:
+    
         // downcast to composite thing
         CompositeThing* daddy = static_cast<CompositeThing*>(thing);
         
@@ -125,6 +128,21 @@ void World::welcome(Thing* thing)
         while(iterator->has_next()) 
             init_constraints(iterator->next());
         delete iterator;
+        
+        break;
+    
+    case constraint:
+        // downcast to constraint thing
+        ConstraintThing* ct = static_cast<ConstraintThing*>(thing);
+        
+        // add constraint to dynamics world
+        dynamics_world->addConstraint(
+            ct->get_constraint(), ct->get_disable_collisions())
+        break;
+    
+    default:
+        cout << "can't welcome thing of unkown species!" << endl;
+        break;
     }
 }
 

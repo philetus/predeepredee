@@ -42,10 +42,9 @@ namespace pdpd
             AtomicThing(
                 bool sft,
                 float* clr,
-                float mss = 0.0,
-                bool chld = false)
+                float mss = 0.0)
             :
-            Thing(chld, true), // child, atomic
+            Thing(atomic),
             soft(sft),
             mass(mss)
             {
