@@ -5,6 +5,7 @@ pdpd_module = Extension(
     include_dirs = [
         '/usr/include',
         '/usr/local/include/SDL', 
+        '/usr/local/include/bullet', 
         '/usr/include/cairo', '/usr/include/pixman-1', 
         '/usr/include/freetype2', '/usr/include/libpng12',
         ],
