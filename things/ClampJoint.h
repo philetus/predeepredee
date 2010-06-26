@@ -1,4 +1,4 @@
-/*  Clamp.h
+/*  ClampJoint.h
  *
  *  clamps two rigid nodes together
  *  
@@ -10,8 +10,8 @@
  *  
  */
  
-#ifndef PDPD_THINGS_CLAMP
-#define PDPD_THINGS_CLAMP
+#ifndef PDPD_THINGS_CLAMP_JOINT
+#define PDPD_THINGS_CLAMP_JOINT
 
 #include "ConstraintThing.h"
 #include "RigidThing.h"
@@ -23,7 +23,7 @@ namespace pdpd
 {
     namespace things
     {
-        class Clamp : public ConstraintThing
+        class ClampJoint : public ConstraintThing
         {
         protected:
             RigidThing* alpha;
@@ -34,7 +34,7 @@ namespace pdpd
             btGeneric6DofConstraint* clamp_constraint;
             
         public:
-            Clamp(
+            ClampJoint(
                 RigidThing* lph,
                 const geometry::Transformation3& lph_frm,
                 RigidThing* bt,
@@ -57,7 +57,7 @@ namespace pdpd
 	            clamp_constraint->setAngularUpperLimit(Vector3(0, 0, 0));
             }
             
-            ~Clamp()
+            ~ClampJoint()
             {
                 if(clamp_constraint != NULL)
                 {
@@ -85,4 +85,4 @@ namespace pdpd
         };
     }
 }
-#endif // PDPD_THINGS_CLAMP
+#endif // PDPD_THINGS_CLAMP_JOINT
