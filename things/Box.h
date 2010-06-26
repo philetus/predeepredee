@@ -2,7 +2,7 @@
  *
  *  a simple rigid atomic thing
  *
- *  - defined by a size (width, depth, height) and a wold frame
+ *  - defined by a size (width, depth, height) and a world frame
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -55,10 +55,9 @@ namespace pdpd
                 const geometry::Vector3& scl,
                 const geometry::Transformation3& wrld_frm,
                 float* clr,
-                float mss = 0.0,
-                bool chld = false)
+                float mss = 0.0)
             :
-            RigidThing(wrld_frm, clr, mss, chld),
+            RigidThing(wrld_frm, clr, mss),
             scale(scl)
             {                
                 // set collision shape from scale (half size)

@@ -34,10 +34,9 @@ namespace pdpd
             RigidThing(
                 const geometry::Transformation3& wrld_frm,
                 float* clr,
-                float mss = 0.0,
-                bool chld = false)
+                float mss = 0.0)
             :
-            AtomicThing(false, clr, mss, chld), // soft, color, mass, child
+            AtomicThing(false, clr, mss), // soft, color, mass, child
             world_frame(wrld_frm)
             {}
             
