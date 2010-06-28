@@ -11,17 +11,28 @@ class Loop2(Shape2):
     EPSILON = 0.1
     SPECIES = {"interior" : 0, "exterior" : 1}
     
-    def __init__(self, idstring="noname"):
+    def __init__(self, vertices=None, idstring="noname"):
+        Shape2.__init__(self) # inits the following:
+        #self._vertices = []
+        #self._bounds = None
+        
         self.idstring = idstring
-        self._vertices = [] # vertices in order connected
-        self._bounds = None
         self.closed = False
         self.species = None
         self.polygon = None
     
+        if vertices is not None:
+            self._vertices = list(vertices)
+            self.closed = True
+
     def __repr__(self):
         return "<loop {0}>".format(self.idstring)
     
+    def __cmp__(self, other):
+        """sort loops by minimum vertex
+        """
+        return cmp(min(self._vertices), min(other._vertices))
+        
     def add_pair(self, a, b):
         self._bounds = None # invalidate bounds when data changes
         
@@ -69,13 +80,13 @@ class Loop2(Shape2):
             raise ValueError("won't find ear for open loop!")
         
         # init ear search
-        v_iter = self.vertices
+        vs = iter(self)
         a = None
-        b = v_iter.next()
-        c = v_iter.next()
+        b = vs.next()
+        c = vs.next()
         
         # loop over vertices looking for ear
-        for v in v_iter:
+        for v in vs:
             a = b
             b = c
             c = v
@@ -87,29 +98,27 @@ class Loop2(Shape2):
     def _test_ear(self, a, b, c):
         """test potential ear
         """
-        print("testing", a, b, c, "for ear")
+        #print("testing", a, b, c, "for ear")
         
         # test if midpoint of ac is inside loop
         mid_ac = a + ((c - a) * 0.5)
         
-        print("\tmidpoint of ac:", mid_ac)
+        #print("\tmidpoint of ac:", mid_ac)
         
         if not self.contains(mid_ac):
-            print("\tfail: midpoint not contained!")
+            #print("\tfail: midpoint not contained!")
             return False
         
         # build triangle loop to test points
-        ear = Loop2()
-        for v in (a, b, c):
-            ear._vertices.append(v)
-        ear.closed = True
+        ear = Loop2([a, b, c])
         
         # check winding of vertices except these 3
-        for v in (x for x in self.vertices if x not in (a, b, c)):
+        for v in (x for x in self if x not in (a, b, c)):
             if ear.contains(v):
-                print("\tfail:", x, "contained by ear", a, b, c)
+                #print("\tfail:", v, "contained by ear", a, b, c)
                 return False
         
+        #print("\tftw!", a, b, c, "is an ear")
         return True
         
     def winding(self, vertex):
@@ -120,7 +129,7 @@ class Loop2(Shape2):
         
         # set up winding iteration
         degrees = 0.0
-        vertices = list(self.vertices)
+        vertices = list(self)
         a = None
         b = vertices.pop(0) # seed with first vertex
         vertices.append(b) # add first vertex back to end to close loop
@@ -153,7 +162,7 @@ class Loop2(Shape2):
         if not self.bounds.touches(loop.bounds):
             return False
         
-        for vertex in loop.vertices:
+        for vertex in loop:
             if not self.contains(vertex):
                 return False
         
@@ -165,9 +174,9 @@ class Loop2(Shape2):
            (ccw winding is opengl default for forward-facing face)
         """
         # find lowest point
-        v_iter = self.vertices
-        first = v_iter.next()
-        for v in v_iter:
+        vs = iter(self)
+        first = vs.next()
+        for v in vs:
             if v.y < first.y:
                 first = v
             elif v.y == first.y and v.x < first.x:
@@ -176,7 +185,7 @@ class Loop2(Shape2):
         # find vertex with lowest heading from first point
         next = None
         hmin = 360.0
-        for v in (x for x in self.vertices if x != first):
+        for v in (x for x in self if x != first):
             vh = (v - first).heading
             if vh < hmin:
                 hmin = vh
@@ -186,7 +195,7 @@ class Loop2(Shape2):
         nc = next - first
         last = None
         dmin = 360.0
-        for v in (x for x in self.vertices if x not in (next, first)):
+        for v in (x for x in self if x not in (next, first)):
             vd = nc.angle_to(v - next)
             if vd < dmin:
                 dmin = vd

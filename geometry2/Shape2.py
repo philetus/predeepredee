@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from Bounds2 import Bounds2
 
 class Shape2:
@@ -8,15 +10,13 @@ class Shape2:
         self._vertices = []
         self._bounds = None
     
-    @property
-    def vertices(self):
+    def __iter__(self):
         """iterate over vertices of shape
         """
         for vertex in self._vertices:
             yield vertex
             
-    @property
-    def vertex_len(self):
+    def __len__(self):
         return len(self._vertices)
             
     @property
@@ -24,6 +24,6 @@ class Shape2:
         """return bounds of shape
         """
         if self._bounds is None:
-            self._bounds = Bounds2(cloud=self.vertices)
+            self._bounds = Bounds2(shape=self)
         return self._bounds
     

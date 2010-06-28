@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from Vector2 import Vector2
 
 class Vertex2(Vector2):

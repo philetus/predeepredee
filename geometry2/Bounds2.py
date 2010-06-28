@@ -1,19 +1,21 @@
+from __future__ import print_function
+
 from Vertex2 import Vertex2
 
 class Bounds2:
     """a 2d bounding box
     """
     
-    def __init__(self, mn=None, mx=None, cloud=None):
+    def __init__(self, mn=None, mx=None, shape=None):
         self.min = None
         self.max = None
         if mn and mx:
             self.min = Vertex2(*mn)
             self.max = Vertex2(*mx)
-        elif cloud:
+        elif shape:
             xs = []
             ys = []
-            for x, y in cloud: # iterate over each vertex in cloud to get x, y
+            for x, y in shape: # iterate over each vertex in shape to get x, y
                 xs.append(x)
                 ys.append(y)
             self.min = Vertex2(min(xs), min(ys))

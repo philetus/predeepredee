@@ -9,7 +9,7 @@ p = PolygonParser("cockroach.svg", d)
 
 g = Gooey()
 dw = DrawingWindow(d)
-#dw.zoom = 0.5
+dw.zoom = 1.5
 g.show(dw)
 
 g.start()
