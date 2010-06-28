@@ -11,8 +11,6 @@ class PolygonParser(sax.ContentHandler):
     """
     
     def __init__(self, xmlfile, drawing):
-        self.drawing = drawing
-
         self.vertices = [] # sorted list of vertices
         self.edges = [] # sorted list of edges
         self.facets = [] # sorted list of facets
@@ -35,11 +33,15 @@ class PolygonParser(sax.ContentHandler):
         # find loops that are holes in other loops
         # and build polygons
         self.polygons_from_loops()
+        
+        # kludge: put polygons in drawing
+        for polygon in self.polygons:
+            drawing.polygons.append(polygon)
     
     def startElement(self, name, attrs):
         #print "starting element", str(name)
         if str(name) == "path":
-            self.parse_path(str(attrs["d"]))
+            self.parse_path(str(attrs["d"]), str(attrs["id"]))
     
     def polygons_from_loops(self):
         """
@@ -82,9 +84,9 @@ class PolygonParser(sax.ContentHandler):
         for other in (l for l in self.loops if l != loop):
             if other.surrounds(loop):
                 return True
-            return False
-    
-    def parse_path(self, dstring):
+        return False
+            
+    def parse_path(self, dstring, idstring):
         """parse 'd' attribute of path tag
         """
         # split attr string on whitespace
@@ -92,12 +94,12 @@ class PolygonParser(sax.ContentHandler):
                 
         # parser for "m" (inkscape format)
         if dlist[0] == "m" or dlist[0] == "M":
-            self.parse_mpath(dlist)
+            self.parse_mpath(dlist, idstring)
             return
             
         raise ValueError("unrecognized d attr init: {0}".format(dlist[0]))
         
-    def parse_mpath(self, dlist):
+    def parse_mpath(self, dlist, idstring):
         """parse path from inkscape-style d attr list
            'm x,y dx,dy dx,dy ... [z]'
         """
@@ -108,7 +110,7 @@ class PolygonParser(sax.ContentHandler):
             relative = False
         
         # loop to fill with vertices
-        loop = Loop2()    
+        loop = Loop2(idstring)
 
         # set initial vertex
         x, y = (float(s) for s in dlist.pop(0).split(","))
@@ -134,7 +136,8 @@ class PolygonParser(sax.ContentHandler):
                     current_vertex = self.add_vertex(x, y)
                     
                 if not loop.add_pair(last_vertex, current_vertex):
-                    raise ValueError("wtf? can't add pair to loop!")
+                    raise ValueError(
+                        "wtf? can't add pair to loop {0}!".format(idstring))
             
             else:
                 raise ValueError("can't parse d attr item: {0}".format(item))
