@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from Shape2 import Shape2
 
 class Polygon2(Shape2):

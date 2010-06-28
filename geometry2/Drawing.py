@@ -9,5 +9,6 @@ class Drawing:
     def __init__(self):    
         self.vertices = [] # sorted list of vertices
         self.edges = [] # sorted list of edges
+        self.polygons = [] 
             
 

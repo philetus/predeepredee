@@ -11,13 +11,16 @@ class Loop2(Shape2):
     EPSILON = 0.1
     SPECIES = {"interior" : 0, "exterior" : 1}
     
-    def __init__(self):
+    def __init__(self, idstring="noname"):
+        self.idstring = idstring
         self._vertices = [] # vertices in order connected
         self._bounds = None
         self.closed = False
         self.species = None
         self.polygon = None
-        
+    
+    def __repr__(self):
+        return "<loop {0}>".format(self.idstring)
     
     def add_pair(self, a, b):
         self._bounds = None # invalidate bounds when data changes

@@ -1,5 +1,16 @@
 from PolygonParser import PolygonParser
+from Drawing import Drawing
 
-p = PolygonParser("tricky_polygon.svg", None)
-l = p.loops[0]
+from Gooey import Gooey
+from DrawingWindow import DrawingWindow
+
+d = Drawing()
+p = PolygonParser("cockroach.svg", d)
+
+g = Gooey()
+dw = DrawingWindow(d)
+#dw.zoom = 0.5
+g.show(dw)
+
+g.start()
 
