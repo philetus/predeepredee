@@ -17,9 +17,9 @@
 
 #include "RigidThing.h"
 #include "../util/Iterator.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Transformation3.h"
-#include "../geometry/Facet.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Transformation3.h"
+#include "../geometry3/Facet.h"
 
 namespace pdpd
 {
@@ -29,14 +29,14 @@ namespace pdpd
         {
         protected:
             // Material* material; // defines what box is made of
-            geometry::Vector3 scale; // scale vector representing size of box
+            geometry3::Vector3 scale; // scale vector representing size of box
             
             static const float normal_table[][3]; // table of normals by facet
             static const int vertex_table[][3]; // table of vertices by facet
             
             // *** iterator over facets
             friend class FacetIterator;
-            class FacetIterator : public util::Iterator<geometry::Facet>
+            class FacetIterator : public util::Iterator<geometry3::Facet>
             {
                 static const int facet_count = 12;
                 int index;
@@ -44,7 +44,7 @@ namespace pdpd
             public:
                 FacetIterator(Box& b) : index(0), box(b) {}
                 virtual bool has_next() { return index < facet_count; }
-                virtual geometry::Facet next()
+                virtual geometry3::Facet next()
                     { return box.get_facet(index++); }
             }; // FacetIterator
             
@@ -52,8 +52,8 @@ namespace pdpd
             
             // scale, mass, child
             Box(
-                const geometry::Vector3& scl,
-                const geometry::Transformation3& wrld_frm,
+                const geometry3::Vector3& scl,
+                const geometry3::Transformation3& wrld_frm,
                 float* clr,
                 float mss = 0.0)
             :
@@ -84,19 +84,19 @@ namespace pdpd
             }
             
             // *** thing interface,
-            // TODO geometry::Aabb3 get_aabb();
-            void get_parent_frame(geometry::Transformation3* t);
+            // TODO geometry3::Aabb3 get_aabb();
+            void get_parent_frame(geometry3::Transformation3* t);
             void get_gl_parent_frame(btScalar* m16);
             
             // *** atomic thing interface
             // virtual materials::Material* get_material() { return material }
-            util::Iterator<geometry::Vector3>* iter_vertices();
-            util::Iterator<geometry::Facet>* iter_facets()
+            util::Iterator<geometry3::Vector3>* iter_vertices();
+            util::Iterator<geometry3::Facet>* iter_facets()
                 { return new FacetIterator(*this); }
             
             // (untransformed) component geometry created on the fly from scale
-            geometry::Vector3 get_vertex(int index);
-            geometry::Facet get_facet(int index);
+            geometry3::Vector3 get_vertex(int index);
+            geometry3::Facet get_facet(int index);
             
         };
     }

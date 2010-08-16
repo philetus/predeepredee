@@ -34,9 +34,9 @@
 #include "things/Box.h"
 #include "util/Iterator.h"
 #include "util/DequeIterator.h"
-#include "geometry/Vector3.h"
-#include "geometry/Rotation3.h"
-#include "geometry/Transformation3.h"
+#include "geometry3/Vector3.h"
+#include "geometry3/Rotation3.h"
+#include "geometry3/Transformation3.h"
 
 namespace pdpd
 {
@@ -50,7 +50,7 @@ namespace pdpd
         int max_proxies;
         int max_overlap;
         float world_radius;
-        geometry::Vector3 gravity;
+        geometry3::Vector3 gravity;
 
 	    btSoftRigidDynamicsWorld* dynamics_world; // the most important class
 	    btClock step_timer; // track time between rendering passes
@@ -130,8 +130,8 @@ namespace pdpd
         void step_physics();
         
         void ray_pick(
-            const geometry::Vector3& ry_frm, 
-            const geometry::Vector3& ry_t,
+            const geometry3::Vector3& ry_frm, 
+            const geometry3::Vector3& ry_t,
             btCollisionWorld::ClosestRayResultCallback& ry_cllbck)
         {
             if(dynamics_world)

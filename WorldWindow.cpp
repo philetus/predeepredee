@@ -16,7 +16,7 @@
  
 using namespace std;
 using namespace pdpd;
-using namespace geometry;
+using namespace geometry3;
 using namespace things;
 using namespace renderer;
 

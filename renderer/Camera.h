@@ -16,7 +16,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "../geometry/Vector3.h"
+#include "../geometry3/Vector3.h"
 
 namespace pdpd
 {
@@ -38,9 +38,9 @@ namespace pdpd
             float near; // near clipping plane distance
             float far; // far clipping plane distance
             int forward_index;
-            geometry::Vector3 forward_axis;
+            geometry3::Vector3 forward_axis;
             int up_index;
-            geometry::Vector3 up_axis;
+            geometry3::Vector3 up_axis;
                         
         public:
             Camera() 
@@ -68,7 +68,7 @@ namespace pdpd
             }
             
             // get ray from world to coord on window plane
-            virtual geometry::Vector3 get_ray_to(int x, int y) = 0;
+            virtual geometry3::Vector3 get_ray_to(int x, int y) = 0;
             
             // make gl calls to initialize gl perspective matrix
             virtual void set_perspective() = 0;
@@ -82,7 +82,7 @@ namespace pdpd
             // zoom camera
             virtual void zoom(float dd) = 0;
             
-            virtual const geometry::Vector3 get_position() = 0;
+            virtual const geometry3::Vector3 get_position() = 0;
         };
     }
 }

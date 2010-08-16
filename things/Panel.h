@@ -17,9 +17,9 @@
 
 #include "RigidThing.h"
 #include "../util/Iterator.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Transformation3.h"
-#include "../geometry/Facet.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Transformation3.h"
+#include "../geometry3/Facet.h"
 
 namespace pdpd
 {
@@ -35,7 +35,7 @@ namespace pdpd
             // scale, mass, child
             Panel(
                 Iterator<Vector3*> vrtcs,
-                const geometry::Transformation3& wrld_frm,
+                const geometry3::Transformation3& wrld_frm,
                 float* clr,
                 float mss = 0.0)
             :
@@ -62,19 +62,19 @@ namespace pdpd
             }
             
             // *** thing interface,
-            // TODO geometry::Aabb3 get_aabb();
-            void get_parent_frame(geometry::Transformation3* t);
+            // TODO geometry3::Aabb3 get_aabb();
+            void get_parent_frame(geometry3::Transformation3* t);
             void get_gl_parent_frame(btScalar* m16);
             
             // *** atomic thing interface
             // virtual materials::Material* get_material() { return material }
-            util::Iterator<geometry::Vector3>* iter_vertices();
-            util::Iterator<geometry::Facet>* iter_facets()
+            util::Iterator<geometry3::Vector3>* iter_vertices();
+            util::Iterator<geometry3::Facet>* iter_facets()
                 { return new FacetIterator(*this); }
             
             // (untransformed) component geometry created on the fly from scale
-            geometry::Vector3 get_vertex(int index);
-            geometry::Facet get_facet(int index);
+            geometry3::Vector3 get_vertex(int index);
+            geometry3::Facet get_facet(int index);
             
         };
     }

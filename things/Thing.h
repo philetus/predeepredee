@@ -15,8 +15,8 @@
 
 #include <iostream>
 
-//#include "../geometry/Aabb3.h"
-#include "../geometry/Transformation3.h"
+//#include "../geometry3/Aabb3.h"
+#include "../geometry3/Transformation3.h"
 
 namespace pdpd
 {
@@ -80,10 +80,10 @@ namespace pdpd
             }
             
             // allow things to be sorted spatially by axis aligned bounding box
-            // TODO virtual geometry::Aabb3 get_aabb() = 0;
+            // TODO virtual geometry3::Aabb3 get_aabb() = 0;
             
             // offset from parent node
-            virtual void get_parent_frame(geometry::Transformation3* t) = 0;
+            virtual void get_parent_frame(geometry3::Transformation3* t) = 0;
             virtual void get_gl_parent_frame(btScalar* m16) = 0;
             
             // recursively set touched flags to indicate physics engine has

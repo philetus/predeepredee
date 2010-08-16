@@ -27,8 +27,8 @@ pdpd_module = Extension(
         'renderer/WorldRenderer.cpp',
         'things/Box.cpp',
         'things/Thing.cpp',
-        'geometry/Facet.cpp',
-        'geometry/Vector3.cpp'
+        'geometry3/Facet.cpp',
+        'geometry3/Vector3.cpp'
         ])
 
 setup (name = 'pdpd_package',

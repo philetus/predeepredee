@@ -17,9 +17,9 @@
 
 #include "SoftThing.h"
 #include "../util/Iterator.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Transformation3.h"
-#include "../geometry/Facet.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Transformation3.h"
+#include "../geometry3/Facet.h"
 
 namespace pdpd
 {
@@ -28,13 +28,13 @@ namespace pdpd
         class Flexure : public SoftThing
         {
         protected:            
-            geometry::Vector3 vertices[2][2];
+            geometry3::Vector3 vertices[2][2];
             int resolution[2];
             int fixed_corners;
             
             // *** iterator over facets
             friend class FacetIterator;
-            class FacetIterator : public util::Iterator<geometry::Facet>
+            class FacetIterator : public util::Iterator<geometry3::Facet>
             {
                 int facet_count;
                 int index;
@@ -47,17 +47,17 @@ namespace pdpd
                 flexure(flxr)
                 {}
                 virtual bool has_next() { return index < facet_count; }
-                virtual geometry::Facet next()
+                virtual geometry3::Facet next()
                     { return flexure.get_facet(index++); }
             }; // FacetIterator
 
             
         public:
             Flexure(
-                const geometry::Vector3& v00,
-                const geometry::Vector3& v10,
-                const geometry::Vector3& v01,
-                const geometry::Vector3& v11,
+                const geometry3::Vector3& v00,
+                const geometry3::Vector3& v10,
+                const geometry3::Vector3& v01,
+                const geometry3::Vector3& v11,
                 float* clr,
                 float mss = 0.0,
                 int x_rs = 9,
@@ -125,33 +125,33 @@ namespace pdpd
             }
             
             // *** thing interface
-            void get_parent_frame(geometry::Transformation3*) {}
+            void get_parent_frame(geometry3::Transformation3*) {}
             void get_gl_parent_frame(btScalar*) {}
 
             // *** atomic thing interface
-            util::Iterator<geometry::Vector3>* iter_vertices()
+            util::Iterator<geometry3::Vector3>* iter_vertices()
                 { return NULL; }
-            util::Iterator<geometry::Facet>* iter_facets()
+            util::Iterator<geometry3::Facet>* iter_facets()
                 { return new FacetIterator(*this); }
             
-            geometry::Facet get_facet(int index)
+            geometry3::Facet get_facet(int index)
             {
                 int i = index / 2;
                 bool side = static_cast<bool>(index % 2);
                 
                 if(side)
                 {
-                    return geometry::Facet(
-                        geometry::Vector3(soft_body->m_faces[i].m_normal),
-                        geometry::Vector3(soft_body->m_faces[i].m_n[0]->m_x),
-                        geometry::Vector3(soft_body->m_faces[i].m_n[1]->m_x),
-                        geometry::Vector3(soft_body->m_faces[i].m_n[2]->m_x));
+                    return geometry3::Facet(
+                        geometry3::Vector3(soft_body->m_faces[i].m_normal),
+                        geometry3::Vector3(soft_body->m_faces[i].m_n[0]->m_x),
+                        geometry3::Vector3(soft_body->m_faces[i].m_n[1]->m_x),
+                        geometry3::Vector3(soft_body->m_faces[i].m_n[2]->m_x));
                 }
-                return geometry::Facet(
-                    geometry::Vector3(-soft_body->m_faces[i].m_normal),
-                    geometry::Vector3(soft_body->m_faces[i].m_n[2]->m_x),
-                    geometry::Vector3(soft_body->m_faces[i].m_n[1]->m_x),
-                    geometry::Vector3(soft_body->m_faces[i].m_n[0]->m_x));
+                return geometry3::Facet(
+                    geometry3::Vector3(-soft_body->m_faces[i].m_normal),
+                    geometry3::Vector3(soft_body->m_faces[i].m_n[2]->m_x),
+                    geometry3::Vector3(soft_body->m_faces[i].m_n[1]->m_x),
+                    geometry3::Vector3(soft_body->m_faces[i].m_n[0]->m_x));
             }
         };
     }

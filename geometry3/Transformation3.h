@@ -11,14 +11,14 @@
  *  
  */
 
-#ifndef PDPD_GEOMETRY_TRANSFORMATION3
-#define PDPD_GEOMETRY_TRANSFORMATION3
+#ifndef PDPD_GEOMETRY3_TRANSFORMATION3
+#define PDPD_GEOMETRY3_TRANSFORMATION3
 
 #include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
-    namespace geometry
+    namespace geometry3
     {
         class Transformation3 : public btTransform
         {
@@ -54,5 +54,5 @@ namespace pdpd
         };
     }
 }
-#endif // PDPD_GEOMETRY_TRANSFORMATION3
+#endif // PDPD_GEOMETRY3_TRANSFORMATION3
 

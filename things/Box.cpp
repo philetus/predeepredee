@@ -15,7 +15,7 @@
 using namespace pdpd;
 using namespace things;
 using namespace util;
-using namespace geometry;
+using namespace geometry3;
 
 /*  return vector with position of transformed vertex at index
  *
@@ -88,6 +88,6 @@ const int Box::vertex_table[][3] =
      {7, 4, 5}}; // +z
 
 Iterator<Vector3>* Box::iter_vertices() { return NULL; } // TODO
-void Box::get_parent_frame(geometry::Transformation3*) {} // TODO
+void Box::get_parent_frame(geometry3::Transformation3*) {} // TODO
 void Box::get_gl_parent_frame(btScalar*) {} // TODO
 

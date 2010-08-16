@@ -18,7 +18,7 @@
 #include <deque>
 
 #include "../World.h"
-#include "../geometry/Vector3.h"
+#include "../geometry3/Vector3.h"
 #include "../util/DequeIterator.h"
 #include "Light.h"
 #include "Camera.h"
@@ -39,7 +39,7 @@ namespace pdpd
             
             unsigned int next_light;            
             std::deque<Light*> lights; // and then there was light
-            geometry::Vector3 shadowcast;
+            geometry3::Vector3 shadowcast;
         public:
             
             WorldRenderer(World* w, Camera* c, ThingDrawer* d)

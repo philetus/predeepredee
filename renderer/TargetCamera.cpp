@@ -18,7 +18,7 @@
 using namespace std;
 using namespace pdpd;
 using namespace renderer;
-using namespace geometry;
+using namespace geometry3;
 
 void TargetCamera::set_perspective()
 {

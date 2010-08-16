@@ -119,9 +119,9 @@ class PolygonParser(sax.ContentHandler):
     def _find_splice_pair(self, outline, hole):
         """return closest (outline_vertex, hole_vertex) to splice at
         """
-        # get first hole vertex
-        hole_vs = iter(hole) # get iterator over hole vertices
-        hole_v = hole_vs.next()
+        # start with min hole vertex
+        hole_v = min(hole._vertices)
+        hole_vs = (v for v in hole if v != hole_v)
         
         # find outline vertex closest to initial hole vertex
         outline_vs = iter(outline)
@@ -288,7 +288,7 @@ class PolygonParser(sax.ContentHandler):
     ###
     
     def startElement(self, name, attrs):
-        #print "starting element", str(name)
+        #print("starting element", str(name))
         if str(name) == "path":
             self._parse_path(str(attrs["d"]), str(attrs["id"]))
     

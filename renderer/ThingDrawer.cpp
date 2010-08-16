@@ -20,7 +20,7 @@ using namespace pdpd;
 using namespace renderer;
 using namespace util;
 using namespace things;
-using namespace geometry;
+using namespace geometry3;
 
 // iterates over root-level things and descends tree to atomic things
 void ThingDrawer::visit(

@@ -16,8 +16,8 @@
 #include "ConstraintThing.h"
 #include "RigidThing.h"
 #include "../util/PairIterator.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Transformation3.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Transformation3.h"
 
 namespace pdpd
 {
@@ -27,18 +27,18 @@ namespace pdpd
         {
         protected:
             RigidThing* alpha;
-            geometry::Transformation3 alpha_frame;
+            geometry3::Transformation3 alpha_frame;
             RigidThing* beta;
-            geometry::Transformation3 beta_frame;
+            geometry3::Transformation3 beta_frame;
             
             btGeneric6DofConstraint* clamp_constraint;
             
         public:
             ClampJoint(
                 RigidThing* lph,
-                const geometry::Transformation3& lph_frm,
+                const geometry3::Transformation3& lph_frm,
                 RigidThing* bt,
-                const geometry::Transformation3& bt_frm
+                const geometry3::Transformation3& bt_frm
             )
             :
             alpha(lph),
@@ -68,12 +68,12 @@ namespace pdpd
             
             btTypedConstraint* get_constraint() { return clamp_constraint; }
             
-            util::Iterator<geometry::Vector3>* iter_vertices() 
+            util::Iterator<geometry3::Vector3>* iter_vertices() 
             {
                 return NULL;
             }
             
-            util::Iterator<geometry::Facet>* iter_facets() 
+            util::Iterator<geometry3::Facet>* iter_facets() 
             {
                 return NULL;
             }

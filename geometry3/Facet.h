@@ -11,8 +11,8 @@
  *  
  */
 
-#ifndef PDPD_GEOMETRY_FACET
-#define PDPD_GEOMETRY_FACET
+#ifndef PDPD_GEOMETRY3_FACET
+#define PDPD_GEOMETRY3_FACET
 
 #include <iostream>
 
@@ -21,7 +21,7 @@
 
 namespace pdpd
 {
-    namespace geometry
+    namespace geometry3
     {
         class Facet
         {
@@ -52,10 +52,10 @@ namespace pdpd
             
             // construct from a normal and three vertices
             Facet(
-                const geometry::Vector3& n, 
-                const geometry::Vector3& v0, 
-                const geometry::Vector3& v1, 
-                const geometry::Vector3& v2)
+                const geometry3::Vector3& n, 
+                const geometry3::Vector3& v0, 
+                const geometry3::Vector3& v1, 
+                const geometry3::Vector3& v2)
             :
             normal(n), vertex0(v0), vertex1(v1), vertex2(v2) 
             {}
@@ -124,4 +124,4 @@ namespace pdpd
         };        
     }
 }
-#endif // PDPD_GEOMETRY_FACET
+#endif // PDPD_GEOMETRY3_FACET

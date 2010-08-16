@@ -93,7 +93,8 @@ class Loop2(Shape2):
             if self._test_ear(a, b, c):
                 return (a, b, c)
 
-        raise ValueError("wtf? failed to find ear!")
+        raise ValueError("wtf? failed to find ear in loop {0}!".format(
+            self.idstring))
     
     def _test_ear(self, a, b, c):
         """test potential ear

@@ -14,9 +14,9 @@
 #define PDPD_RENDERER_TARGET_CAMERA
 
 #include "Camera.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Rotation3.h"
-#include "../geometry/Matrix3x3.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Rotation3.h"
+#include "../geometry3/Matrix3x3.h"
 
 namespace pdpd
 {
@@ -28,8 +28,8 @@ namespace pdpd
             float azimuth; // angle heading in degrees
             float elevation; // angle to look up or down
             float distance; // distance from camera to target 
-            geometry::Vector3 position; // position of camera
-            geometry::Vector3 target; // point to look at
+            geometry3::Vector3 position; // position of camera
+            geometry3::Vector3 target; // point to look at
             
             TargetCamera(const TargetCamera&); // hide copy-constructor 
         public:
@@ -44,18 +44,18 @@ namespace pdpd
             
             // implements camera interface for rendering and pointer handlers
             void set_perspective();
-            geometry::Vector3 get_ray_to(int x, int y);
+            geometry3::Vector3 get_ray_to(int x, int y);
             void tilt(int dx, int dy); // tilt adjusts azimuth and elevation
             void pan(int dx, int dy); // pan moves target
             void zoom(float dd); // zoom adjusts camera distance
             
             // target camera extended direct interface
-            void set_target(const geometry::Vector3& t) { target.crib(t); }
+            void set_target(const geometry3::Vector3& t) { target.crib(t); }
             void set_distance(float d) { distance = d; }
             void set_azimuth(float a) { azimuth = a; }
             void set_elevation(float e) { elevation = e; }
             
-            const geometry::Vector3 get_position() { return position; }
+            const geometry3::Vector3 get_position() { return position; }
         };
     }
 }

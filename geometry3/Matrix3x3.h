@@ -11,14 +11,14 @@
  *  
  */
 
-#ifndef PDPD_GEOMETRY_MATRIX3X3
-#define PDPD_GEOMETRY_MATRIX3X3
+#ifndef PDPD_GEOMETRY3_MATRIX3X3
+#define PDPD_GEOMETRY3_MATRIX3X3
 
 #include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
-    namespace geometry
+    namespace geometry3
     {
         class Matrix3x3 : public btMatrix3x3
         {
@@ -40,5 +40,5 @@ namespace pdpd
         
     }
 }
-#endif // PDPD_GEOMETRY_MATRIX3X3
+#endif // PDPD_GEOMETRY3_MATRIX3X3
 

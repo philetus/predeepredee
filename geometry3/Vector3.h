@@ -11,15 +11,15 @@
  *  
  */
 
-#ifndef PDPD_GEOMETRY_VECTOR3
-#define PDPD_GEOMETRY_VECTOR3
+#ifndef PDPD_GEOMETRY3_VECTOR3
+#define PDPD_GEOMETRY3_VECTOR3
 
 #include <iostream>
 #include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
-    namespace geometry
+    namespace geometry3
     {
         // subclass btVector3
         class Vector3 : public btVector3
@@ -50,5 +50,5 @@ namespace pdpd
         };
     }
 }
-#endif // PDPD_GEOMETRY_VECTOR3
+#endif // PDPD_GEOMETRY3_VECTOR3
 

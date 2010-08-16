@@ -20,8 +20,8 @@
 #include <GL/glu.h>
 
 #include "../util/Iterator.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Facet.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Facet.h"
 #include "../things/Thing.h"
 #include "../things/AtomicThing.h"
 #include "../things/CompositeThing.h"
@@ -69,7 +69,7 @@ namespace pdpd
                 things::Thing* thing,
                 int mode,
                 int pass,
-                const geometry::Vector3& cast);
+                const geometry3::Vector3& cast);
 
             // just this method can be overridden to change appearance
             virtual void draw_thing(things::AtomicThing* thing, int pass = 0);
@@ -77,10 +77,10 @@ namespace pdpd
             virtual void pick_thing(things::AtomicThing* thing);
             virtual void shade_thing(
                 things::AtomicThing* thing,
-                const geometry::Vector3& cast);
+                const geometry3::Vector3& cast);
             virtual void shade_facet(
-                geometry::Facet& near, 
-                const geometry::Vector3& cast);
+                geometry3::Facet& near, 
+                const geometry3::Vector3& cast);
             
         public:
             virtual ~ThingDrawer() {}
@@ -96,8 +96,8 @@ namespace pdpd
                 util::Iterator<things::Thing*>* iterator,
                 int mode,
                 int pass = 0,
-                const geometry::Vector3& cast = 
-                    geometry::Vector3(0.0, -1000.0, 0.0));
+                const geometry3::Vector3& cast = 
+                    geometry3::Vector3(0.0, -1000.0, 0.0));
             
             // clear display lists for dismissed things
             virtual void dismiss(things::Thing* thing);

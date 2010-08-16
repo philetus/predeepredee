@@ -1,7 +1,6 @@
-/*  Facet.cpp
+/*  Vector3.cpp
  *
- *  triangle in a graphics mesh
- *  - defined by a surface normal and 3 vectors
+ *  3d translation vector
  *  
  *  copyright 2010 michael philetus weller <philetus@gmail.com>
  *  
@@ -10,21 +9,19 @@
  *  for more information see: http://www.gnu.org/licenses/gpl.html
  *  
  */
-
-#include "Facet.h"
+ 
+#include "Vector3.h"
 
 using namespace std;
 
 namespace pdpd
 {
-    namespace geometry
+    namespace geometry3
     {
-        ostream& operator<<(ostream& os, const Facet& f)
+        ostream& operator<<(ostream& os, const Vector3& v)
         {
-            os << "Facet(" << f.normal << ", " << f.vertex0 << ", " 
-                << f.vertex1 << ", " << f.vertex2 << ")";
+            os << "Vector3(" << v[0] << ", " << v[1] << ", " << v[2] << ")";
             return os;
         }
     }
-}    
-
+}

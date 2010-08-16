@@ -16,7 +16,7 @@
 #include <iostream>
 
 #include "AtomicThing.h"
-#include "../geometry/Transformation3.h"
+#include "../geometry3/Transformation3.h"
 
 namespace pdpd
 {
@@ -27,12 +27,12 @@ namespace pdpd
             RigidThing(); // hide
             RigidThing(const RigidThing&); // hide
         protected:
-            geometry::Transformation3 world_frame;
+            geometry3::Transformation3 world_frame;
             btCollisionShape* collision_shape;
             btRigidBody* rigid_body;
         public:
             RigidThing(
-                const geometry::Transformation3& wrld_frm,
+                const geometry3::Transformation3& wrld_frm,
                 float* clr,
                 float mss = 0.0)
             :
@@ -40,13 +40,13 @@ namespace pdpd
             world_frame(wrld_frm)
             {}
             
-            virtual void set_world_frame(const geometry::Transformation3& frame)
+            virtual void set_world_frame(const geometry3::Transformation3& frame)
             {
                 world_frame.crib(frame);
                 touch(); // set touched flag (and recursively set parents' too)
             }
             
-            virtual void get_world_frame(geometry::Transformation3* frame)
+            virtual void get_world_frame(geometry3::Transformation3* frame)
                 { frame->crib(world_frame); }
             
             virtual void get_gl_world_frame(btScalar* m16)
@@ -82,7 +82,7 @@ namespace pdpd
                 virtual void setWorldTransform(
                     const btTransform &wrld_trnsfrm)
                 {
-                    geometry::Transformation3 frame(wrld_trnsfrm);
+                    geometry3::Transformation3 frame(wrld_trnsfrm);
                     thing->set_world_frame(frame);
                 }
             };

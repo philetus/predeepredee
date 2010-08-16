@@ -16,8 +16,8 @@
 #include "Thing.h"
 #include "RigidThing.h"
 #include "../util/Iterator.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Facet.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Facet.h"
 
 namespace pdpd
 {
@@ -36,8 +36,8 @@ namespace pdpd
                         
             virtual btTypedConstraint* get_constraint() = 0;
 
-            virtual util::Iterator<geometry::Vector3>* iter_vertices() = 0;
-            virtual util::Iterator<geometry::Facet>* iter_facets() = 0;
+            virtual util::Iterator<geometry3::Vector3>* iter_vertices() = 0;
+            virtual util::Iterator<geometry3::Facet>* iter_facets() = 0;
             virtual util::Iterator<RigidThing*>* iter_constrained() = 0;
             
             bool get_disable_collisions() { return disable_collisions; }

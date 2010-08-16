@@ -10,14 +10,14 @@
  *  
  */
 
-#ifndef PDPD_GEOMETRY_AABB3
-#define PDPD_GEOMETRY_AABB3
+#ifndef PDPD_GEOMETRY3_AABB3
+#define PDPD_GEOMETRY3_AABB3
 
 #include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
-    namespace geometry
+    namespace geometry3
     {
         class Aabb3
         {
@@ -47,4 +47,4 @@ namespace pdpd
         };
     }
 }
-#endif // PDPD_GEOMETRY_AABB3
+#endif // PDPD_GEOMETRY3_AABB3

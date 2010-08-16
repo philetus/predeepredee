@@ -11,14 +11,14 @@
  *  
  */
 
-#ifndef PDPD_GEOMETRY_ROTATION3
-#define PDPD_GEOMETRY_ROTATION3
+#ifndef PDPD_GEOMETRY3_ROTATION3
+#define PDPD_GEOMETRY3_ROTATION3
 
 #include "btBulletDynamicsCommon.h"
 
 namespace pdpd
 {
-    namespace geometry
+    namespace geometry3
     {
         class Rotation3 : public btQuaternion
         {
@@ -52,5 +52,5 @@ namespace pdpd
         };
     }
 }
-#endif // PDPD_GEOMETRY_ROTATION3
+#endif // PDPD_GEOMETRY3_ROTATION3
 

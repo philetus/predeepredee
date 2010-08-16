@@ -7,14 +7,14 @@
 #include "renderer/WorldRenderer.h"
 #include "things/Box.h"
 #include "things/Flexure.h"
-#include "geometry/Vector3.h"
-#include "geometry/Rotation3.h"
-#include "geometry/Transformation3.h"
+#include "geometry3/Vector3.h"
+#include "geometry3/Rotation3.h"
+#include "geometry3/Transformation3.h"
 
 using namespace std;
 using namespace pdpd;
 using namespace things;
-using namespace geometry;
+using namespace geometry3;
 using namespace renderer;
 
 int main(int, char**)

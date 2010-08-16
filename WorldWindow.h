@@ -24,9 +24,9 @@
 #include "renderer/ThingDrawer.h"
 #include "renderer/WorldRenderer.h"
 
-#include "geometry/Vector3.h"
-#include "geometry/Rotation3.h"
-#include "geometry/Transformation3.h"
+#include "geometry3/Vector3.h"
+#include "geometry3/Rotation3.h"
+#include "geometry3/Transformation3.h"
 #include "things/Box.h"
 #include "things/Flexure.h"
 
@@ -52,8 +52,8 @@ namespace pdpd
         things::RigidThing* picked_thing;
         btPoint2PointConstraint* pick_constraint;
         static const float pick_clamping = 30.0;
-        geometry::Vector3 old_pick_position;
-        geometry::Vector3 old_hit_position;
+        geometry3::Vector3 old_pick_position;
+        geometry3::Vector3 old_hit_position;
         float old_pick_distance;
 
         void pick_thing(int x, int y);

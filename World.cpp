@@ -18,7 +18,7 @@ using namespace std;
 using namespace pdpd;
 using namespace things;
 using namespace util;
-using namespace geometry;
+using namespace geometry3;
 
 bool World::init_physics()
 {

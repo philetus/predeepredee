@@ -5,11 +5,11 @@ from Gooey import Gooey
 from DrawingWindow import DrawingWindow
 
 d = Drawing()
-p = PolygonParser("cockroach.svg", d)
+p = PolygonParser("tricky_polygon.svg", d)
 
 g = Gooey()
 dw = DrawingWindow(d)
-dw.zoom = 1.5
+dw.zoom = 1.0
 g.show(dw)
 
 g.start()

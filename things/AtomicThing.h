@@ -17,8 +17,8 @@
 
 #include "Thing.h"
 #include "../util/Iterator.h"
-#include "../geometry/Vector3.h"
-#include "../geometry/Facet.h"
+#include "../geometry3/Vector3.h"
+#include "../geometry3/Facet.h"
 // TODO #include "../materials/Material.h"
 
 namespace pdpd
@@ -52,8 +52,8 @@ namespace pdpd
             }
             
             // virtual materials::Material get_material() = 0;
-            virtual util::Iterator<geometry::Vector3>* iter_vertices() = 0;
-            virtual util::Iterator<geometry::Facet>* iter_facets() = 0;
+            virtual util::Iterator<geometry3::Vector3>* iter_vertices() = 0;
+            virtual util::Iterator<geometry3::Facet>* iter_facets() = 0;
             virtual bool is_dynamic()
             {
                 if((mass - epsilon) > 0.0) return true;
